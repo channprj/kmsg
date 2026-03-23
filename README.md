@@ -378,7 +378,7 @@ README 디버깅 가이드도 함께 업데이트해 주세요.
 ## Deploy
 
 `v*` 태그를 푸시하면 GitHub Actions가 자동으로 빌드해서 `kmsg-macos-universal` 파일을 Releases에 업로드합니다.
-또한 `TAP_REPO_TOKEN`이 설정되어 있으면 `channprj/homebrew-tap`의 `Formula/kmsg.rb`를 자동으로 갱신합니다.
+같은 workflow가 `channprj/homebrew-tap` 리모트까지 자동으로 동기화하며, `TAP_REPO_TOKEN`이 없거나 tap push가 실패하면 릴리즈도 실패합니다.
 
 배포 전에 `VERSION` 파일 값을 먼저 업데이트하세요.
 
@@ -410,6 +410,9 @@ gh workflow run release.yml
    - 권한: `homebrew-tap` 저장소 `contents: write`
 3. tap 저장소 기본 브랜치가 `main`이 아니면
    `.github/workflows/release.yml`의 `TAP_REPO_REF` 값을 맞춰 주세요.
+
+이제 `TAP_REPO_TOKEN`은 선택이 아니라 필수입니다.
+secret이 없으면 바이너리 release만 만들고 끝내지 않고, workflow 전체가 실패해서 tap 반영 누락을 바로 잡도록 동작합니다.
 
 릴리즈 후 사용자는 아래 명령으로 설치할 수 있습니다.
 

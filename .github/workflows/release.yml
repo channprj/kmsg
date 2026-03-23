@@ -122,12 +122,25 @@ jobs:
         id: tap-sync
         shell: bash
         run: |
+          set -euo pipefail
+
+          {
+            echo "## Homebrew tap sync"
+            echo "- Repository: $TAP_REPO"
+            echo "- Branch: $TAP_REPO_REF"
+            echo "- Policy: required"
+          } >> "$GITHUB_STEP_SUMMARY"
+
           if [[ -z "${{ secrets.TAP_REPO_TOKEN }}" ]]; then
-            echo "::warning::TAP_REPO_TOKEN is not configured. Skipping Homebrew formula sync."
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "::error::TAP_REPO_TOKEN is required for Homebrew tap sync."
+            {
+              echo "- Status: failed"
+              echo "- Reason: TAP_REPO_TOKEN is missing"
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           fi
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
 
       - name: Checkout tap repository
         if: steps.tap-sync.outputs.enabled == 'true'
@@ -233,6 +246,10 @@ jobs:
           cd "$TAP_DIR"
           if git diff --quiet -- README.md Formula; then
             echo "Homebrew tap already up-to-date."
+            {
+              echo "- Status: success"
+              echo "- Result: tap repository already up-to-date for $TAG"
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
@@ -241,3 +258,8 @@ jobs:
           git add README.md Formula
           git commit -m "chore(tap): sync kmsg formulas for $TAG"
           git push origin HEAD:"$TAP_REPO_REF"
+
+          {
+            echo "- Status: success"
+            echo "- Result: pushed tap updates for $TAG"
+          } >> "$GITHUB_STEP_SUMMARY"
