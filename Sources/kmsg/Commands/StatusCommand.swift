@@ -78,8 +78,10 @@ struct StatusCommand: ParsableCommand {
 
         EXAMPLES:
           kmsg chats                      List all chat rooms
+          kmsg chats --json               List chat rooms with chat_id in JSON
           kmsg read "친구이름"             Read messages from chat
           kmsg send "친구이름" "안녕!"      Send a message
+          kmsg send --chat-id "<id>" "안녕!" Send a message by chat_id
         """)
     }
 }

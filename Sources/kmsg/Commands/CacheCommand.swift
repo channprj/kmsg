@@ -90,7 +90,7 @@ struct CacheImportCommand: ParsableCommand {
 struct CacheWarmupCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "warmup",
-        abstract: "Warm up AX cache paths for faster send"
+        abstract: "Warm up AX cache paths for faster send and chats"
     )
 
     @Option(name: .long, help: "Optional recipient to warm up chat-open path")
@@ -124,6 +124,11 @@ struct CacheWarmupCommand: ParsableCommand {
         let windowsBeforeWarmup = kakao.windows
         var warmedRecipientWindow: UIElement?
         var warmedSlots: [AXPathSlot] = []
+        let chatListScanner = ChatListScanner()
+
+        warmedSlots.append(contentsOf: chatListScanner.warmup(in: searchRoot, trace: { message in
+            runner.log(message)
+        }))
 
         if let searchField = locateWarmupSearchField(rootWindow: searchRoot, kakao: kakao, runner: runner) {
             AXPathCacheStore.shared.remember(slot: .searchField, root: searchRoot, element: searchField, trace: { message in
@@ -163,6 +168,8 @@ struct CacheWarmupCommand: ParsableCommand {
             runner.log("warmup: message input not found")
         }
 
+        var seenWarmedSlots = Set<AXPathSlot>()
+        warmedSlots = warmedSlots.filter { seenWarmedSlots.insert($0).inserted }
         let status = warmedSlots.map(\.rawValue).joined(separator: ", ")
         print("Warmup complete: \(status.isEmpty ? "no slots warmed" : status)")
 

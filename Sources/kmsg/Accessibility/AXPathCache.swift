@@ -4,6 +4,9 @@ import Foundation
 enum AXPathSlot: String, CaseIterable, Codable {
     case searchField
     case messageInput
+    case chatListContainer
+    case chatRowTitle
+    case chatRowPreview
 }
 
 struct AXPathStep: Codable {

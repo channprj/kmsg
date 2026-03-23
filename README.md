@@ -57,10 +57,12 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
 ```bash
 kmsg status
 kmsg send "본인, 친구, 또는 단톡방 이름" "안녕하세요"
+kmsg send --chat-id "chat_7f42c5e1d9ab" "안녕하세요"
 kmsg send "본인, 친구, 또는 단톡방 이름" "$(date '+%Y-%m-%d %H:%M:%S') 테스트"
 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --keep-window
 kmsg send-image "본인, 친구, 또는 단톡방 이름" "/path/to/image.png"
 kmsg chats
+kmsg chats --json
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --keep-window
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
@@ -83,12 +85,16 @@ kmsg status [--verbose]
 ### chats
 
 ```bash
-kmsg chats [--verbose] [--limit <limit>] [--trace-ax]
+kmsg chats [--verbose] [--limit <limit>] [--trace-ax] [--json] [--keep-window]
 ```
 
 - `-v, --verbose`: 상세 정보 출력
 - `-l, --limit <limit>`: 최대 채팅 목록 개수 (기본값: 20)
 - `--trace-ax`: AX 탐색/재시도 로그 출력
+- `--json`: `chat_id`를 포함한 구조화 JSON 출력
+- `-k, --keep-window`: `chats` 실행 중 자동으로 연 창을 유지
+
+기본 출력에는 각 채팅의 `chat_id`가 함께 표시됩니다. `chat_id`는 로컬 registry(`~/.kmsg/chat-registry.json`)에 저장되는 synthetic ID이며, 채팅방 이름을 기준으로 생성/재사용됩니다. 같은 이름의 방이 여러 개면 registry가 별도 ID를 유지하고, 방 이름이 바뀌면 새 ID로 취급합니다. `chats`가 실행 중 창을 자동으로 열었다면 기본적으로 종료 시 닫고, `--keep-window`일 때만 유지합니다.
 
 ### read
 
@@ -107,14 +113,18 @@ kmsg read <chat> [--limit <limit>] [--debug] [--trace-ax] [--keep-window] [--dee
 
 ```bash
 kmsg send <recipient> <message> [--dry-run] [--trace-ax] [--no-cache] [--refresh-cache] [--keep-window] [--deep-recovery]
+kmsg send --chat-id <chat-id> <message> [--dry-run] [--trace-ax] [--no-cache] [--refresh-cache] [--keep-window] [--deep-recovery]
 ```
 
+- `--chat-id <chat-id>`: `kmsg chats`에서 출력된 `chat_id`로 전송
 - `--dry-run`: 실제 전송 없이 시뮬레이션
 - `--trace-ax`: AX 탐색/재시도 로그 출력
 - `--no-cache`: 이번 실행에서 AX path cache 비활성화
 - `--refresh-cache`: 이번 실행에서 AX path cache 강제 재구성
 - `-k, --keep-window`: 자동으로 연 채팅창 유지
 - `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
+
+`--chat-id` 전송은 local registry에서 채팅방 이름을 역조회한 뒤 기존 search/open 경로로 채팅을 엽니다. registry에 없는 ID는 즉시 실패합니다.
 
 ### send-image
 
@@ -155,7 +165,7 @@ kmsg help cache
 - `clear`: 캐시 삭제
 - `export <output-path>`: 캐시 JSON 내보내기
 - `import <input-path>`: 캐시 JSON 가져오기
-- `warmup [--recipient <recipient>] [--trace-ax] [--keep-window]`: 경로 캐시 워밍업
+- `warmup [--recipient <recipient>] [--trace-ax] [--keep-window]`: `send`/`chats` happy-path 경로 캐시 워밍업
 
 ## 권한 문제 해결
 
@@ -205,6 +215,8 @@ kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
 
 - `--json` 사용 시 JSON은 `stdout`으로만 출력됩니다.
 - `--trace-ax` 로그는 `stderr`로 분리되므로 OpenClaw 같은 파이프 연동에서 안전하게 사용할 수 있습니다.
+
+`chats --json`도 동일하게 `stdout`에만 JSON을 출력하며, 각 채팅 항목에 `chat_id`와 `last_message`를 포함합니다. 첫 실행이나 캐시 self-heal 시에는 더 느릴 수 있지만, 이후 실행은 저장된 happy-path AX cache를 우선 사용합니다.
 
 ## MCP 연동
 
@@ -314,9 +326,11 @@ install -m 755 .build/release/kmsg ~/.local/bin/kmsg
 
 ```bash
 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --trace-ax
+kmsg send --chat-id "chat_7f42c5e1d9ab" "테스트" --dry-run
 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --dry-run --trace-ax
 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --no-cache
 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --refresh-cache
+kmsg chats --json
 kmsg send-image "본인, 친구, 또는 단톡방 이름" "/path/to/image.png" --trace-ax
 KMSG_AX_TIMEOUT=0.25 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트"
 kmsg inspect --window 0 --depth 20 --debug-layout

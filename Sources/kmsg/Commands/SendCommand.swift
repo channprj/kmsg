@@ -5,14 +5,22 @@ import Foundation
 struct SendCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "send",
-        abstract: "Send a message to a chat"
+        abstract: "Send a message to a chat",
+        discussion: """
+            Use either:
+              kmsg send <recipient> <message>
+              kmsg send --chat-id <chat-id> <message>
+            """
     )
 
-    @Argument(help: "Name of the chat or friend to send to")
-    var recipient: String
+    @Option(name: .long, help: "Send using a chat_id from 'kmsg chats'")
+    var chatID: String?
 
-    @Argument(help: "Message to send")
-    var message: String
+    @Argument(help: "Recipient name, or message when --chat-id is used")
+    var firstValue: String?
+
+    @Argument(help: "Message to send when recipient is provided")
+    var secondValue: String?
 
     @Flag(name: .long, help: "Don't actually send, just show what would happen")
     var dryRun: Bool = false
@@ -48,23 +56,65 @@ struct SendCommand: ParsableCommand {
         case searchMiss = "SEARCH_MISS"
     }
 
-    func run() throws {
-        guard AccessibilityPermission.ensureGranted() else {
-            AccessibilityPermission.printInstructions()
-            throw ExitCode.failure
+    var recipient: String? {
+        guard chatID == nil else { return nil }
+        return firstValue
+    }
+
+    var message: String {
+        if chatID == nil {
+            return secondValue ?? ""
+        }
+        return firstValue ?? ""
+    }
+
+    private var targetDescription: String {
+        if let chatID {
+            return "chat_id '\(chatID)'"
+        }
+        return "'\(recipient ?? "")'"
+    }
+
+    func validate() throws {
+        if let chatID, !chatID.isEmpty {
+            guard let firstValue, !firstValue.isEmpty else {
+                throw ValidationError("Message is required when using --chat-id.")
+            }
+            guard secondValue == nil else {
+                throw ValidationError("Recipient cannot be provided together with --chat-id.")
+            }
+            return
         }
 
-        let runner = AXActionRunner(traceEnabled: traceAX)
+        guard let firstValue, !firstValue.isEmpty else {
+            throw ValidationError("Recipient is required.")
+        }
+        guard let secondValue, !secondValue.isEmpty else {
+            throw ValidationError("Message is required.")
+        }
+    }
 
+    func run() throws {
         if dryRun {
             print("Dry run mode - no message will be sent")
-            print("Recipient: \(recipient)")
+            if let chatID {
+                print("Chat ID: \(chatID)")
+            } else {
+                print("Recipient: \(recipient ?? "")")
+            }
             print("Message: \(message)")
             if keepWindow {
                 print("Option: keep auto-opened window")
             }
             return
         }
+
+        guard AccessibilityPermission.ensureGranted() else {
+            AccessibilityPermission.printInstructions()
+            throw ExitCode.failure
+        }
+
+        let runner = AXActionRunner(traceEnabled: traceAX)
 
         prepareCacheIfNeeded(runner: runner)
         let kakao = try KakaoTalkApp()
@@ -77,12 +127,28 @@ struct SendCommand: ParsableCommand {
 
         do {
             runner.log("window strategy: focusedWindow -> mainWindow -> windows.first")
-            print("Looking for chat with '\(recipient)'...")
-            let resolution = try chatWindowResolver.resolve(query: recipient)
-            if resolution.openedViaSearch {
-                print("No existing chat window. Opening via search...")
+            let resolution: ChatWindowResolution
+            if let chatID {
+                guard let record = ChatIdentityRegistryStore.shared.record(for: chatID) else {
+                    throw KakaoTalkError.elementNotFound("Unknown chat_id '\(chatID)'. Run 'kmsg chats' first to refresh the local registry.")
+                }
+                print("Looking for chat with \(targetDescription)...")
+                print("Resolved \(targetDescription) to '\(record.displayName)'.")
+                resolution = try chatWindowResolver.resolve(query: record.displayName)
+                if resolution.openedViaSearch {
+                    print("No existing chat window. Opening via search...")
+                } else {
+                    print("Found existing chat window.")
+                }
             } else {
-                print("Found existing chat window.")
+                let recipient = recipient ?? ""
+                print("Looking for chat with \(targetDescription)...")
+                resolution = try chatWindowResolver.resolve(query: recipient)
+                if resolution.openedViaSearch {
+                    print("No existing chat window. Opening via search...")
+                } else {
+                    print("Found existing chat window.")
+                }
             }
 
             try sendMessageToWindow(resolution.window, kakao: kakao, runner: runner)
@@ -612,7 +678,7 @@ struct SendCommand: ParsableCommand {
             guard forcedTyped else {
                 throw KakaoTalkError.actionFailed("[\(SendFailureCode.forcedTypingFailed.rawValue)] Message input field not found and forced typing fallback failed")
             }
-            print("✓ Message sent to '\(recipient)' (forced typing fallback)")
+            print("✓ Message sent to \(targetDescription) (forced typing fallback)")
             return
         }
 
@@ -650,7 +716,7 @@ struct SendCommand: ParsableCommand {
             throw KakaoTalkError.actionFailed("[\(SendFailureCode.enterNotEffective.rawValue)] Enter key had no visible effect")
         }
 
-        print("✓ Message sent to '\(recipient)'")
+        print("✓ Message sent to \(targetDescription)")
     }
 
     private func closeChatWindowIfNeeded(
@@ -800,27 +866,12 @@ struct SendCommand: ParsableCommand {
     private func forceTypeIntoChatWindow(chatWindow: UIElement, kakao: KakaoTalkApp, runner: AXActionRunner) -> Bool {
         runner.log("fallback: force typing mode enabled")
 
-        guard let targetWindow = findMatchingChatWindow(in: kakao.windows, query: recipient) else {
-            runner.log("fallback: skipped (target window mismatch)")
-            return false
-        }
-
         kakao.activate()
-        _ = tryRaiseWindow(targetWindow, runner: runner)
+        _ = tryRaiseWindow(chatWindow, runner: runner)
         Thread.sleep(forTimeInterval: 0.12)
 
-        let focusedTitle = kakao.focusedWindow?.title ?? ""
-        let targetTitle = targetWindow.title ?? ""
-        let matchesFocused = focusedTitle.localizedCaseInsensitiveContains(recipient)
-        let matchesTarget = targetTitle.localizedCaseInsensitiveContains(recipient)
-
-        guard matchesFocused || matchesTarget else {
-            runner.log("fallback: skipped (target window mismatch)")
-            return false
-        }
-
         _ = runner.focusWithVerification(chatWindow, label: "chat window fallback", attempts: 1)
-        runner.log("fallback: target title matched -> typing")
+        runner.log("fallback: typing into active chat window")
         _ = runner.typeTextWithVerification(message, on: nil, label: "forced typing", attempts: 1)
         runner.pressEnterKey()
         Thread.sleep(forTimeInterval: 0.08)
