@@ -21,11 +21,12 @@ jobs:
       RELEASE_ASSET_NAME: kmsg-macos-universal
       TAP_REPO: channprj/homebrew-tap
       TAP_REPO_REF: main
-      TAP_FORMULA_PATH: Formula/kmsg.rb
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Swift 6.0
         uses: swift-actions/setup-swift@v2
@@ -117,26 +118,6 @@ jobs:
             gh release create "$TAG" "$RELEASE_ASSET_NAME" --title "$TAG" --generate-notes --target "$GITHUB_SHA"
           fi
 
-      - name: Compute Homebrew formula metadata
-        id: brew-meta
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          TAG="${{ steps.meta.outputs.tag }}"
-          VERSION="${TAG#v}"
-          ASSET_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/${RELEASE_ASSET_NAME}"
-          SHA256="$(shasum -a 256 "$RELEASE_ASSET_NAME" | awk '{print $1}')"
-
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "asset_url=$ASSET_URL" >> "$GITHUB_OUTPUT"
-          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
-
-          echo "Homebrew metadata:"
-          echo "  version: $VERSION"
-          echo "  asset:   $ASSET_URL"
-          echo "  sha256:  $SHA256"
-
       - name: Check Homebrew tap sync configuration
         id: tap-sync
         shell: bash
@@ -157,49 +138,106 @@ jobs:
           ref: ${{ env.TAP_REPO_REF }}
           path: tap-repo
 
-      - name: Update Homebrew formula
+      - name: Build Homebrew release metadata
+        if: steps.tap-sync.outputs.enabled == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_FILE: ${{ runner.temp }}/kmsg-homebrew-meta/tags.txt
+          JSON_FILE: ${{ runner.temp }}/kmsg-homebrew-meta/releases.json
+          DOWNLOAD_DIR: ${{ runner.temp }}/kmsg-homebrew-meta/downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TAG="${{ steps.meta.outputs.tag }}"
+          KEEP_VERSIONS=10
+          META_DIR="$RUNNER_TEMP/kmsg-homebrew-meta"
+          TAG_FILE="$META_DIR/tags.txt"
+          JSON_FILE="$META_DIR/releases.json"
+          DOWNLOAD_DIR="$META_DIR/downloads"
+
+          mkdir -p "$META_DIR" "$DOWNLOAD_DIR"
+
+          python3 <<'PY' > "$TAG_FILE"
+          import re
+          import subprocess
+
+          KEEP_VERSIONS = 10
+          pattern = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
+          tags = subprocess.check_output(["git", "tag", "--list"], text=True).splitlines()
+          semver_tags = [tag for tag in tags if pattern.match(tag)]
+          semver_tags.sort(key=lambda tag: tuple(int(part) for part in tag[1:].split(".")), reverse=True)
+          for tag in semver_tags[:KEEP_VERSIONS]:
+              print(tag)
+          PY
+
+          while IFS= read -r RELEASE_TAG; do
+            [[ -n "$RELEASE_TAG" ]] || continue
+            if [[ "$RELEASE_TAG" == "$TAG" ]]; then
+              cp "$RELEASE_ASSET_NAME" "$DOWNLOAD_DIR/$RELEASE_TAG-$RELEASE_ASSET_NAME"
+            else
+              gh release download "$RELEASE_TAG" \
+                --repo "$GITHUB_REPOSITORY" \
+                --pattern "$RELEASE_ASSET_NAME" \
+                --dir "$DOWNLOAD_DIR/$RELEASE_TAG"
+              mv "$DOWNLOAD_DIR/$RELEASE_TAG/$RELEASE_ASSET_NAME" "$DOWNLOAD_DIR/$RELEASE_TAG-$RELEASE_ASSET_NAME"
+              rmdir "$DOWNLOAD_DIR/$RELEASE_TAG"
+            fi
+          done < "$TAG_FILE"
+
+          python3 <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          repository = os.environ["GITHUB_REPOSITORY"]
+          asset_name = os.environ["RELEASE_ASSET_NAME"]
+          tag_file = Path(os.environ["TAG_FILE"])
+          download_dir = Path(os.environ["DOWNLOAD_DIR"])
+          json_file = Path(os.environ["JSON_FILE"])
+
+          metadata = {}
+          for tag in tag_file.read_text(encoding="utf-8").splitlines():
+              if not tag:
+                  continue
+              version = tag.removeprefix("v")
+              asset_path = download_dir / f"{tag}-{asset_name}"
+              sha256 = hashlib.sha256(asset_path.read_bytes()).hexdigest()
+              metadata[tag] = {
+                  "url": f"https://github.com/{repository}/releases/download/{tag}/{asset_name}",
+                  "sha256": sha256,
+                  "version": version,
+              }
+
+          json_file.write_text(json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8")
+          PY
+
+      - name: Update Homebrew formulas
         if: steps.tap-sync.outputs.enabled == 'true'
         shell: bash
         run: |
           set -euo pipefail
 
           TAP_DIR="$GITHUB_WORKSPACE/tap-repo"
-          FORMULA_PATH="$TAP_DIR/$TAP_FORMULA_PATH"
-          VERSION="${{ steps.brew-meta.outputs.version }}"
-          ASSET_URL="${{ steps.brew-meta.outputs.asset_url }}"
-          SHA256="${{ steps.brew-meta.outputs.sha256 }}"
           TAG="${{ steps.meta.outputs.tag }}"
 
-          mkdir -p "$(dirname "$FORMULA_PATH")"
-
-          cat > "$FORMULA_PATH" <<EOF
-          class Kmsg < Formula
-            desc "CLI tool for KakaoTalk on macOS"
-            homepage "https://github.com/channprj/kmsg"
-            url "$ASSET_URL"
-            sha256 "$SHA256"
-            version "$VERSION"
-            license "MIT"
-
-            def install
-              bin.install "kmsg-macos-universal" => "kmsg"
-            end
-
-            test do
-              output = shell_output("#{bin}/kmsg --version")
-              assert_match "$VERSION", output
-            end
-          end
-          EOF
+          python3 tools/sync_homebrew_tap.py \
+            --tap-dir "$TAP_DIR" \
+            --asset-path "$GITHUB_WORKSPACE/$RELEASE_ASSET_NAME" \
+            --repository "$GITHUB_REPOSITORY" \
+            --current-tag "$TAG" \
+            --release-metadata-file "$RUNNER_TEMP/kmsg-homebrew-meta/releases.json" \
+            --keep-versions 10
 
           cd "$TAP_DIR"
-          if git diff --quiet -- "$TAP_FORMULA_PATH"; then
-            echo "Homebrew formula already up-to-date: $TAP_FORMULA_PATH"
+          if git diff --quiet -- README.md Formula; then
+            echo "Homebrew tap already up-to-date."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$TAP_FORMULA_PATH"
-          git commit -m "chore(formula): bump kmsg to $TAG"
+          git add README.md Formula
+          git commit -m "chore(tap): sync kmsg formulas for $TAG"
           git push origin HEAD:"$TAP_REPO_REF"

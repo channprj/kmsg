@@ -25,6 +25,13 @@ https://github.com/user-attachments/assets/c620b2e3-7106-40fa-86d1-ed847e3b1a6f
 brew install channprj/tap/kmsg
 ```
 
+특정 릴리즈를 고정해서 설치하려면 exact version formula를 사용할 수 있습니다.
+tap에는 최신 10개 릴리즈만 유지됩니다.
+
+```bash
+brew install channprj/tap/kmsg@0.2.7
+```
+
 ### 설치 (직접 다운로드)
 
 ```bash
@@ -408,11 +415,21 @@ gh workflow run release.yml
 
 ```bash
 brew install channprj/tap/kmsg
+brew install channprj/tap/kmsg@0.2.7
+```
+
+`kmsg` formula는 항상 최신 릴리즈를 가리키고, `kmsg@X.Y.Z` formula는 최근 10개 exact release만 유지됩니다.
+이미 다른 버전을 설치했다면 아래처럼 링크를 전환할 수 있습니다.
+
+```bash
+brew unlink kmsg
+brew link --overwrite kmsg@0.2.7
 ```
 
 ## 기타
 
 - Homebrew 설치: `brew install channprj/tap/kmsg`
+- exact 버전 설치: `brew install channprj/tap/kmsg@0.2.7`
 - 직접 설치는 `kmsg-macos-universal` 아티팩트를 사용합니다.
 - 다운로드 실패 시 https://github.com/channprj/kmsg/releases 에서 직접 내려받아 `~/.local/bin/kmsg`로 저장 후 `chmod +x ~/.local/bin/kmsg` 를 진행하시면 됩니다.
 
