@@ -34,7 +34,7 @@ struct SendCommand: ParsableCommand {
     @Flag(name: .long, help: "Rebuild AX path cache for this run")
     var refreshCache: Bool = false
 
-    @Flag(name: [.short, .long], help: "Keep chat window open after sending message")
+    @Flag(name: [.short, .long], help: "Keep chat and list windows open after sending message")
     var keepWindow: Bool = false
 
     @Flag(
@@ -152,8 +152,9 @@ struct SendCommand: ParsableCommand {
             }
 
             try sendMessageToWindow(resolution.window, kakao: kakao, runner: runner)
-            closeChatWindowIfNeeded(
+            closeWindowsIfNeeded(
                 resolution: resolution,
+                kakao: kakao,
                 resolver: chatWindowResolver,
                 runner: runner
             )
@@ -719,8 +720,9 @@ struct SendCommand: ParsableCommand {
         print("✓ Message sent to \(targetDescription)")
     }
 
-    private func closeChatWindowIfNeeded(
+    private func closeWindowsIfNeeded(
         resolution: ChatWindowResolution,
+        kakao: KakaoTalkApp,
         resolver: ChatWindowResolver,
         runner: AXActionRunner
     ) {
@@ -733,6 +735,16 @@ struct SendCommand: ParsableCommand {
             print("✓ Chat window closed.")
         } else {
             runner.log("send: close window could not be verified")
+        }
+
+        if let listWindow = kakao.chatListWindow,
+           !areSameAXElement(listWindow, resolution.window)
+        {
+            if resolver.closeWindow(listWindow) {
+                runner.log("send: chat list window closed")
+            } else {
+                runner.log("send: chat list window could not be verified")
+            }
         }
     }
 
