@@ -20,7 +20,7 @@ struct SendImageCommand: ParsableCommand {
     @Flag(name: .long, help: "Disable AX path cache for this run")
     var noCache: Bool = false
 
-    @Flag(name: [.short, .long], help: "Keep chat window open after sending image")
+    @Flag(name: [.short, .long], help: "Keep chat and list windows open after sending image")
     var keepWindow: Bool = false
 
     @Flag(name: .long, help: "Enable deep window recovery when fast window detection fails")
@@ -51,13 +51,14 @@ struct SendImageCommand: ParsableCommand {
         do {
             print("Looking for chat with '\(recipient)'...")
             let resolution = try chatWindowResolver.resolve(query: recipient)
-            
+
             try sendImageToWindow(imageURL, window: resolution.window, kakao: kakao, runner: runner)
-            
-            if !keepWindow {
-                _ = chatWindowResolver.closeWindow(resolution.window)
-                print("✓ Chat window closed.")
-            }
+            closeWindowsIfNeeded(
+                resolution: resolution,
+                kakao: kakao,
+                resolver: chatWindowResolver,
+                runner: runner
+            )
         } catch {
             print("Failed to send image: \(error)")
             throw ExitCode.failure
@@ -85,47 +86,105 @@ struct SendImageCommand: ParsableCommand {
         runner.pressPaste()
         runner.log("Paste command sent")
 
-        // 4. Wait for confirmation sheet
+        // 4. Confirmation sheet can be transient or skipped entirely depending on KakaoTalk state.
+        if let confirmationSheet = waitForConfirmationSheet(in: window, runner: runner) {
+            runner.log("Confirmation sheet found")
+            Thread.sleep(forTimeInterval: 0.2)
+
+            guard let button = findSendButton(in: confirmationSheet) else {
+                if !waitForSendCompletion(in: window, confirmationSheet: confirmationSheet, runner: runner) {
+                    throw KakaoTalkError.elementNotFound("Send button not found on confirmation sheet")
+                }
+                runner.log("send-image: sheet vanished before button lookup; treating as success")
+                print("✓ Image sent to '\(recipient)'")
+                Thread.sleep(forTimeInterval: 0.5)
+                return
+            }
+
+            if !runner.clickWithRetry(button, label: "send button"),
+               !waitForSendCompletion(in: window, confirmationSheet: confirmationSheet, runner: runner)
+            {
+                throw KakaoTalkError.actionFailed("Failed to click send button after retries")
+            }
+        } else {
+            runner.log("send-image: confirmation sheet not observed; allowing direct-send path")
+            Thread.sleep(forTimeInterval: 0.7)
+        }
+
+        print("✓ Image sent to '\(recipient)'")
+
+        // Give it a moment to finish sending
+        Thread.sleep(forTimeInterval: 0.5)
+    }
+
+    private func closeWindowsIfNeeded(
+        resolution: ChatWindowResolution,
+        kakao: KakaoTalkApp,
+        resolver: ChatWindowResolver,
+        runner: AXActionRunner
+    ) {
+        guard !keepWindow else {
+            runner.log("send-image: keep-window enabled; skipping auto-close")
+            return
+        }
+
+        if resolver.closeWindow(resolution.window) {
+            print("✓ Chat window closed.")
+        } else {
+            runner.log("send-image: close window could not be verified")
+        }
+
+        if let listWindow = kakao.chatListWindow,
+           !areSameAXElement(listWindow, resolution.window)
+        {
+            if resolver.closeWindow(listWindow) {
+                runner.log("send-image: chat list window closed")
+            } else {
+                runner.log("send-image: chat list window could not be verified")
+            }
+        }
+    }
+
+    private func waitForConfirmationSheet(in window: UIElement, runner: AXActionRunner) -> UIElement? {
         var sheet: UIElement?
-        _ = runner.waitUntil(label: "confirmation sheet", timeout: 4.0, pollInterval: 0.2) {
-            // Try attribute first
-            if let found = window.attributeOptional(kAXSheetsAttribute).flatMap({ (elements: [AXUIElement]) in elements.first }) {
-                sheet = UIElement(found)
-                return true
-            }
-            // Fallback: search children for AXSheet role
-            if let found = window.findFirst(where: { $0.role == kAXSheetRole }) {
-                sheet = found
-                return true
-            }
-            return false
+        _ = runner.waitUntil(label: "confirmation sheet", timeout: 1.5, pollInterval: 0.1) {
+            sheet = locateConfirmationSheet(in: window)
+            return sheet != nil
         }
+        return sheet
+    }
 
-        guard let confirmationSheet = sheet else {
-            throw KakaoTalkError.actionFailed("Confirmation sheet did not appear")
+    private func locateConfirmationSheet(in window: UIElement) -> UIElement? {
+        if let found = window.attributeOptional(kAXSheetsAttribute).flatMap({ (elements: [AXUIElement]) in elements.first }) {
+            return UIElement(found)
         }
+        return window.findFirst(where: { $0.role == kAXSheetRole })
+    }
 
-        runner.log("Confirmation sheet found")
-        Thread.sleep(forTimeInterval: 0.5) // Let sheet settle
-
-        // 5. Click "Send" button on the sheet
-        // KakaoTalk's send button title is "전송" or "Send" depending on locale
-        let sendButton = confirmationSheet.findAll(role: kAXButtonRole).first { button in
+    private func findSendButton(in confirmationSheet: UIElement) -> UIElement? {
+        confirmationSheet.findAll(role: kAXButtonRole).first { button in
             let title = (button.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             return title == "전송" || title == "Send"
         }
+    }
 
-        guard let button = sendButton else {
-            throw KakaoTalkError.elementNotFound("Send button not found on confirmation sheet")
+    private func waitForSendCompletion(
+        in window: UIElement,
+        confirmationSheet: UIElement,
+        runner: AXActionRunner
+    ) -> Bool {
+        runner.waitUntil(label: "send-image completion", timeout: 1.5, pollInterval: 0.1) {
+            locateConfirmationSheet(in: window) == nil || !windowContainsElement(window, target: confirmationSheet)
         }
+    }
 
-        if !runner.clickWithRetry(button, label: "send button") {
-            throw KakaoTalkError.actionFailed("Failed to click send button after retries")
-        }
-        
-        print("✓ Image sent to '\(recipient)'")
-        
-        // Give it a moment to finish sending
-        Thread.sleep(forTimeInterval: 0.5)
+    private func windowContainsElement(_ window: UIElement, target: UIElement) -> Bool {
+        window.findFirst(where: { candidate in
+            areSameAXElement(candidate, target)
+        }) != nil
+    }
+
+    private func areSameAXElement(_ lhs: UIElement, _ rhs: UIElement) -> Bool {
+        CFEqual(lhs.axElement, rhs.axElement)
     }
 }

@@ -134,8 +134,10 @@ kmsg send-image <recipient> <image-path> [--trace-ax] [--no-cache] [--keep-windo
 
 - `--trace-ax`: AX 탐색/재시도 로그 출력
 - `--no-cache`: 이번 실행에서 AX path cache 비활성화
-- `-k, --keep-window`: 자동으로 연 채팅창 유지
+- `-k, --keep-window`: 자동으로 연 채팅창과 리스트창 유지
 - `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
+
+`send-image`는 기본적으로 전송 후 채팅창과 카톡 리스트창을 정리하고, `--keep-window`일 때만 둘 다 유지합니다. 확인 시트가 매우 빠르게 사라지거나 생략되는 경우도 성공으로 처리하도록 되어 있습니다.
 
 ### inspect
 
