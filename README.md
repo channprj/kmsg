@@ -444,18 +444,30 @@ brew link --overwrite kmsg@0.2.7
 
 ## 기타
 
-- Homebrew 설치: `brew install channprj/tap/kmsg`
-- exact 버전 설치: `brew install channprj/tap/kmsg@0.2.7`
-- 직접 설치는 `kmsg-macos-universal` 아티팩트를 사용합니다.
-- 다운로드 실패 시 https://github.com/channprj/kmsg/releases 에서 직접 내려받아 `~/.local/bin/kmsg`로 저장 후 `chmod +x ~/.local/bin/kmsg` 를 진행하시면 됩니다.
+### 왜 Swift 로 만들었나요?
+
+`kmsg` 는 macOS 전용 도구이고, 핵심 기능이 `AppKit`, `ApplicationServices`, `AXUIElement`, `CGEvent` 같은 macOS native API 위에 올라가 있습니다. Swift 는 이 API 들과의 연결이 가장 직접적이고 안정적이며, Objective-C 계열 프레임워크와의 상호운용도 자연스럽습니다.
+반대로 Python 은 런타임/배포 의존성이 늘어나고, Rust 는 macOS framework binding 과 FFI 관리 복잡도가 커지기 때문에 현재 목적에는 Swift 쪽이 구현과 유지보수 모두 더 실용적이었습니다.
+
+### AX 가 뭔가요?
+
+AX 는 macOS Accessibility(손쉬운 사용) API 를 뜻합니다. 앱의 창, 버튼, 입력창, 텍스트 같은 UI 요소를 `AXUIElement` 로 읽고 제어할 수 있게 해주는 시스템 인터페이스입니다.
+
+### 왜 AX 를 사용하나요?
+
+KakaoTalk 은 공식적으로 CLI 를 제공하지 않습니다. 그래서 실제 사용자가 보고 클릭하는 UI 를 시스템 레벨에서 읽고 조작할 수 있는 현실적인 방법이 AX 입니다.
+`kmsg` 의 채팅 목록 읽기, 검색, 메시지 전송, 이미지 전송, 창 제어가 모두 이 레이어 위에서 동작하기 때문에 Accessibility permission 이 필요합니다.
+
+### 이 기능을 Rust 로 작성하면 더 빨라질까요?
+
+조금은 빨라질 수 있지만, 체감 성능 향상은 제한적일 가능성이 큽니다. 이 CLI 의 주된 지연은 언어 런타임보다 `AXUIElement` 호출, UI 탐색, KakaoTalk 창 활성화/복구, 실제 앱 응답 시간에서 발생합니다.
+Rust 로 바꾸면 cold start 나 순수 stdio/JSON 처리 같은 부분은 약간 유리할 수 있지만, 전체 end-to-end latency 는 크게 달라지지 않을 가능성이 높습니다. 대신 macOS native framework binding 과 유지보수 비용은 Swift 보다 높아질 수 있습니다.
 
 ## Inspiration
 
 This project is strongly inspired by [steipete](https://github.com/steipete) and his works.
 
-- [imsg](https://github.com/steipete/imsg)
-- [openclaw](https://github.com/openclaw/openclaw)
-
 ## References
 
 - https://github.com/steipete/imsg
+- https://github.com/openclaw/openclaw
