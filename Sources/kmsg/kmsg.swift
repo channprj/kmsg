@@ -24,6 +24,7 @@ struct Kmsg: ParsableCommand {
             SendImageCommand.self,
             ReadCommand.self,
             CacheCommand.self,
+            MCPServerCommand.self,
         ],
         defaultSubcommand: StatusCommand.self
     )

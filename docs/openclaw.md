@@ -4,9 +4,9 @@ This guide shows how to connect `kmsg` to OpenClaw through MCP.
 
 ## Overview
 
-The repository includes a local MCP stdio server:
+The recommended MCP stdio server entrypoint is:
 
-- `tools/kmsg-mcp.py`
+- `kmsg mcp-server`
 
 It exposes 3 tools:
 
@@ -19,25 +19,21 @@ It exposes 3 tools:
 - macOS with KakaoTalk installed
 - Accessibility permission granted for `kmsg`
 - `kmsg` binary installed and executable
-- Python 3 available
-
 Check first:
 
 ```bash
 kmsg --version
 kmsg status
-python3 -m py_compile tools/kmsg-mcp.py
 ```
 
 ## Run MCP server manually
 
 ```bash
-python3 tools/kmsg-mcp.py
+kmsg mcp-server
 ```
 
 Optional environment variables:
 
-- `KMSG_BIN`: absolute path to `kmsg` binary
 - `KMSG_DEFAULT_DEEP_RECOVERY`: `true` or `false`
 - `KMSG_TRACE_DEFAULT`: `true` or `false`
 
@@ -49,10 +45,9 @@ Use your OpenClaw MCP config file and register this server:
 {
   "mcpServers": {
     "kmsg": {
-      "command": "python3",
-      "args": ["/ABS/PATH/TO/kmsg/tools/kmsg-mcp.py"],
+      "command": "kmsg",
+      "args": ["mcp-server"],
       "env": {
-        "KMSG_BIN": "/Users/you/.local/bin/kmsg",
         "KMSG_DEFAULT_DEEP_RECOVERY": "false",
         "KMSG_TRACE_DEFAULT": "false"
       }
@@ -183,4 +178,4 @@ If `kmsg_read` fails:
    - `kmsg inspect --window 0 --depth 20`
 3. Keep KakaoTalk visible and responsive during tool calls.
 
-If MCP startup check reports failure, validate `KMSG_BIN` and run `kmsg status` directly.
+If MCP startup check reports failure, run `kmsg status` directly and confirm Accessibility permission / KakaoTalk readiness.

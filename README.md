@@ -227,21 +227,20 @@ kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
 우선, 아래와 같이 MCP 서버를 실행합니다.
 
 ```bash
-python tools/kmsg-mcp.py
+kmsg mcp-server
 ```
 
 ### OpenClaw 설정 예시
 
-MCP 서버를 띄웠다면 아래와 같이 JSON 설정값을 주면서 MCP 연동을 해달라고 하면 됩니다. 정말 간단하죠? 그래도 args 의 path 는 수정하셔야 합니다.
+MCP 서버를 띄웠다면 아래와 같이 JSON 설정값을 주면서 MCP 연동을 해달라고 하면 됩니다.
 
 ```json
 {
   "mcpServers": {
     "kmsg": {
-      "command": "python3",
-      "args": ["/path/to/kmsg/tools/kmsg-mcp.py"],
+      "command": "kmsg",
+      "args": ["mcp-server"],
       "env": {
-        "KMSG_BIN": "$HOME/.local/bin/kmsg",
         "KMSG_DEFAULT_DEEP_RECOVERY": "false",
         "KMSG_TRACE_DEFAULT": "false"
       }
@@ -314,6 +313,8 @@ MCP 서버 연결 후, 아래 순서로 호출하면 됩니다.
 
 openclaw 와의 자세한 연동/운영 가이드는 [docs/openclaw.md](./docs/openclaw.md) 를 참고하세요.
 설정 템플릿은 [docs/openclaw.mcp.example.json](./docs/openclaw.mcp.example.json) 에도 포함되어 있습니다.
+
+기존 `tools/kmsg-mcp.py` 는 레거시/개발용 참조 구현으로 남아 있지만, 설치형 사용 흐름의 기본 진입점은 `kmsg mcp-server` 입니다.
 
 ## 로컬 빌드 및 개발
 
