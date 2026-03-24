@@ -839,7 +839,14 @@ private final class KmsgMCPServer {
 struct MCPServerCommand: ParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "mcp-server",
-        abstract: "Run the stdio MCP server for kmsg integrations"
+        abstract: "Run the stdio MCP server for kmsg integrations",
+        discussion: """
+            Starts the local stdio MCP server for OpenClaw and similar clients.
+
+            Examples:
+              kmsg mcp-server
+              KMSG_TRACE_DEFAULT=true kmsg mcp-server
+            """
     )
 
     func run() throws {

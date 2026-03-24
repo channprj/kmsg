@@ -69,19 +69,24 @@ struct StatusCommand: ParsableCommand {
           chats     List chat rooms
           read      Read messages from a chat room
           send      Send a message to a chat room
+          send-image Send an image to a chat
           cache     Manage AX path cache
           inspect   Inspect KakaoTalk UI hierarchy (debug)
+          mcp-server Run the stdio MCP server for integrations
 
         OPTIONS:
           --help    Show help for any command
-          --version Show version
+          -v, --version Show version
 
         EXAMPLES:
+          kmsg -v                         Show version
           kmsg chats                      List all chat rooms
           kmsg chats --json               List chat rooms with chat_id in JSON
           kmsg read "친구이름"             Read messages from chat
           kmsg send "친구이름" "안녕!"      Send a message
+          kmsg send-image "친구이름" "/tmp/a.png" Send an image
           kmsg send --chat-id "<id>" "안녕!" Send a message by chat_id
+          kmsg mcp-server                 Run local MCP server
         """)
     }
 }

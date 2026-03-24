@@ -56,11 +56,13 @@ echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
 
 ```bash
 kmsg status
+kmsg -v
 kmsg send "본인, 친구, 또는 단톡방 이름" "안녕하세요"
 kmsg send --chat-id "chat_7f42c5e1d9ab" "안녕하세요"
 kmsg send "본인, 친구, 또는 단톡방 이름" "$(date '+%Y-%m-%d %H:%M:%S') 테스트"
 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --keep-window
 kmsg send-image "본인, 친구, 또는 단톡방 이름" "/path/to/image.png"
+kmsg mcp-server
 kmsg chats
 kmsg chats --json
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20
