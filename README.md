@@ -46,12 +46,6 @@ kmsg status
 
 권한 팝업이 뜨면 허용해 주세요.
 
-`kmsg`를 바로 실행하고 싶다면 아래와 같이 PATH 등록을 해주세요.
-
-```bash
-echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc
-```
-
 ## 가장 많이 쓰는 명령
 
 ```bash
