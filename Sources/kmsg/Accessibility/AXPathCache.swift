@@ -4,6 +4,7 @@ import Foundation
 enum AXPathSlot: String, CaseIterable, Codable {
     case searchField
     case messageInput
+    case transcriptRoot
     case chatListContainer
     case chatRowTitle
     case chatRowPreview

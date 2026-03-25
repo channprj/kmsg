@@ -14,6 +14,14 @@ It exposes 3 tools:
 - `kmsg_send`: sends KakaoTalk messages using `kmsg send`
 - `kmsg_send_image`: sends KakaoTalk images using `kmsg send-image`
 
+For streaming use cases such as an external auto-reply supervisor, use the CLI directly:
+
+```bash
+kmsg watch "채팅방 이름" --json
+```
+
+Current MCP integration remains request/response only. `watch` is the streaming primitive.
+
 ## Prerequisites
 
 - macOS with KakaoTalk installed

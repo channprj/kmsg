@@ -63,6 +63,9 @@ kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --keep-window
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
 kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --deep-recovery
+kmsg watch "본인, 친구, 또는 단톡방 이름"
+kmsg watch "본인, 친구, 또는 단톡방 이름" --json
+kmsg watch "본인, 친구, 또는 단톡방 이름" --json --poll-interval 0.5
 kmsg inspect --window 0 --depth 20 --debug-layout
 ```
 
@@ -104,6 +107,21 @@ kmsg read <chat> [--limit <limit>] [--debug] [--trace-ax] [--keep-window] [--dee
 - `-k, --keep-window`: 자동으로 연 채팅창과 리스트창 유지
 - `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
 - `--json`: JSON 형식으로 출력
+
+### watch
+
+```bash
+kmsg watch <chat> [--poll-interval <seconds>] [--trace-ax] [--keep-window] [--deep-recovery] [--json] [--include-system]
+```
+
+- `--poll-interval <seconds>`: 폴링 주기 (기본값: `0.2`, 범위: `0.2...10.0`)
+- `--trace-ax`: AX 탐색/재시도 로그 출력
+- `-k, --keep-window`: 자동으로 연 채팅창 유지
+- `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
+- `--json`: 새 메시지 이벤트를 pretty JSON 객체로 계속 출력
+- `--include-system`: 날짜 구분선 등 시스템성 메시지도 포함
+
+`watch`는 시작 시 현재 대화를 baseline으로만 잡고 출력하지 않으며, transcript가 늦게 로딩되는 경우를 피하기 위해 최대 1-2초 정도 silent warm-up으로 baseline을 안정화한 뒤 감시를 시작합니다. 또한 파싱된 날짜/시각을 기준으로 `watch` 시작 시점 이전 메시지는 출력하지 않습니다. 안전한 시각을 추정할 수 없는 행은 보수적으로 숨길 수 있습니다. steady-state에서는 마지막으로 성공한 transcript context를 우선 재사용하고, transcript root도 AX cache happy path를 사용해 200ms polling을 견딜 수 있게 했습니다. 기본 모드는 일반 대화 메시지만 출력하고, `--include-system`일 때만 시스템성 메시지를 포함합니다. `--json`에서는 이벤트마다 별도 JSON 객체가 `stdout`으로 출력되고, `--trace-ax`는 계속 `stderr`에만 기록됩니다.
 
 ### send
 
@@ -213,6 +231,29 @@ kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
 
 - `--json` 사용 시 JSON은 `stdout`으로만 출력됩니다.
 - `--trace-ax` 로그는 `stderr`로 분리되므로 OpenClaw 같은 파이프 연동에서 안전하게 사용할 수 있습니다.
+
+`watch --json`은 배열 하나를 반환하는 대신, 새 메시지가 감지될 때마다 pretty JSON 객체 하나씩을 연속 출력합니다.
+
+```bash
+kmsg watch "본인, 친구, 또는 단톡방 이름" --json
+```
+
+예시 이벤트:
+
+```json
+{
+  "chat": "홍길동",
+  "detected_at": "2026-03-25T10:20:30.123Z",
+  "event": "message",
+  "message": {
+    "author": "홍길동",
+    "time_raw": "10:20",
+    "body": "새 메시지"
+  }
+}
+```
+
+`--include-system`을 같이 쓰면 `event` 값이 `system`인 객체도 함께 출력될 수 있습니다.
 
 `chats --json`도 동일하게 `stdout`에만 JSON을 출력하며, 각 채팅 항목에 `chat_id`와 `last_message`를 포함합니다. 첫 실행이나 캐시 self-heal 시에는 더 느릴 수 있지만, 이후 실행은 저장된 happy-path AX cache를 우선 사용합니다.
 

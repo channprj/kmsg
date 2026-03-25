@@ -20,6 +20,8 @@ struct Kmsg: ParsableCommand {
               kmsg chats --json
               kmsg send "채팅방" "메시지"
               kmsg send-image "채팅방" "/path/to/image.png"
+              kmsg watch "채팅방"
+              kmsg watch "채팅방" --json
               kmsg mcp-server
 
             Tip:
@@ -33,6 +35,7 @@ struct Kmsg: ParsableCommand {
             SendCommand.self,
             SendImageCommand.self,
             ReadCommand.self,
+            WatchCommand.self,
             CacheCommand.self,
             MCPServerCommand.self,
         ],

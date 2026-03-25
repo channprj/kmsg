@@ -111,6 +111,18 @@ struct MessageContextResolver {
     }
 
     private func resolveTranscriptRoot(chatWindow: UIElement, paneRoot: UIElement?, inputElement: UIElement) -> UIElement? {
+        let cacheRoot = paneRoot ?? chatWindow
+        if let cachedTranscriptRoot = resolveCachedElement(
+            slot: .transcriptRoot,
+            root: cacheRoot,
+            validate: { candidate in
+                isLikelyTranscriptRoot(candidate, chatWindow: chatWindow, inputElement: inputElement)
+            }
+        ) {
+            runner.log("read: transcript root cache hit")
+            return cachedTranscriptRoot
+        }
+
         var candidates: [UIElement] = []
 
         if let paneRoot {
@@ -149,7 +161,12 @@ struct MessageContextResolver {
             runner.log("read: transcript candidates=\(scored.count) bestScore=\(Int(top.score))")
         }
 
-        return scored.first(where: { $0.score > 0 })?.candidate
+        guard let transcriptRoot = scored.first(where: { $0.score > 0 })?.candidate else {
+            return nil
+        }
+
+        rememberCachedElement(slot: .transcriptRoot, root: cacheRoot, element: transcriptRoot)
+        return transcriptRoot
     }
 
     private func collectTranscriptContainers(from root: UIElement) -> [UIElement] {
@@ -243,6 +260,15 @@ struct MessageContextResolver {
         let rowCount = found[kAXRowRole]?.count ?? 0
         let textCount = found[kAXStaticTextRole]?.count ?? 0
         return Double(rowCount * 150) + Double(textCount * 25)
+    }
+
+    private func isLikelyTranscriptRoot(_ candidate: UIElement, chatWindow: UIElement, inputElement: UIElement) -> Bool {
+        let role = candidate.role ?? ""
+        guard role == kAXScrollAreaRole || role == kAXTableRole || role == kAXOutlineRole || role == kAXListRole || role == kAXGroupRole else {
+            return false
+        }
+
+        return scoreTranscriptContainerSpatial(candidate, chatWindow: chatWindow, inputElement: inputElement) > 0
     }
 
     private func preferredChatPaneRoot(for inputElement: UIElement, in chatWindow: UIElement) -> UIElement? {
