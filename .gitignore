@@ -9,4 +9,5 @@ DerivedData/
 .claude/settings.local.json
 video/node_modules/
 video/out/
-
+__pycache__/
+*.py[cod]

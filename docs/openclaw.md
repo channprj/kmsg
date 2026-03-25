@@ -1,32 +1,48 @@
 # OpenClaw Integration Guide
 
-This guide shows how to connect `kmsg` to OpenClaw through MCP.
+This guide explains the current `kmsg` + OpenClaw integration model.
 
-## Overview
+## Core Model
 
-The recommended MCP stdio server entrypoint is:
+There are two different interfaces:
 
-- `kmsg mcp-server`
+- MCP, via `kmsg mcp-server`
+- real-time streaming, via `kmsg watch "<chat>" --json`
 
-It exposes 3 tools:
+Today, MCP is still request/response only. It exposes:
 
-- `kmsg_read`: reads KakaoTalk messages using `kmsg read --json`
-- `kmsg_send`: sends KakaoTalk messages using `kmsg send`
-- `kmsg_send_image`: sends KakaoTalk images using `kmsg send-image`
+- `kmsg_read`
+- `kmsg_send`
+- `kmsg_send_image`
 
-For streaming use cases such as an external auto-reply supervisor, use the CLI directly:
+`watch` is not an MCP tool. If you want real-time auto-reply, run `watch --json` as a separate process and feed each event into OpenClaw or a small wrapper around it.
 
-```bash
-kmsg watch "채팅방 이름" --json
-```
+## Recommended Architecture
 
-Current MCP integration remains request/response only. `watch` is the streaming primitive.
+Use two processes:
+
+1. `kmsg mcp-server`
+2. `kmsg watch "채팅방 이름" --json`
+
+The flow is:
+
+1. `watch --json` emits a new KakaoTalk event
+2. your supervisor passes that event to OpenClaw
+3. OpenClaw drafts a reply
+4. the reply is sent with `kmsg_send` through MCP, or `kmsg send` directly
+
+This separation matters:
+
+- MCP handles tool calls cleanly
+- `watch` handles low-latency inbound detection
+- you do not need a streaming MCP extension to operate today
 
 ## Prerequisites
 
 - macOS with KakaoTalk installed
 - Accessibility permission granted for `kmsg`
-- `kmsg` binary installed and executable
+- `kmsg` installed and working
+
 Check first:
 
 ```bash
@@ -34,20 +50,15 @@ kmsg --version
 kmsg status
 ```
 
-## Run MCP server manually
+## MCP Setup
+
+Run the MCP server:
 
 ```bash
 kmsg mcp-server
 ```
 
-Optional environment variables:
-
-- `KMSG_DEFAULT_DEEP_RECOVERY`: `true` or `false`
-- `KMSG_TRACE_DEFAULT`: `true` or `false`
-
-## OpenClaw MCP config example
-
-Use your OpenClaw MCP config file and register this server:
+Config example:
 
 ```json
 {
@@ -64,11 +75,43 @@ Use your OpenClaw MCP config file and register this server:
 }
 ```
 
-You can also copy and edit:
+You can copy:
 
 - `docs/openclaw.mcp.example.json`
 
-## Tool contracts
+## Real-Time Watch Setup
+
+Run a dedicated watch process for the chat you want to automate:
+
+```bash
+kmsg watch "채팅방 이름" --json
+```
+
+`watch --json` emits one JSON object per detected event on `stdout`.
+
+Example:
+
+```json
+{
+  "chat": "홍길동",
+  "detected_at": "2026-03-25T10:20:30.123Z",
+  "event": "message",
+  "message": {
+    "author": "홍길동",
+    "time_raw": "10:20",
+    "body": "새 메시지"
+  }
+}
+```
+
+Notes:
+
+- `watch` now defaults to 200ms polling
+- startup uses a short warm-up to avoid backfill
+- messages earlier than the watch start cutoff are suppressed
+- `--trace-ax` logs stay on `stderr`
+
+## Tool Contracts
 
 ## `kmsg_read`
 
@@ -84,7 +127,7 @@ Input:
 }
 ```
 
-Success output shape:
+Success shape:
 
 ```json
 {
@@ -122,8 +165,8 @@ Input:
 
 Notes:
 
-- Default behavior sends immediately (`confirm=false` or omitted).
-- `confirm=true` blocks sending and returns `CONFIRMATION_REQUIRED`.
+- `confirm=false` or omitted sends immediately
+- `confirm=true` does not send and returns `CONFIRMATION_REQUIRED`
 
 ## `kmsg_send_image`
 
@@ -140,50 +183,68 @@ Input:
 }
 ```
 
-Notes:
+## Operating Modes
 
-- Default behavior sends immediately (`confirm=false` or omitted).
-- `confirm=true` blocks sending and returns `CONFIRMATION_REQUIRED`.
+### Recommended: Draft Then Approve
 
-## Error model
+1. `watch --json` emits a message
+2. OpenClaw drafts a reply
+3. user approves
+4. send with `kmsg_send`
 
-All tools return structured errors with:
+This is the safest default because KakaoTalk is a personal chat surface and mistakes are expensive.
 
-- `ok: false`
-- `error.code`
-- `error.message`
-- `error.hint`
-- `error.raw_stdout`
-- `error.raw_stderr`
-- `meta.latency_ms`
+Minimal send call:
 
-Common `error.code` values:
+```json
+{
+  "name": "kmsg_send",
+  "arguments": {
+    "chat": "홍길동",
+    "message": "검토 후 전송합니다.",
+    "confirm": false
+  }
+}
+```
 
-- `CHAT_NOT_FOUND`
-- `KMSG_BIN_NOT_FOUND`
-- `KAKAO_WINDOW_UNAVAILABLE`
-- `ACCESSIBILITY_PERMISSION_DENIED`
-- `PROCESS_TIMEOUT`
-- `INVALID_JSON_OUTPUT`
-- `CONFIRMATION_REQUIRED`
-- `UNKNOWN_EXEC_FAILURE`
+### Advanced: Full Auto-Reply
 
-## Recommended prompting pattern in OpenClaw
+1. `watch --json` emits a message
+2. OpenClaw generates a reply automatically
+3. your supervisor immediately calls `kmsg_send`
 
-1. Use `kmsg_read` to fetch latest context.
-2. Draft reply.
-3. Ask user for approval.
-4. Send with `kmsg_send` / `kmsg_send_image` using `confirm=false` (or omit `confirm`).
-5. If you want to force an extra confirmation step before send, call with `confirm=true` first.
+Use this only with guardrails. At minimum:
+
+- ignore your own messages
+- restrict to specific chat rooms
+- add cooldown / loop protection
+- log every outbound message
+
+## Quick Start
+
+Minimal manual setup:
+
+```bash
+kmsg mcp-server
+```
+
+In another process:
+
+```bash
+kmsg watch "채팅방 이름" --json
+```
+
+Then wire the watch events into OpenClaw and send replies through MCP `kmsg_send`.
 
 ## Troubleshooting
 
-If `kmsg_read` fails:
+If watch fails:
 
-1. Run manually with trace:
-   - `kmsg read "채팅방" --json --trace-ax --deep-recovery`
-2. Inspect UI tree:
-   - `kmsg inspect --window 0 --depth 20`
-3. Keep KakaoTalk visible and responsive during tool calls.
+- `kmsg watch "채팅방 이름" --json --trace-ax`
+- `kmsg inspect --window 0 --depth 20`
 
-If MCP startup check reports failure, run `kmsg status` directly and confirm Accessibility permission / KakaoTalk readiness.
+If MCP fails:
+
+- `kmsg mcp-server`
+- `kmsg status`
+- confirm Accessibility permission and KakaoTalk readiness
