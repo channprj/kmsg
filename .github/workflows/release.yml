@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v0.1.0). Optional."
+        description: "Release tag (e.g. v2026.0422.22). Optional."
         required: false
         type: string
 
@@ -71,10 +71,30 @@ jobs:
             exit 1
           fi
 
-          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid tag '$TAG'. Expected format: vX.Y.Z"
-            exit 1
-          fi
+          export TAG
+          python3 <<'PY'
+          import datetime as dt
+          import os
+          import re
+          import sys
+
+          tag = os.environ["TAG"]
+          match = re.fullmatch(r"v(\d{4})\.(\d{2})(\d{2})\.(\d+)", tag)
+          if match is None:
+              print(f"Invalid tag '{tag}'. Expected format: vYYYY.MMDD.COUNT")
+              raise SystemExit(1)
+
+          year, month, day, count = (int(part) for part in match.groups())
+          if count < 1:
+              print(f"Invalid tag '{tag}'. COUNT must be >= 1")
+              raise SystemExit(1)
+
+          try:
+              dt.date(year, month, day)
+          except ValueError:
+              print(f"Invalid tag '{tag}'. MMDD must resolve to a real calendar date")
+              raise SystemExit(1)
+          PY
 
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
@@ -172,15 +192,37 @@ jobs:
           mkdir -p "$META_DIR" "$DOWNLOAD_DIR"
 
           python3 <<'PY' > "$TAG_FILE"
+          import datetime as dt
           import re
           import subprocess
 
           KEEP_VERSIONS = 10
-          pattern = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
+          calendar_pattern = re.compile(r"^v(\d{4})\.(\d{2})(\d{2})\.(\d+)$")
+          legacy_pattern = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
+
+          def parse_release_tag(tag: str):
+              calendar_match = calendar_pattern.fullmatch(tag)
+              if calendar_match is not None:
+                  year, month, day, count = (int(part) for part in calendar_match.groups())
+                  try:
+                      dt.date(year, month, day)
+                  except ValueError:
+                      return None
+                  if count < 1:
+                      return None
+                  return (2, year, month, day, count)
+
+              legacy_match = legacy_pattern.fullmatch(tag)
+              if legacy_match is not None:
+                  major, minor, patch = (int(part) for part in legacy_match.groups())
+                  return (1, major, minor, patch, 0)
+
+              return None
+
           tags = subprocess.check_output(["git", "tag", "--list"], text=True).splitlines()
-          semver_tags = [tag for tag in tags if pattern.match(tag)]
-          semver_tags.sort(key=lambda tag: tuple(int(part) for part in tag[1:].split(".")), reverse=True)
-          for tag in semver_tags[:KEEP_VERSIONS]:
+          release_tags = [tag for tag in tags if parse_release_tag(tag) is not None]
+          release_tags.sort(key=parse_release_tag, reverse=True)
+          for tag in release_tags[:KEEP_VERSIONS]:
               print(tag)
           PY
 

@@ -11,7 +11,7 @@ SCRIPT_PATH = REPO_ROOT / "tools" / "sync_homebrew_tap.py"
 
 
 class SyncHomebrewTapTests(unittest.TestCase):
-    def test_generates_latest_formula_keeps_last_ten_versions_and_updates_readme(self) -> None:
+    def test_generates_latest_formula_for_calendar_versions_and_preserves_recent_legacy_releases(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             tap_dir = tmp / "homebrew-tap"
@@ -41,22 +41,20 @@ class SyncHomebrewTapTests(unittest.TestCase):
             release_tags = [
                 "v0.1.0",
                 "v0.1.1",
-                "v0.1.2",
-                "v0.1.4",
-                "v0.1.5",
-                "v0.1.6",
                 "v0.2.0",
                 "v0.2.1",
-                "v0.2.2",
-                "v0.2.3",
-                "v0.2.4",
-                "v0.2.5",
-                "v0.2.6",
+                "v0.3.0",
+                "v2026.0420.001",
+                "v2026.0420.002",
+                "v2026.0421.001",
+                "v2026.0421.002",
+                "v2026.0422.001",
+                "v2026.0422.123",
             ]
             metadata = {}
             for tag in release_tags:
                 version = tag.removeprefix("v")
-                sha = expected_sha if tag == "v0.2.6" else hashlib.sha256(version.encode("utf-8")).hexdigest()
+                sha = expected_sha if tag == "v2026.0422.123" else hashlib.sha256(version.encode("utf-8")).hexdigest()
                 metadata[tag] = {
                     "url": f"https://github.com/channprj/kmsg/releases/download/{tag}/kmsg-macos-universal",
                     "sha256": sha,
@@ -77,7 +75,7 @@ class SyncHomebrewTapTests(unittest.TestCase):
                     "--repository",
                     "channprj/kmsg",
                     "--current-tag",
-                    "v0.2.6",
+                    "v2026.0422.123",
                     "--release-metadata-file",
                     str(metadata_path),
                     "--keep-versions",
@@ -91,25 +89,31 @@ class SyncHomebrewTapTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
 
             latest_formula = (formula_dir / "kmsg.rb").read_text(encoding="utf-8")
-            self.assertIn('url "https://github.com/channprj/kmsg/releases/download/v0.2.6/kmsg-macos-universal"', latest_formula)
+            self.assertIn(
+                'url "https://github.com/channprj/kmsg/releases/download/v2026.0422.123/kmsg-macos-universal"',
+                latest_formula,
+            )
             self.assertIn(f'sha256 "{expected_sha}"', latest_formula)
-            self.assertIn('version "0.2.6"', latest_formula)
+            self.assertIn('version "2026.0422.123"', latest_formula)
 
             expected_versions = [
-                "0.1.4",
-                "0.1.5",
-                "0.1.6",
+                "0.1.1",
                 "0.2.0",
                 "0.2.1",
-                "0.2.2",
-                "0.2.3",
-                "0.2.4",
-                "0.2.5",
-                "0.2.6",
+                "0.3.0",
+                "2026.0420.001",
+                "2026.0420.002",
+                "2026.0421.001",
+                "2026.0421.002",
+                "2026.0422.001",
+                "2026.0422.123",
             ]
-            self.assertFalse((formula_dir / "kmsg@0.1.0.rb").exists())
-            self.assertFalse((formula_dir / "kmsg@0.1.1.rb").exists())
-            self.assertFalse((formula_dir / "kmsg@0.1.2.rb").exists())
+            removed_versions = [
+                "0.1.0",
+            ]
+
+            for version in removed_versions:
+                self.assertFalse((formula_dir / f"kmsg@{version}.rb").exists())
 
             for version in expected_versions:
                 formula_path = formula_dir / f"kmsg@{version}.rb"
@@ -122,8 +126,40 @@ class SyncHomebrewTapTests(unittest.TestCase):
 
             readme_text = readme_path.read_text(encoding="utf-8")
             self.assertIn("## kmsg Versioned Installs", readme_text)
-            self.assertIn("brew install channprj/tap/kmsg@0.2.6", readme_text)
+            self.assertIn("brew install channprj/tap/kmsg@2026.0422.123", readme_text)
             self.assertIn("Recent 10 releases are kept", readme_text)
+
+    def test_rejects_invalid_calendar_current_tag(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            tap_dir = tmp / "homebrew-tap"
+            asset_path = tmp / "kmsg-macos-universal"
+            asset_path.write_bytes(b"kmsg-binary")
+            metadata_path = tmp / "release-metadata.json"
+            metadata_path.write_text("{}", encoding="utf-8")
+
+            result = subprocess.run(
+                [
+                    "python3",
+                    str(SCRIPT_PATH),
+                    "--tap-dir",
+                    str(tap_dir),
+                    "--asset-path",
+                    str(asset_path),
+                    "--repository",
+                    "channprj/kmsg",
+                    "--current-tag",
+                    "v2026.1399.001",
+                    "--release-metadata-file",
+                    str(metadata_path),
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("current tag must match vYYYY.MMDD.COUNT", result.stderr)
 
 
 if __name__ == "__main__":

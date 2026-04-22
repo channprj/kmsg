@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import hashlib
 import json
 import re
@@ -10,7 +11,8 @@ import sys
 from pathlib import Path
 
 
-SEMVER_TAG_RE = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
+CALENDAR_TAG_RE = re.compile(r"^v(\d{4})\.(\d{2})(\d{2})\.(\d+)$")
+LEGACY_SEMVER_TAG_RE = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
 README_START = "<!-- kmsg-versioned:start -->"
 README_END = "<!-- kmsg-versioned:end -->"
 
@@ -26,11 +28,23 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_semver_tag(tag: str) -> tuple[int, int, int] | None:
-    match = SEMVER_TAG_RE.match(tag)
-    if match is None:
+def parse_release_tag(tag: str) -> tuple[int, int, int, int, int] | None:
+    calendar_match = CALENDAR_TAG_RE.match(tag)
+    if calendar_match is not None:
+        year, month, day, count = (int(part) for part in calendar_match.groups())
+        try:
+            dt.date(year, month, day)
+        except ValueError:
+            return None
+        if count < 1:
+            return None
+        return (2, year, month, day, count)
+
+    legacy_match = LEGACY_SEMVER_TAG_RE.match(tag)
+    if legacy_match is None:
         return None
-    return tuple(int(part) for part in match.groups())
+    major, minor, patch = (int(part) for part in legacy_match.groups())
+    return (1, major, minor, patch, 0)
 
 
 def compute_sha256(path: Path) -> str:
@@ -48,7 +62,7 @@ def load_release_metadata(path: Path) -> dict[str, dict[str, str]]:
 
     metadata: dict[str, dict[str, str]] = {}
     for tag, item in payload.items():
-        if parse_semver_tag(tag) is None:
+        if parse_release_tag(tag) is None:
             continue
         if not isinstance(item, dict):
             raise ValueError(f"release metadata for {tag} must be an object")
@@ -118,9 +132,9 @@ def ensure_current_release_metadata(
 
 
 def sorted_recent_tags(metadata: dict[str, dict[str, str]], keep_versions: int) -> list[str]:
-    semver_tags = [tag for tag in metadata if parse_semver_tag(tag) is not None]
-    semver_tags.sort(key=lambda tag: parse_semver_tag(tag), reverse=True)
-    return semver_tags[:keep_versions]
+    release_tags = [tag for tag in metadata if parse_release_tag(tag) is not None]
+    release_tags.sort(key=lambda tag: parse_release_tag(tag), reverse=True)
+    return release_tags[:keep_versions]
 
 
 def write_formula_files(tap_dir: Path, metadata: dict[str, dict[str, str]], recent_tags: list[str]) -> list[str]:
@@ -209,8 +223,8 @@ def update_readme(tap_dir: Path, versions: list[str]) -> None:
 def main() -> int:
     args = parse_args()
 
-    if parse_semver_tag(args.current_tag) is None:
-        raise ValueError(f"current tag must match vX.Y.Z: {args.current_tag}")
+    if parse_release_tag(args.current_tag) is None:
+        raise ValueError(f"current tag must match vYYYY.MMDD.COUNT: {args.current_tag}")
     if args.keep_versions < 1:
         raise ValueError("keep-versions must be at least 1")
 

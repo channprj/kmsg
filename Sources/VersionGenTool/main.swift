@@ -21,8 +21,8 @@ struct VersionGenTool {
             throw ToolError.invalidVersion("VERSION file is empty")
         }
 
-        guard isValidSemverLike(version) else {
-            throw ToolError.invalidVersion("VERSION must match semver-like format (e.g. 0.1.1)")
+        guard isValidCalendarVersion(version) else {
+            throw ToolError.invalidVersion("VERSION must match YYYY.MMDD.COUNT (e.g. 2026.0422.123)")
         }
 
         let generated = """
@@ -41,12 +41,40 @@ struct VersionGenTool {
         try generated.write(to: outputURL, atomically: true, encoding: .utf8)
     }
 
-    private static func isValidSemverLike(_ version: String) -> Bool {
-        guard let regex = try? NSRegularExpression(pattern: #"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z\.-]+)?$"#) else {
+    private static func isValidCalendarVersion(_ version: String) -> Bool {
+        let parts = version.split(separator: ".", omittingEmptySubsequences: false)
+        guard parts.count == 3 else { return false }
+
+        let yearPart = String(parts[0])
+        let monthDayPart = String(parts[1])
+        let countPart = String(parts[2])
+
+        guard yearPart.count == 4,
+              monthDayPart.count == 4,
+              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: yearPart)),
+              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: monthDayPart)),
+              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: countPart)),
+              let year = Int(yearPart),
+              let month = Int(monthDayPart.prefix(2)),
+              let day = Int(monthDayPart.suffix(2)),
+              let count = Int(countPart),
+              count > 0
+        else {
             return false
         }
-        let range = NSRange(location: 0, length: version.utf16.count)
-        return regex.firstMatch(in: version, options: [], range: range) != nil
+
+        var components = DateComponents()
+        components.calendar = Calendar(identifier: .gregorian)
+        components.year = year
+        components.month = month
+        components.day = day
+
+        guard let date = components.date else {
+            return false
+        }
+
+        let resolved = components.calendar?.dateComponents([.year, .month, .day], from: date)
+        return resolved?.year == year && resolved?.month == month && resolved?.day == day
     }
 
     private static func escapeForSwiftLiteral(_ value: String) -> String {
