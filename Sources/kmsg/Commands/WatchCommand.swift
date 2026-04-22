@@ -75,8 +75,8 @@ struct WatchCommand: ParsableCommand {
         let interval = max(0.2, min(pollInterval, 10.0))
         let snapshotLimit = 120
 
-        let kakao = try KakaoTalkApp()
         let runner = AXActionRunner(traceEnabled: traceAX)
+        let kakao = try AuthBootstrap.requireAuthenticated(traceAX: traceAX)
         let chatWindowResolver = ChatWindowResolver(
             kakao: kakao,
             runner: runner,

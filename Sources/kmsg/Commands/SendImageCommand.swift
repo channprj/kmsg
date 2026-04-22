@@ -40,7 +40,7 @@ struct SendImageCommand: ParsableCommand {
             throw ExitCode.failure
         }
 
-        let kakao = try KakaoTalkApp()
+        let kakao = try AuthBootstrap.requireAuthenticated(traceAX: traceAX)
         let chatWindowResolver = ChatWindowResolver(
             kakao: kakao,
             runner: runner,

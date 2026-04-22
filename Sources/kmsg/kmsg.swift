@@ -17,6 +17,7 @@ struct Kmsg: ParsableCommand {
 
             Examples:
               kmsg status
+              kmsg auth login
               kmsg chats --json
               kmsg send "채팅방" "메시지"
               kmsg send-image "채팅방" "/path/to/image.png"
@@ -29,6 +30,7 @@ struct Kmsg: ParsableCommand {
             """,
         version: BuildVersion.current,
         subcommands: [
+            AuthCommand.self,
             StatusCommand.self,
             InspectCommand.self,
             ChatsCommand.self,

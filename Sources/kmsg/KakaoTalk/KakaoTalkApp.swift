@@ -269,7 +269,7 @@ public final class KakaoTalkApp: Sendable {
                 return window
             }
         }
-        return mainWindow
+        return nil
     }
 
     // MARK: - UI Navigation

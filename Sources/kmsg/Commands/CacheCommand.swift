@@ -109,7 +109,7 @@ struct CacheWarmupCommand: ParsableCommand {
         }
 
         let runner = AXActionRunner(traceEnabled: traceAX)
-        let kakao = try KakaoTalkApp()
+        let kakao = try AuthBootstrap.requireAuthenticated(traceAX: traceAX)
         let windowResolver = ChatWindowResolver(kakao: kakao, runner: runner)
 
         guard let usableWindow = kakao.ensureMainWindow(timeout: 1.2, mode: .fast, trace: { message in

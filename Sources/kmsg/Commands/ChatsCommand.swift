@@ -33,8 +33,8 @@ struct ChatsCommand: ParsableCommand {
             throw ExitCode.failure
         }
 
-        let kakao = try KakaoTalkApp()
         let runner = AXActionRunner(traceEnabled: traceAX)
+        let kakao = try AuthBootstrap.requireAuthenticated(traceAX: traceAX)
         let chatWindowResolver = ChatWindowResolver(kakao: kakao, runner: runner)
         let windowsBefore = kakao.windows
 

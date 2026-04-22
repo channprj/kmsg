@@ -38,11 +38,19 @@ struct StatusCommand: ParsableCommand {
             print("KakaoTalk: ✓ Running")
         }
 
+        do {
+            _ = try AuthBootstrap.requireAuthenticated(traceAX: false)
+            print("Authentication: ✓ Ready")
+        } catch {
+            print("Authentication: ✗ \(error.localizedDescription)")
+            throw ExitCode.failure
+        }
+
         // Get detailed info if verbose
         if verbose {
             print("")
             do {
-                let kakao = try KakaoTalkApp()
+                let kakao = try AuthBootstrap.requireAuthenticated(traceAX: false)
                 let windows = kakao.windows
 
                 print("Windows (\(windows.count)):")
@@ -66,6 +74,7 @@ struct StatusCommand: ParsableCommand {
 
         COMMANDS:
           status    Check KakaoTalk and accessibility status
+          auth      Log in and manage stored credentials
           chats     List chat rooms
           read      Read messages from a chat room
           send      Send a message to a chat room
@@ -80,6 +89,7 @@ struct StatusCommand: ParsableCommand {
 
         EXAMPLES:
           kmsg -v                         Show version
+          kmsg auth login                 Prompt for credentials and log in
           kmsg chats                      List all chat rooms
           kmsg chats --json               List chat rooms with chat_id in JSON
           kmsg read "친구이름"             Read messages from chat

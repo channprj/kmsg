@@ -212,12 +212,33 @@ struct AXActionRunner {
         pressKey(code: 125)
     }
 
+    func pressTabKey() {
+        pressKey(code: 48)
+    }
+
+    func pressShiftTabKey() {
+        pressKey(code: 48, flags: .maskShift)
+    }
+
+    func pressSpaceKey() {
+        pressKey(code: 49)
+    }
+
     func pressCommandW() {
         pressKey(code: 13, flags: .maskCommand) // W
     }
 
+    func pressCommandA() {
+        pressKey(code: 0, flags: .maskCommand) // A
+    }
+
     func pressPaste() {
         pressKey(code: 9, flags: .maskCommand) // V
+    }
+
+    func typeTextDirect(_ text: String, label: String, perCharacterDelay: TimeInterval = 0.01) {
+        typeText(text, perCharacterDelay: perCharacterDelay)
+        log("\(label): typed without reflection check")
     }
 
     private func typeText(_ text: String, perCharacterDelay: TimeInterval) {

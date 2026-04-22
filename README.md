@@ -51,6 +51,8 @@ kmsg status
 
 ```bash
 kmsg status
+kmsg auth login
+kmsg auth login --auto
 kmsg -v
 kmsg send "본인, 친구, 또는 단톡방 이름" "안녕하세요"
 kmsg send --chat-id "chat_7f42c5e1d9ab" "안녕하세요"
@@ -81,6 +83,19 @@ kmsg status [--verbose]
 ```
 
 - `--verbose`: 상세 상태 출력
+
+`status`, `chats`, `read`, `send`, `send-image`, `watch`, `cache warmup`은 카카오톡 로그인이 풀려 있으면 저장된 자격 증명으로 자동 로그인을 시도합니다. 저장된 정보가 없거나 불완전하면 터미널에서 아이디/비밀번호를 입력받아 `~/.config/kmsg/credentials.json`에 저장하고, 비밀번호 암호키는 `~/.config/kmsg/credentials/`에 별도로 보관합니다.
+
+### auth login
+
+```bash
+kmsg auth login [--auto] [--trace-ax]
+```
+
+- `--auto`: 저장된 자격 증명이 있으면 그대로 사용하고, 없으면 입력받아 저장 후 로그인
+- `--trace-ax`: AX 탐색/재시도 로그 출력
+
+기본 `kmsg auth login`은 아이디/비밀번호를 새로 입력받아 저장하고 로그인합니다. 비밀번호는 평문이 아니라 암호화된 형태로 저장됩니다.
 
 ### chats
 
