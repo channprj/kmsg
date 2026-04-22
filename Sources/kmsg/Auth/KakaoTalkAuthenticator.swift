@@ -117,7 +117,7 @@ final class KakaoTalkAuthenticator {
         }
 
         kakao.activate()
-        if let submitButton = resolveSubmitButton(in: form.window),
+        if let submitButton = resolveSubmitButton(in: form.window, near: form.passwordField),
            runner.clickWithRetry(submitButton, label: "auth login button", attempts: 2)
         {
             runner.log("auth: login button clicked")
@@ -182,27 +182,26 @@ final class KakaoTalkAuthenticator {
         runner.typeTextDirect(credentials.password, label: "auth blind password")
         Thread.sleep(forTimeInterval: 0.1)
 
-        runner.log("auth: moving focus from password field to Log in button via Tab")
-        runner.pressTabKey()
-        Thread.sleep(forTimeInterval: 0.12)
-
-        runner.log("auth: submitting login via Space on focused button")
-        runner.pressSpaceKey()
+        kakao.activate()
+        if clickPreferredLoginButton(timeout: 1.0, label: "auth blind login button") {
+            runner.log("auth: blind submit clicked preferred login button")
+        } else {
+            runner.log("auth: direct login button unavailable; trying keyboard focus traversal")
+            pressBlindSubmitSequence([.tab], label: "auth blind submit tab-space")
+        }
 
         if !runner.waitUntil(label: "auth blind completion", timeout: 2.0, pollInterval: 0.2, evaluateAfterTimeout: false, condition: { [self] in
             isAuthenticated()
         }) {
-            runner.log("auth: first blind submit did not complete; retrying with Enter on focused button")
-            runner.pressEnterKey()
+            runner.log("auth: first blind submit did not complete; retrying with extended Tab traversal")
+            pressBlindSubmitSequence([.tab, .tab], label: "auth blind submit tab-tab-space")
         }
 
         if !runner.waitUntil(label: "auth blind completion retry", timeout: 1.2, pollInterval: 0.2, evaluateAfterTimeout: false, condition: { [self] in
             isAuthenticated()
         }) {
-            runner.log("auth: button may have advanced; retrying with Shift-Tab then Space")
-            runner.pressShiftTabKey()
-            Thread.sleep(forTimeInterval: 0.08)
-            runner.pressSpaceKey()
+            runner.log("auth: keyboard traversal still pending; retrying with reverse traversal")
+            pressBlindSubmitSequence([.shiftTab], label: "auth blind submit shift-tab-space")
         }
 
         let loggedIn = runner.waitUntil(label: "auth completion", timeout: 10.0, pollInterval: 0.2) { [self] in
@@ -235,7 +234,7 @@ final class KakaoTalkAuthenticator {
 
     private func findLoginForm() -> LoginForm? {
         kakao.activate()
-        let deadline = Date().addingTimeInterval(2.0)
+        let deadline = Date().addingTimeInterval(3.5)
         var attempt = 0
         var attemptedResetFromQRCode = false
 
@@ -408,9 +407,18 @@ final class KakaoTalkAuthenticator {
         return inputs.contains(where: looksLikePasswordField)
     }
 
-    private func resolveSubmitButton(in window: UIElement) -> UIElement? {
-        let buttons = collectLoginButtons(primaryRoot: window)
-        return buttons.max(by: { scoreButton($0) < scoreButton($1) })
+    private func resolveSubmitButton(in window: UIElement, near referenceElement: UIElement? = nil) -> UIElement? {
+        bestScoredLoginButton(from: collectLoginButtons(primaryRoot: window), near: referenceElement)
+    }
+
+    private func resolveSubmitButton(near referenceElement: UIElement? = nil) -> UIElement? {
+        var buttons: [UIElement] = []
+        for root in collectLoginSearchRoots() {
+            for button in collectLoginButtons(primaryRoot: root) {
+                appendUnique(button, to: &buttons)
+            }
+        }
+        return bestScoredLoginButton(from: buttons, near: referenceElement)
     }
 
     private func resolveQRCodeResetButton(in root: UIElement) -> UIElement? {
@@ -443,6 +451,27 @@ final class KakaoTalkAuthenticator {
         }
 
         return buttons
+    }
+
+    private func bestScoredLoginButton(from buttons: [UIElement], near referenceElement: UIElement?) -> UIElement? {
+        let referenceFrame = referenceElement?.frame
+        let scoredButtons = buttons.map { button in
+            (button: button, score: scoreButton(button, relativeTo: referenceFrame))
+        }
+
+        for (index, candidate) in scoredButtons.sorted(by: { $0.score > $1.score }).enumerated() {
+            let metadata = buttonTextCandidates(candidate.button).joined(separator: " | ")
+            runner.log("auth: submit candidate[\(index)] score=\(candidate.score) text='\(metadata)'")
+        }
+
+        return scoredButtons.max(by: { lhs, rhs in
+            if lhs.score == rhs.score {
+                let lhsY = lhs.button.position?.y ?? .greatestFiniteMagnitude
+                let rhsY = rhs.button.position?.y ?? .greatestFiniteMagnitude
+                return lhsY > rhsY
+            }
+            return lhs.score < rhs.score
+        })?.button
     }
 
     private func collectLoginMarkerText(from root: UIElement) -> String {
@@ -500,21 +529,116 @@ final class KakaoTalkAuthenticator {
         return false
     }
 
-    private func scoreButton(_ button: UIElement) -> Int {
-        let metadata = normalizedText([
-            button.title,
-            button.axDescription,
-            button.identifier,
-        ].compactMap { $0 }.joined(separator: " "))
+    private func clickPreferredLoginButton(
+        timeout: TimeInterval,
+        label: String,
+        near referenceElement: UIElement? = nil
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            if let submitButton = resolveSubmitButton(near: referenceElement),
+               runner.clickWithRetry(submitButton, label: label, attempts: 1)
+            {
+                return true
+            }
+            if Date() >= deadline {
+                return false
+            }
+            Thread.sleep(forTimeInterval: 0.1)
+        } while true
+    }
 
+    private enum BlindSubmitStep {
+        case tab
+        case shiftTab
+    }
+
+    private func pressBlindSubmitSequence(_ steps: [BlindSubmitStep], label: String) {
+        for step in steps {
+            switch step {
+            case .tab:
+                runner.pressTabKey()
+            case .shiftTab:
+                runner.pressShiftTabKey()
+            }
+            Thread.sleep(forTimeInterval: 0.08)
+        }
+        runner.log("\(label): submitting via Space on focused button")
+        runner.pressSpaceKey()
+    }
+
+    private func scoreButton(_ button: UIElement, relativeTo referenceFrame: CGRect? = nil) -> Int {
+        let texts = buttonTextCandidates(button)
         var score = 0
-        if metadata.contains("로그인") || metadata.contains("login") || metadata.contains("signin") {
-            score += 100
+        if texts.contains(where: isExactLoginButtonLabel) {
+            score += 220
+        }
+        if texts.contains(where: containsAccountLoginMarker) {
+            score += 120
+        }
+        if texts.contains(where: containsQRCodeMarker) {
+            score -= 260
         }
         if button.isEnabled {
             score += 20
         }
+        if let referenceFrame, let buttonFrame = button.frame {
+            let deltaY = buttonFrame.midY - referenceFrame.midY
+            if deltaY >= -12 && deltaY <= 180 {
+                score += 30
+            } else if deltaY < -12 {
+                score -= 20
+            }
+
+            let deltaX = abs(buttonFrame.midX - referenceFrame.midX)
+            if deltaX <= max(referenceFrame.width, buttonFrame.width) {
+                score += 20
+            }
+        }
         return score
+    }
+
+    private func buttonTextCandidates(_ button: UIElement) -> [String] {
+        Array(
+            Set(
+                [
+                    button.title,
+                    button.axDescription,
+                    button.identifier,
+                    button.stringValue,
+                ]
+                .compactMap { $0 }
+                .map(normalizedText)
+                .filter { !$0.isEmpty }
+            )
+        )
+    }
+
+    private func isExactLoginButtonLabel(_ text: String) -> Bool {
+        [
+            "login",
+            "log in",
+            "signin",
+            "sign in",
+            "로그인",
+        ].contains(text)
+    }
+
+    private func containsAccountLoginMarker(_ text: String) -> Bool {
+        guard !containsQRCodeMarker(text) else { return false }
+        return text.contains("로그인") ||
+            text.contains("login") ||
+            text.contains("log in") ||
+            text.contains("signin") ||
+            text.contains("sign in")
+    }
+
+    private func containsQRCodeMarker(_ text: String) -> Bool {
+        text.contains("qr") ||
+            text.contains("qrcode") ||
+            text.contains("qr code") ||
+            text.contains("큐알") ||
+            text.contains("qr코드")
     }
 
     private func normalizedText(_ text: String) -> String {
