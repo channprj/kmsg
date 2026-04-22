@@ -37,6 +37,12 @@ private struct LoginForm {
     let passwordField: UIElement
 }
 
+private struct PostLoginAcknowledgement {
+    let root: UIElement
+    let button: UIElement
+    let message: String
+}
+
 final class KakaoTalkAuthenticator {
     private let kakao: KakaoTalkApp
     private let runner: AXActionRunner
@@ -213,6 +219,10 @@ final class KakaoTalkAuthenticator {
     }
 
     private func isAuthenticated() -> Bool {
+        if dismissPostLoginAcknowledgementIfPresent() {
+            return false
+        }
+
         if let chatListWindow = kakao.chatListWindow, !isLikelyLoginWindow(chatListWindow) {
             runner.log("auth: chatListWindow considered authenticated title='\(chatListWindow.title ?? "")'")
             return true
@@ -230,6 +240,24 @@ final class KakaoTalkAuthenticator {
         }
 
         return false
+    }
+
+    private func dismissPostLoginAcknowledgementIfPresent() -> Bool {
+        guard let acknowledgement = resolvePostLoginAcknowledgement() else {
+            return false
+        }
+
+        let compactMessage = acknowledgement.message.replacingOccurrences(of: "\n", with: " ")
+        runner.log("auth: post-login acknowledgement detected text='\(String(compactMessage.prefix(120)))'")
+
+        guard runner.clickWithRetry(acknowledgement.button, label: "auth post-login ok button", attempts: 2) else {
+            runner.log("auth: failed to dismiss post-login acknowledgement")
+            return false
+        }
+
+        Thread.sleep(forTimeInterval: 0.15)
+        runner.log("auth: post-login acknowledgement dismissed")
+        return true
     }
 
     private func findLoginForm() -> LoginForm? {
@@ -493,6 +521,70 @@ final class KakaoTalkAuthenticator {
         }.joined(separator: " "))
     }
 
+    private func resolvePostLoginAcknowledgement() -> PostLoginAcknowledgement? {
+        for root in collectPostLoginAcknowledgementRoots() {
+            guard let acknowledgement = resolvePostLoginAcknowledgement(in: root) else {
+                continue
+            }
+            return acknowledgement
+        }
+        return nil
+    }
+
+    private func collectPostLoginAcknowledgementRoots() -> [UIElement] {
+        var roots: [UIElement] = []
+        appendUnique(kakao.focusedWindow, to: &roots)
+        appendUnique(kakao.mainWindow, to: &roots)
+        appendUnique(kakao.applicationElement.focusedUIElement, to: &roots)
+        appendFocusedElementAncestorChain(from: kakao.applicationElement.focusedUIElement, to: &roots)
+
+        let systemWide = UIElement.systemWide()
+        appendUnique(systemWide.focusedUIElement, to: &roots)
+        appendFocusedElementAncestorChain(from: systemWide.focusedUIElement, to: &roots)
+
+        for window in kakao.windows {
+            appendUnique(window, to: &roots)
+        }
+
+        appendUnique(kakao.applicationElement, to: &roots)
+        return roots
+    }
+
+    private func resolvePostLoginAcknowledgement(in root: UIElement) -> PostLoginAcknowledgement? {
+        let message = collectPostLoginAcknowledgementText(from: root)
+        guard containsPostLoginAcknowledgementMarkers(message) else {
+            return nil
+        }
+
+        let buttons = root.findAll(role: kAXButtonRole, limit: 8, maxNodes: 220)
+        guard let button = buttons.max(by: { scoreAcknowledgementButton($0) < scoreAcknowledgementButton($1) }),
+              scoreAcknowledgementButton(button) > 0
+        else {
+            return nil
+        }
+
+        return PostLoginAcknowledgement(root: root, button: button, message: message)
+    }
+
+    private func collectPostLoginAcknowledgementText(from root: UIElement) -> String {
+        let roles: Set<String> = [kAXButtonRole, kAXStaticTextRole, kAXGroupRole]
+        let found = root.findAll(roles: roles, roleLimits: [
+            kAXButtonRole: 8,
+            kAXStaticTextRole: 16,
+            kAXGroupRole: 6,
+        ], maxNodes: 260)
+
+        let tokens = (found[kAXStaticTextRole] ?? []) + (found[kAXButtonRole] ?? []) + (found[kAXGroupRole] ?? [])
+        return normalizedText(tokens.map {
+            [
+                $0.title,
+                $0.axDescription,
+                $0.stringValue,
+                $0.identifier,
+            ].compactMap { $0 }.joined(separator: " ")
+        }.joined(separator: " "))
+    }
+
     private func containsLoginMarkers(_ text: String) -> Bool {
         let markers = [
             "qr code",
@@ -505,6 +597,35 @@ final class KakaoTalkAuthenticator {
             "log in using a qr code",
         ]
         return markers.contains(where: text.contains)
+    }
+
+    private func containsPostLoginAcknowledgementMarkers(_ text: String) -> Bool {
+        let exactMarkers = [
+            "currently logged in",
+            "already logged in",
+            "you are currently logged in",
+            "you are already logged in",
+            "logged in on another device",
+            "이미 로그인",
+            "로그인되어 있습니다",
+        ]
+
+        if exactMarkers.contains(where: text.contains) {
+            return true
+        }
+
+        let hasLoggedInMarker =
+            text.contains("logged in") ||
+            text.contains("이미 로그인") ||
+            text.contains("로그인되어")
+        let hasPromptMarker =
+            text.contains("ok") ||
+            text.contains("확인") ||
+            text.contains("currently") ||
+            text.contains("already") ||
+            text.contains("device")
+
+        return hasLoggedInMarker && hasPromptMarker
     }
 
     private func looksLikePasswordField(_ element: UIElement) -> Bool {
@@ -594,6 +715,24 @@ final class KakaoTalkAuthenticator {
             if deltaX <= max(referenceFrame.width, buttonFrame.width) {
                 score += 20
             }
+        }
+        return score
+    }
+
+    private func scoreAcknowledgementButton(_ button: UIElement) -> Int {
+        let texts = buttonTextCandidates(button)
+        var score = 0
+        if texts.contains("ok") {
+            score += 140
+        }
+        if texts.contains("확인") {
+            score += 120
+        }
+        if texts.contains("confirm") {
+            score += 100
+        }
+        if button.isEnabled {
+            score += 20
         }
         return score
     }
