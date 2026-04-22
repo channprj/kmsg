@@ -63,6 +63,7 @@ Chat Window (title = chat name):
 - Keyboard input uses `CGEvent` for Korean text (Unicode support)
 - Search methods support `limit` for early termination - use to avoid full UI traversal
 - All classes interacting with accessibility APIs should be `Sendable`
+- For version bumps, release tags, or release automation changes, follow `VERSIONING.md`
 
 ## Commit Convention
 

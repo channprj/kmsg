@@ -30,7 +30,7 @@ brew install channprj/tap/kmsg
 tap에는 최신 10개 릴리즈만 유지됩니다.
 
 ```bash
-brew install channprj/tap/kmsg@0.2.7
+brew install channprj/tap/kmsg@2026.0422.22
 ```
 
 ### 설치 (직접 다운로드)
@@ -399,25 +399,26 @@ README 디버깅 가이드도 함께 업데이트해 주세요.
 같은 workflow가 `channprj/homebrew-tap` 리모트까지 자동으로 동기화하며, `TAP_REPO_TOKEN`이 없거나 tap push가 실패하면 릴리즈도 실패합니다.
 
 배포 전에 `VERSION` 파일 값을 먼저 업데이트하세요.
+버전 규칙은 [VERSIONING.md](VERSIONING.md)를 따릅니다.
 
 ```bash
 # gh 토큰이 만료됐으면 재로그인
 gh auth login -h github.com
 
 # 배포 태그 생성/푸시
-git tag v0.2.3
-git push origin v0.2.3
+git tag v2026.0422.22
+git push origin v2026.0422.22
 ```
 
 필요하면 Actions를 수동 실행할 수 있습니다.
 `workflow_dispatch`에서 `tag`를 비워두면 `VERSION` 파일을 읽어 `v<version>`으로 자동 생성합니다.
-`tag`를 직접 입력할 경우 `vX.Y.Z` 형식만 허용됩니다.
+`tag`를 직접 입력할 경우 `vYYYY.MMDD.COUNT` 형식만 허용됩니다.
 
 ```bash
 # 태그를 직접 지정해서 실행
-gh workflow run release.yml -f tag=v0.2.4
+gh workflow run release.yml -f tag=v2026.0422.22
 
-# tag 미지정 시 VERSION(예: 0.2.4) 기반으로 실행
+# tag 미지정 시 VERSION(예: 2026.0422.22) 기반으로 실행
 gh workflow run release.yml
 ```
 
@@ -436,15 +437,15 @@ secret이 없으면 바이너리 release만 만들고 끝내지 않고, workflow
 
 ```bash
 brew install channprj/tap/kmsg
-brew install channprj/tap/kmsg@0.2.7
+brew install channprj/tap/kmsg@2026.0422.22
 ```
 
-`kmsg` formula는 항상 최신 릴리즈를 가리키고, `kmsg@X.Y.Z` formula는 최근 10개 exact release만 유지됩니다.
+`kmsg` formula는 항상 최신 릴리즈를 가리키고, `kmsg@YYYY.MMDD.COUNT` formula는 최근 10개 exact release만 유지됩니다.
 이미 다른 버전을 설치했다면 아래처럼 링크를 전환할 수 있습니다.
 
 ```bash
 brew unlink kmsg
-brew link --overwrite kmsg@0.2.7
+brew link --overwrite kmsg@2026.0422.22
 ```
 
 ## 기타
