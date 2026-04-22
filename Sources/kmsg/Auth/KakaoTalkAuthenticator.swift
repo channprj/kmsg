@@ -182,16 +182,27 @@ final class KakaoTalkAuthenticator {
         runner.typeTextDirect(credentials.password, label: "auth blind password")
         Thread.sleep(forTimeInterval: 0.1)
 
-        runner.log("auth: submitting login via Enter from password field")
-        runner.pressEnterKey()
+        runner.log("auth: moving focus from password field to Log in button via Tab")
+        runner.pressTabKey()
+        Thread.sleep(forTimeInterval: 0.12)
+
+        runner.log("auth: submitting login via Space on focused button")
+        runner.pressSpaceKey()
 
         if !runner.waitUntil(label: "auth blind completion", timeout: 2.0, pollInterval: 0.2, evaluateAfterTimeout: false, condition: { [self] in
             isAuthenticated()
         }) {
-            runner.log("auth: first blind submit did not complete; retrying with Tab+Enter")
-            runner.pressTabKey()
-            Thread.sleep(forTimeInterval: 0.08)
+            runner.log("auth: first blind submit did not complete; retrying with Enter on focused button")
             runner.pressEnterKey()
+        }
+
+        if !runner.waitUntil(label: "auth blind completion retry", timeout: 1.2, pollInterval: 0.2, evaluateAfterTimeout: false, condition: { [self] in
+            isAuthenticated()
+        }) {
+            runner.log("auth: button may have advanced; retrying with Shift-Tab then Space")
+            runner.pressShiftTabKey()
+            Thread.sleep(forTimeInterval: 0.08)
+            runner.pressSpaceKey()
         }
 
         let loggedIn = runner.waitUntil(label: "auth completion", timeout: 10.0, pollInterval: 0.2) { [self] in
