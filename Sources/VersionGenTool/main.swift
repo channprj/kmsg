@@ -21,8 +21,8 @@ struct VersionGenTool {
             throw ToolError.invalidVersion("VERSION file is empty")
         }
 
-        guard isValidCalendarVersion(version) else {
-            throw ToolError.invalidVersion("VERSION must match YYYY.MMDD.COUNT (e.g. 2026.0422.123)")
+        guard isValidReleaseVersion(version) else {
+            throw ToolError.invalidVersion("VERSION must match MAJOR.YYMMDD.PATCH_COUNT (e.g. 1.260424.0)")
         }
 
         let generated = """
@@ -41,31 +41,34 @@ struct VersionGenTool {
         try generated.write(to: outputURL, atomically: true, encoding: .utf8)
     }
 
-    private static func isValidCalendarVersion(_ version: String) -> Bool {
+    private static func isValidReleaseVersion(_ version: String) -> Bool {
         let parts = version.split(separator: ".", omittingEmptySubsequences: false)
         guard parts.count == 3 else { return false }
 
-        let yearPart = String(parts[0])
-        let monthDayPart = String(parts[1])
-        let countPart = String(parts[2])
+        let majorPart = String(parts[0])
+        let datePart = String(parts[1])
+        let patchCountPart = String(parts[2])
 
-        guard yearPart.count == 4,
-              monthDayPart.count == 4,
-              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: yearPart)),
-              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: monthDayPart)),
-              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: countPart)),
-              let year = Int(yearPart),
-              let month = Int(monthDayPart.prefix(2)),
-              let day = Int(monthDayPart.suffix(2)),
-              let count = Int(countPart),
-              count > 0
+        guard !majorPart.isEmpty,
+              datePart.count == 6,
+              !patchCountPart.isEmpty,
+              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: majorPart)),
+              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: datePart)),
+              CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: patchCountPart)),
+              let major = Int(majorPart),
+              let yearSuffix = Int(datePart.prefix(2)),
+              let month = Int(datePart.dropFirst(2).prefix(2)),
+              let day = Int(datePart.suffix(2)),
+              let patchCount = Int(patchCountPart),
+              major >= 1,
+              patchCount >= 0
         else {
             return false
         }
 
         var components = DateComponents()
         components.calendar = Calendar(identifier: .gregorian)
-        components.year = year
+        components.year = 2000 + yearSuffix
         components.month = month
         components.day = day
 
@@ -74,7 +77,7 @@ struct VersionGenTool {
         }
 
         let resolved = components.calendar?.dateComponents([.year, .month, .day], from: date)
-        return resolved?.year == year && resolved?.month == month && resolved?.day == day
+        return resolved?.year == 2000 + yearSuffix && resolved?.month == month && resolved?.day == day
     }
 
     private static func escapeForSwiftLiteral(_ value: String) -> String {

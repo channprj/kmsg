@@ -8,11 +8,12 @@ WORKFLOW_PATH = REPO_ROOT / ".github" / "workflows" / "release.yml"
 
 
 class ReleaseWorkflowTests(unittest.TestCase):
-    def test_release_workflow_uses_calendar_version_tags(self) -> None:
+    def test_release_workflow_uses_major_date_patch_tags(self) -> None:
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
-        self.assertIn("v2026.0422.22", workflow)
-        self.assertIn("vYYYY.MMDD.COUNT", workflow)
-        self.assertIn("MMDD must resolve to a real calendar date", workflow)
+        self.assertIn("v1.260424.0", workflow)
+        self.assertIn("vMAJOR.YYMMDD.PATCH_COUNT", workflow)
+        self.assertIn("PATCH_COUNT must be >= 0", workflow)
+        self.assertIn("YYMMDD must resolve to a real calendar date", workflow)
 
     def test_tap_sync_secret_is_required(self) -> None:
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")

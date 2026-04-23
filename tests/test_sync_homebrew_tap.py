@@ -11,7 +11,7 @@ SCRIPT_PATH = REPO_ROOT / "tools" / "sync_homebrew_tap.py"
 
 
 class SyncHomebrewTapTests(unittest.TestCase):
-    def test_generates_latest_formula_for_calendar_versions_and_preserves_recent_legacy_releases(self) -> None:
+    def test_generates_latest_formula_for_major_date_patch_versions_and_preserves_recent_legacy_releases(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             tap_dir = tmp / "homebrew-tap"
@@ -44,17 +44,17 @@ class SyncHomebrewTapTests(unittest.TestCase):
                 "v0.2.0",
                 "v0.2.1",
                 "v0.3.0",
-                "v2026.0420.001",
-                "v2026.0420.002",
-                "v2026.0421.001",
-                "v2026.0421.002",
-                "v2026.0422.001",
-                "v2026.0422.123",
+                "v1.260423.0",
+                "v1.260423.1",
+                "v1.260424.0",
+                "v1.260424.1",
+                "v1.260424.9",
+                "v1.260425.0",
             ]
             metadata = {}
             for tag in release_tags:
                 version = tag.removeprefix("v")
-                sha = expected_sha if tag == "v2026.0422.123" else hashlib.sha256(version.encode("utf-8")).hexdigest()
+                sha = expected_sha if tag == "v1.260425.0" else hashlib.sha256(version.encode("utf-8")).hexdigest()
                 metadata[tag] = {
                     "url": f"https://github.com/channprj/kmsg/releases/download/{tag}/kmsg-macos-universal",
                     "sha256": sha,
@@ -75,7 +75,7 @@ class SyncHomebrewTapTests(unittest.TestCase):
                     "--repository",
                     "channprj/kmsg",
                     "--current-tag",
-                    "v2026.0422.123",
+                    "v1.260425.0",
                     "--release-metadata-file",
                     str(metadata_path),
                     "--keep-versions",
@@ -90,23 +90,23 @@ class SyncHomebrewTapTests(unittest.TestCase):
 
             latest_formula = (formula_dir / "kmsg.rb").read_text(encoding="utf-8")
             self.assertIn(
-                'url "https://github.com/channprj/kmsg/releases/download/v2026.0422.123/kmsg-macos-universal"',
+                'url "https://github.com/channprj/kmsg/releases/download/v1.260425.0/kmsg-macos-universal"',
                 latest_formula,
             )
             self.assertIn(f'sha256 "{expected_sha}"', latest_formula)
-            self.assertIn('version "2026.0422.123"', latest_formula)
+            self.assertIn('version "1.260425.0"', latest_formula)
 
             expected_versions = [
                 "0.1.1",
                 "0.2.0",
                 "0.2.1",
                 "0.3.0",
-                "2026.0420.001",
-                "2026.0420.002",
-                "2026.0421.001",
-                "2026.0421.002",
-                "2026.0422.001",
-                "2026.0422.123",
+                "1.260423.0",
+                "1.260423.1",
+                "1.260424.0",
+                "1.260424.1",
+                "1.260424.9",
+                "1.260425.0",
             ]
             removed_versions = [
                 "0.1.0",
@@ -126,10 +126,10 @@ class SyncHomebrewTapTests(unittest.TestCase):
 
             readme_text = readme_path.read_text(encoding="utf-8")
             self.assertIn("## kmsg Versioned Installs", readme_text)
-            self.assertIn("brew install channprj/tap/kmsg@2026.0422.123", readme_text)
+            self.assertIn("brew install channprj/tap/kmsg@1.260425.0", readme_text)
             self.assertIn("Recent 10 releases are kept", readme_text)
 
-    def test_rejects_invalid_calendar_current_tag(self) -> None:
+    def test_rejects_invalid_major_date_patch_current_tag(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
             tap_dir = tmp / "homebrew-tap"
@@ -149,7 +149,7 @@ class SyncHomebrewTapTests(unittest.TestCase):
                     "--repository",
                     "channprj/kmsg",
                     "--current-tag",
-                    "v2026.1399.001",
+                    "v1.261399.0",
                     "--release-metadata-file",
                     str(metadata_path),
                 ],
@@ -159,7 +159,7 @@ class SyncHomebrewTapTests(unittest.TestCase):
             )
 
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn("current tag must match vYYYY.MMDD.COUNT", result.stderr)
+            self.assertIn("current tag must match vMAJOR.YYMMDD.PATCH_COUNT", result.stderr)
 
 
 if __name__ == "__main__":

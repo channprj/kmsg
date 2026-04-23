@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v2026.0422.22). Optional."
+        description: "Release tag (e.g. v1.260424.0). Optional."
         required: false
         type: string
 
@@ -79,20 +79,24 @@ jobs:
           import sys
 
           tag = os.environ["TAG"]
-          match = re.fullmatch(r"v(\d{4})\.(\d{2})(\d{2})\.(\d+)", tag)
+          match = re.fullmatch(r"v(\d+)\.(\d{2})(\d{2})(\d{2})\.(\d+)", tag)
           if match is None:
-              print(f"Invalid tag '{tag}'. Expected format: vYYYY.MMDD.COUNT")
+              print(f"Invalid tag '{tag}'. Expected format: vMAJOR.YYMMDD.PATCH_COUNT")
               raise SystemExit(1)
 
-          year, month, day, count = (int(part) for part in match.groups())
-          if count < 1:
-              print(f"Invalid tag '{tag}'. COUNT must be >= 1")
+          major, year_suffix, month, day, patch_count = (int(part) for part in match.groups())
+          if major < 1:
+              print(f"Invalid tag '{tag}'. MAJOR must be >= 1")
+              raise SystemExit(1)
+
+          if patch_count < 0:
+              print(f"Invalid tag '{tag}'. PATCH_COUNT must be >= 0")
               raise SystemExit(1)
 
           try:
-              dt.date(year, month, day)
+              dt.date(2000 + year_suffix, month, day)
           except ValueError:
-              print(f"Invalid tag '{tag}'. MMDD must resolve to a real calendar date")
+              print(f"Invalid tag '{tag}'. YYMMDD must resolve to a real calendar date")
               raise SystemExit(1)
           PY
 
@@ -197,20 +201,20 @@ jobs:
           import subprocess
 
           KEEP_VERSIONS = 10
-          calendar_pattern = re.compile(r"^v(\d{4})\.(\d{2})(\d{2})\.(\d+)$")
+          major_date_patch_pattern = re.compile(r"^v(\d+)\.(\d{2})(\d{2})(\d{2})\.(\d+)$")
           legacy_pattern = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
 
           def parse_release_tag(tag: str):
-              calendar_match = calendar_pattern.fullmatch(tag)
-              if calendar_match is not None:
-                  year, month, day, count = (int(part) for part in calendar_match.groups())
+              major_date_patch_match = major_date_patch_pattern.fullmatch(tag)
+              if major_date_patch_match is not None:
+                  major, year_suffix, month, day, patch_count = (int(part) for part in major_date_patch_match.groups())
                   try:
-                      dt.date(year, month, day)
+                      dt.date(2000 + year_suffix, month, day)
                   except ValueError:
                       return None
-                  if count < 1:
+                  if major < 1 or patch_count < 0:
                       return None
-                  return (2, year, month, day, count)
+                  return (2, major, 2000 + year_suffix, month, day, patch_count)
 
               legacy_match = legacy_pattern.fullmatch(tag)
               if legacy_match is not None:

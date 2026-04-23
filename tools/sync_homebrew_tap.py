@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 
-CALENDAR_TAG_RE = re.compile(r"^v(\d{4})\.(\d{2})(\d{2})\.(\d+)$")
+MAJOR_DATE_PATCH_TAG_RE = re.compile(r"^v(\d+)\.(\d{2})(\d{2})(\d{2})\.(\d+)$")
 LEGACY_SEMVER_TAG_RE = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
 README_START = "<!-- kmsg-versioned:start -->"
 README_END = "<!-- kmsg-versioned:end -->"
@@ -28,17 +28,17 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_release_tag(tag: str) -> tuple[int, int, int, int, int] | None:
-    calendar_match = CALENDAR_TAG_RE.match(tag)
-    if calendar_match is not None:
-        year, month, day, count = (int(part) for part in calendar_match.groups())
+def parse_release_tag(tag: str) -> tuple[int, ...] | None:
+    major_date_patch_match = MAJOR_DATE_PATCH_TAG_RE.match(tag)
+    if major_date_patch_match is not None:
+        major, year_suffix, month, day, patch_count = (int(part) for part in major_date_patch_match.groups())
         try:
-            dt.date(year, month, day)
+            dt.date(2000 + year_suffix, month, day)
         except ValueError:
             return None
-        if count < 1:
+        if major < 1 or patch_count < 0:
             return None
-        return (2, year, month, day, count)
+        return (2, major, 2000 + year_suffix, month, day, patch_count)
 
     legacy_match = LEGACY_SEMVER_TAG_RE.match(tag)
     if legacy_match is None:
@@ -224,7 +224,7 @@ def main() -> int:
     args = parse_args()
 
     if parse_release_tag(args.current_tag) is None:
-        raise ValueError(f"current tag must match vYYYY.MMDD.COUNT: {args.current_tag}")
+        raise ValueError(f"current tag must match vMAJOR.YYMMDD.PATCH_COUNT: {args.current_tag}")
     if args.keep_versions < 1:
         raise ValueError("keep-versions must be at least 1")
 
