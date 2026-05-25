@@ -58,6 +58,8 @@ Run the MCP server:
 kmsg mcp-server
 ```
 
+The stdio server accepts both MCP `Content-Length` framing and newline-delimited JSON-RPC input. It replies with the same framing style as the current request, so older OpenClaw-style clients and simpler NDJSON supervisors can use the same binary.
+
 Config example:
 
 ```json
@@ -248,3 +250,4 @@ If MCP fails:
 - `kmsg mcp-server`
 - `kmsg status`
 - confirm Accessibility permission and KakaoTalk readiness
+- if a client sends JSON lines instead of `Content-Length` frames, keep one JSON-RPC request per line

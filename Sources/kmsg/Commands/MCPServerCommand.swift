@@ -24,6 +24,28 @@ private struct KmsgMCPError: Error, @unchecked Sendable {
     }
 }
 
+private enum MCPStdioTransport {
+    case contentLength
+    case newlineDelimitedJSON
+}
+
+private final class MCPDataBuffer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var data = Data()
+
+    func store(_ newData: Data) {
+        lock.lock()
+        data = newData
+        lock.unlock()
+    }
+
+    func load() -> Data {
+        lock.lock()
+        defer { lock.unlock() }
+        return data
+    }
+}
+
 private final class KmsgSubprocessRunner {
     let executablePath: String
 
@@ -58,6 +80,20 @@ private final class KmsgSubprocessRunner {
             )
         }
 
+        let stdoutData = MCPDataBuffer()
+        let stderrData = MCPDataBuffer()
+        let stdoutSemaphore = DispatchSemaphore(value: 0)
+        let stderrSemaphore = DispatchSemaphore(value: 0)
+
+        DispatchQueue.global().async {
+            stdoutData.store(stdoutPipe.fileHandleForReading.readDataToEndOfFile())
+            stdoutSemaphore.signal()
+        }
+        DispatchQueue.global().async {
+            stderrData.store(stderrPipe.fileHandleForReading.readDataToEndOfFile())
+            stderrSemaphore.signal()
+        }
+
         let waitSemaphore = DispatchSemaphore(value: 0)
         DispatchQueue.global().async {
             process.waitUntilExit()
@@ -80,8 +116,11 @@ private final class KmsgSubprocessRunner {
             }
         }
 
-        let stdout = String(decoding: stdoutPipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-        let stderr = String(decoding: stderrPipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        _ = stdoutSemaphore.wait(timeout: .now() + 1.0)
+        _ = stderrSemaphore.wait(timeout: .now() + 1.0)
+
+        let stdout = String(decoding: stdoutData.load(), as: UTF8.self)
+        let stderr = String(decoding: stderrData.load(), as: UTF8.self)
 
         return MCPCommandResult(
             returncode: process.terminationStatus,
@@ -107,7 +146,7 @@ private final class KmsgSubprocessRunner {
             )
         }
 
-        let status = run(["status"], timeoutSec: 4.0)
+        let status = run(["status"], timeoutSec: 15.0)
         if status.returncode != 0 {
             return (
                 false,
@@ -139,6 +178,7 @@ private final class KmsgMCPServer {
     private let serverVersion: String
     private var initialized = false
     private var shutdown = false
+    private var responseTransport: MCPStdioTransport = .contentLength
 
     init() {
         let env = ProcessInfo.processInfo.environment
@@ -678,6 +718,9 @@ private final class KmsgMCPServer {
         if combinedText.contains("SEARCH_MISS") {
             return "CHAT_NOT_FOUND"
         }
+        if combinedText.contains("FOCUS_FAIL") {
+            return "KAKAO_SEARCH_FOCUS_FAILED"
+        }
         if combinedText.contains("Accessibility") || combinedText.contains("손쉬운 사용") {
             return "ACCESSIBILITY_PERMISSION_DENIED"
         }
@@ -692,6 +735,8 @@ private final class KmsgMCPServer {
             return "KakaoTalk window was not ready. Open KakaoTalk and retry (or enable deep_recovery)."
         case "CHAT_NOT_FOUND":
             return "Chat was not found in search results. Verify chat name spacing and visibility."
+        case "KAKAO_SEARCH_FOCUS_FAILED":
+            return "KakaoTalk search input could not be focused. Open KakaoTalk, ensure the chat list is visible, then retry with deep_recovery=true."
         case "ACCESSIBILITY_PERMISSION_DENIED":
             return "Grant Accessibility permission in System Settings > Privacy & Security > Accessibility."
         default:
@@ -767,11 +812,16 @@ private final class KmsgMCPServer {
 
         while true {
             guard let line = readHeaderLine() else { return nil }
+            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if headers.isEmpty, trimmed.hasPrefix("{") {
+                responseTransport = .newlineDelimitedJSON
+                return jsonObject(from: Data(line.utf8))
+            }
+
             if line == "\r\n" || line == "\n" {
                 break
             }
 
-            let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.isEmpty {
                 continue
             }
@@ -788,8 +838,13 @@ private final class KmsgMCPServer {
         else {
             return nil
         }
+        responseTransport = .contentLength
 
-        guard let object = try? JSONSerialization.jsonObject(with: body),
+        return jsonObject(from: body)
+    }
+
+    private func jsonObject(from data: Data) -> JSONDict? {
+        guard let object = try? JSONSerialization.jsonObject(with: data),
               let dict = object as? JSONDict
         else {
             return nil
@@ -823,6 +878,15 @@ private final class KmsgMCPServer {
 
     private func writeMessage(_ payload: JSONDict) throws {
         let encoded = try JSONSerialization.data(withJSONObject: payload, options: [])
+        switch responseTransport {
+        case .contentLength:
+            try writeContentLengthMessage(encoded)
+        case .newlineDelimitedJSON:
+            writeNewlineDelimitedJSONMessage(encoded)
+        }
+    }
+
+    private func writeContentLengthMessage(_ encoded: Data) throws {
         let header = "Content-Length: \(encoded.count)\r\n\r\n"
         header.utf8CString.withUnsafeBufferPointer { buffer in
             _ = fwrite(buffer.baseAddress, 1, buffer.count - 1, stdout)
@@ -832,6 +896,17 @@ private final class KmsgMCPServer {
                 _ = fwrite(baseAddress, 1, encoded.count, stdout)
             }
         }
+        fflush(stdout)
+    }
+
+    private func writeNewlineDelimitedJSONMessage(_ encoded: Data) {
+        encoded.withUnsafeBytes { rawBuffer in
+            if let baseAddress = rawBuffer.baseAddress {
+                _ = fwrite(baseAddress, 1, encoded.count, stdout)
+            }
+        }
+        var newline = UInt8(ascii: "\n")
+        _ = fwrite(&newline, 1, 1, stdout)
         fflush(stdout)
     }
 }
