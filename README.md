@@ -305,6 +305,8 @@ OpenClaw MCP 설정 예시:
 }
 ```
 
+`mcp-server` 는 MCP `Content-Length` 프레이밍과 줄 단위 JSON-RPC 입력을 모두 받습니다. 요청이 `Content-Length` 방식이면 같은 방식으로 응답하고, JSON 한 줄 요청이면 JSON 한 줄로 응답합니다.
+
 추천 운영 순서는 아래와 같습니다.
 
 1. `watch --json` 으로 새 메시지 감지
