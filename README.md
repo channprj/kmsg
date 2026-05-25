@@ -277,6 +277,8 @@ kmsg watch "본인, 친구, 또는 단톡방 이름" --json
 
 ## MCP 연동
 
+<p><img src="assets/kmsg-mcp-cyberpunk-hero.png" alt="Cyberpunk visualization of kmsg bridging human chat intent to MCP automation" width="720" /></p>
+
 `kmsg` 는 MCP 로 붙여서 사용할 수 있습니다.
 현재 구조는 다음처럼 나뉩니다.
 
