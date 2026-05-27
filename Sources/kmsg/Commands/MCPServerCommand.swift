@@ -136,6 +136,7 @@ private final class KmsgMCPServer {
     private let runner = KmsgSubprocessRunner()
     private let deepRecoveryDefault: Bool
     private let traceDefault: Bool
+    private let readLayoutDefault: String
     private let serverVersion: String
     private var initialized = false
     private var shutdown = false
@@ -144,6 +145,7 @@ private final class KmsgMCPServer {
         let env = ProcessInfo.processInfo.environment
         deepRecoveryDefault = (env["KMSG_DEFAULT_DEEP_RECOVERY"] ?? "false").lowercased() == "true"
         traceDefault = (env["KMSG_TRACE_DEFAULT"] ?? "false").lowercased() == "true"
+        readLayoutDefault = Self.validReadLayout(env["KMSG_DEFAULT_READ_LAYOUT"]) ?? "preserve"
         serverVersion = env["KMSG_MCP_VERSION"]?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false
             ? env["KMSG_MCP_VERSION"]!.trimmingCharacters(in: .whitespacesAndNewlines)
             : BuildVersion.current
@@ -251,6 +253,7 @@ private final class KmsgMCPServer {
                     "type": "object",
                     "properties": [
                         "chat": ["type": "string", "description": "Chat room or user name"],
+                        "chat_id": ["type": "string", "description": "Synthetic chat_id from kmsg chats"],
                         "limit": ["type": "integer", "minimum": 1, "maximum": 100, "default": 20],
                         "deep_recovery": [
                             "type": "boolean",
@@ -267,8 +270,13 @@ private final class KmsgMCPServer {
                             "default": traceDefault,
                             "description": "Include AX tracing logs",
                         ],
+                        "layout": [
+                            "type": "string",
+                            "enum": ["preserve", "left", "right"],
+                            "default": readLayoutDefault,
+                            "description": "Window layout before reading",
+                        ],
                     ],
-                    "required": ["chat"],
                     "additionalProperties": false,
                 ],
             ],
@@ -366,11 +374,22 @@ private final class KmsgMCPServer {
 
     private func callKmsgRead(_ arguments: JSONDict) -> JSONDict {
         let chat = String(describing: arguments["chat"] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        if chat.isEmpty {
+        let chatID = String(describing: arguments["chat_id"] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if chat.isEmpty && chatID.isEmpty {
             return errorPayload(
                 code: "INVALID_ARGUMENT",
-                message: "chat is required",
-                hint: "Provide a non-empty chat name.",
+                message: "chat or chat_id is required",
+                hint: "Provide either a non-empty chat name or a chat_id from kmsg chats.",
+                rawStdout: "",
+                rawStderr: "",
+                latencyMs: 0
+            )
+        }
+        if !chat.isEmpty && !chatID.isEmpty {
+            return errorPayload(
+                code: "INVALID_ARGUMENT",
+                message: "chat and chat_id cannot be used together",
+                hint: "Use chat_id for stable identity, or chat for name-based lookup.",
                 rawStdout: "",
                 rawStderr: "",
                 latencyMs: 0
@@ -400,8 +419,24 @@ private final class KmsgMCPServer {
         let deepRecovery = boolValue(arguments["deep_recovery"], defaultValue: deepRecoveryDefault)
         let keepWindow = boolValue(arguments["keep_window"], defaultValue: false)
         let traceAX = boolValue(arguments["trace_ax"], defaultValue: traceDefault)
+        guard let layout = Self.validReadLayout(arguments["layout"] as? String ?? readLayoutDefault) else {
+            return errorPayload(
+                code: "INVALID_ARGUMENT",
+                message: "layout must be preserve, left, or right",
+                hint: "Use layout=preserve, layout=left, or layout=right.",
+                rawStdout: "",
+                rawStderr: "",
+                latencyMs: 0
+            )
+        }
 
-        var command = ["read", chat, "--json", "--limit", String(boundedLimit)]
+        var command = ["read"]
+        if !chatID.isEmpty {
+            command.append(contentsOf: ["--chat-id", chatID])
+        } else {
+            command.append(chat)
+        }
+        command.append(contentsOf: ["--json", "--limit", String(boundedLimit), "--layout", layout])
         if deepRecovery { command.append("--deep-recovery") }
         if keepWindow { command.append("--keep-window") }
         if traceAX { command.append("--trace-ax") }
@@ -465,12 +500,13 @@ private final class KmsgMCPServer {
 
         var response: JSONDict = [
             "ok": true,
-            "chat": payload["chat"] ?? chat,
+            "chat": payload["chat"] ?? (chat.isEmpty ? chatID : chat),
             "fetched_at": payload["fetched_at"] as Any,
             "count": payload["count"] ?? 0,
             "messages": payload["messages"] ?? [],
             "meta": [
                 "latency_ms": first.latencyMs,
+                "layout": layout,
             ],
         ]
         if traceAX, !first.stderr.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -714,6 +750,17 @@ private final class KmsgMCPServer {
             }
         }
         return defaultValue
+    }
+
+    private static func validReadLayout(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+        let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        switch normalized {
+        case "preserve", "left", "right":
+            return normalized
+        default:
+            return nil
+        }
     }
 
     private func jsonObject(from string: String) -> JSONDict? {

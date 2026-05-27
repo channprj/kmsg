@@ -1,8 +1,15 @@
 import ApplicationServices.HIServices
 import Foundation
 
+enum ChatWindowLayoutMode: String {
+    case preserve
+    case left
+    case right
+}
+
 enum ChatWindowResolutionMethod {
     case existingWindow
+    case openedViaChatList
     case openedViaSearch
 }
 
@@ -12,6 +19,10 @@ struct ChatWindowResolution {
 
     var openedViaSearch: Bool {
         method == .openedViaSearch
+    }
+
+    var openedTransiently: Bool {
+        method != .existingWindow
     }
 }
 
@@ -43,32 +54,69 @@ private struct SearchCandidate {
 }
 
 struct ChatWindowResolver {
+    private static let minimumReadableWindowSize = CGSize(width: 760, height: 900)
+    private static let maximumAutomaticWindowSize = CGSize(width: 1200, height: 1000)
+
     private let kakao: KakaoTalkApp
     private let runner: AXActionRunner
     private let useCache: Bool
     private let deepRecoveryEnabled: Bool
+    private let layoutMode: ChatWindowLayoutMode
 
     init(
         kakao: KakaoTalkApp,
         runner: AXActionRunner,
         useCache: Bool = true,
-        deepRecoveryEnabled: Bool = false
+        deepRecoveryEnabled: Bool = false,
+        layoutMode: ChatWindowLayoutMode = .preserve
     ) {
         self.kakao = kakao
         self.runner = runner
         self.useCache = useCache
         self.deepRecoveryEnabled = deepRecoveryEnabled
+        self.layoutMode = layoutMode
     }
 
     func resolve(query: String) throws -> ChatWindowResolution {
         let usableWindow = try requireUsableWindow()
 
         if let existingWindow = findMatchingChatWindow(in: kakao.windows, query: query) {
+            standardizeReadableWindow(existingWindow, label: "existing chat window")
             return ChatWindowResolution(window: existingWindow, method: .existingWindow)
         }
 
         let searchWindow = selectSearchWindow(fallback: usableWindow)
+        standardizeReadableWindow(searchWindow, label: "search root window")
         let chatWindow = try openChatViaSearch(query: query, in: searchWindow, fallbackWindow: usableWindow)
+        standardizeReadableWindow(chatWindow, label: "opened chat window")
+        return ChatWindowResolution(window: chatWindow, method: .openedViaSearch)
+    }
+
+    func resolve(chatID: String) throws -> ChatWindowResolution {
+        guard let record = ChatIdentityRegistryStore.shared.record(for: chatID) else {
+            throw KakaoTalkError.elementNotFound("Unknown chat_id '\(chatID)'. Run 'kmsg chats' first to refresh the local registry.")
+        }
+
+        let usableWindow = try requireUsableWindow()
+        let query = record.displayName
+
+        if let existingWindow = findMatchingChatWindow(in: kakao.windows, query: query) {
+            standardizeReadableWindow(existingWindow, label: "existing chat window")
+            return ChatWindowResolution(window: existingWindow, method: .existingWindow)
+        }
+
+        if let chatListWindow = kakao.chatListWindow,
+           let chatWindow = openChatListRow(chatID: chatID, query: query, in: chatListWindow, fallbackWindow: usableWindow)
+        {
+            standardizeReadableWindow(chatWindow, label: "opened chat window")
+            return ChatWindowResolution(window: chatWindow, method: .openedViaChatList)
+        }
+
+        runner.log("chat_id: falling back to search for '\(query)'")
+        let searchWindow = selectSearchWindow(fallback: usableWindow)
+        standardizeReadableWindow(searchWindow, label: "search root window")
+        let chatWindow = try openChatViaSearch(query: query, in: searchWindow, fallbackWindow: usableWindow)
+        standardizeReadableWindow(chatWindow, label: "opened chat window")
         return ChatWindowResolution(window: chatWindow, method: .openedViaSearch)
     }
 
@@ -227,6 +275,181 @@ struct ChatWindowResolver {
         }
 
         throw KakaoTalkError.windowNotFound("[\(ChatWindowFailureCode.windowNotReady.rawValue)] Chat window for '\(query)' did not open")
+    }
+
+    private func openChatListRow(chatID: String, query: String, in chatListWindow: UIElement, fallbackWindow: UIElement) -> UIElement? {
+        runner.log("chat_id: scanning chat list rows")
+        standardizeReadableWindow(chatListWindow, label: "chat list window")
+        let scanner = ChatListScanner()
+        let snapshots = scanner.scan(in: chatListWindow, limit: 200, trace: { message in
+            runner.log(message)
+        })
+        guard !snapshots.isEmpty else {
+            runner.log("chat_id: chat list scan returned no rows")
+            return nil
+        }
+
+        let registry = ChatIdentityRegistryStore.shared
+        let assignedIDs = registry.assignChatIDs(for: snapshots.map(\.discovery))
+        guard let matchIndex = assignedIDs.firstIndex(of: chatID) else {
+            runner.log("chat_id: no visible chat row matched \(chatID)")
+            return nil
+        }
+
+        let row = snapshots[matchIndex].element
+        runner.log("chat_id: matched row title='\(snapshots[matchIndex].discovery.title)'")
+        kakao.activate()
+        _ = tryRaiseWindow(chatListWindow)
+
+        if triggerChatListRowOpen(row) {
+            if let window = waitForOpenedChatWindow(query: query, fallbackWindow: fallbackWindow) {
+                return window
+            }
+        }
+
+        runner.log("chat_id: matched row did not open a chat window")
+        return nil
+    }
+
+    private func triggerChatListRowOpen(_ row: UIElement) -> Bool {
+        if tryActivateSearchResult(row, label: "chat list row") {
+            return true
+        }
+
+        let selected = trySelectSearchResult(row, label: "chat list row")
+        if !selected, let parent = row.parent, trySelectSearchResult(parent, label: "chat list row.parent") {
+            runner.pressEnterKey()
+            return true
+        }
+
+        if selected {
+            runner.pressEnterKey()
+            return true
+        }
+
+        return false
+    }
+
+    private func standardizeReadableWindow(_ window: UIElement, label: String) {
+        kakao.activate()
+        _ = tryRaiseWindow(window)
+
+        guard let currentSize = window.size else {
+            runner.log("\(label): size unavailable; skipping resize")
+            return
+        }
+        let currentFrame = window.frame
+
+        let targetSize = readableTargetSize(for: currentSize)
+        guard targetSize != currentSize else {
+            runner.log("\(label): size already readable \(Int(currentSize.width))x\(Int(currentSize.height))")
+            if let layoutFrame = automaticLayoutFrame(for: window, preferredSize: targetSize, currentFrame: currentFrame) {
+                applyWindowFrame(layoutFrame, to: window, label: label)
+            }
+            return
+        }
+
+        if let layoutFrame = automaticLayoutFrame(for: window, preferredSize: targetSize, currentFrame: currentFrame) {
+            applyWindowFrame(layoutFrame, to: window, label: label)
+        } else {
+            do {
+                try window.setSize(targetSize)
+                if let currentPosition = currentFrame?.origin {
+                    try? window.setPosition(currentPosition)
+                }
+                runner.log("\(label): resized to \(Int(targetSize.width))x\(Int(targetSize.height))")
+                Thread.sleep(forTimeInterval: 0.08)
+            } catch {
+                runner.log("\(label): resize failed (\(error))")
+            }
+        }
+    }
+
+    private func readableTargetSize(for currentSize: CGSize) -> CGSize {
+        CGSize(
+            width: readableTargetDimension(
+                current: currentSize.width,
+                minimum: Self.minimumReadableWindowSize.width,
+                automaticMaximum: Self.maximumAutomaticWindowSize.width
+            ),
+            height: readableTargetDimension(
+                current: currentSize.height,
+                minimum: Self.minimumReadableWindowSize.height,
+                automaticMaximum: Self.maximumAutomaticWindowSize.height
+            )
+        )
+    }
+
+    private func readableTargetDimension(current: CGFloat, minimum: CGFloat, automaticMaximum: CGFloat) -> CGFloat {
+        if current >= automaticMaximum {
+            return current
+        }
+
+        return max(current, minimum)
+    }
+
+    private func automaticLayoutFrame(
+        for window: UIElement,
+        preferredSize: CGSize,
+        currentFrame: CGRect?
+    ) -> CGRect? {
+        guard layoutMode != .preserve else {
+            return nil
+        }
+
+        let currentFrame = currentFrame ?? window.frame ?? CGRect(origin: .zero, size: preferredSize)
+        let screenFrame = screenFrame(containing: currentFrame) ?? CGDisplayBounds(CGMainDisplayID())
+        let usableFrame = screenFrame.insetBy(dx: 24, dy: 24)
+        guard usableFrame.width > 0, usableFrame.height > 0 else {
+            return nil
+        }
+
+        let layoutSize = CGSize(
+            width: min(
+                max(preferredSize.width, Self.minimumReadableWindowSize.width),
+                min(Self.maximumAutomaticWindowSize.width, usableFrame.width)
+            ),
+            height: min(
+                max(preferredSize.height, Self.minimumReadableWindowSize.height),
+                min(Self.maximumAutomaticWindowSize.height, usableFrame.height)
+            )
+        )
+        let x = layoutMode == .right ? usableFrame.maxX - layoutSize.width : usableFrame.minX
+        let y = min(max(currentFrame.minY, usableFrame.minY), usableFrame.maxY - layoutSize.height)
+        return CGRect(origin: CGPoint(x: x, y: y), size: layoutSize)
+    }
+
+    private func screenFrame(containing frame: CGRect) -> CGRect? {
+        var displayCount: UInt32 = 0
+        guard CGGetActiveDisplayList(0, nil, &displayCount) == .success, displayCount > 0 else {
+            return nil
+        }
+
+        var displays = [CGDirectDisplayID](repeating: 0, count: Int(displayCount))
+        guard CGGetActiveDisplayList(displayCount, &displays, &displayCount) == .success else {
+            return nil
+        }
+
+        let referencePoint = CGPoint(x: frame.midX, y: frame.midY)
+        return displays
+            .map(CGDisplayBounds)
+            .first { $0.contains(referencePoint) }
+    }
+
+    private func applyWindowFrame(_ frame: CGRect, to window: UIElement, label: String) {
+        do {
+            try window.setFrame(frame)
+            runner.log("\(label): laid out \(Int(frame.width))x\(Int(frame.height)) at \(Int(frame.minX)),\(Int(frame.minY))")
+            Thread.sleep(forTimeInterval: 0.08)
+        } catch {
+            runner.log("\(label): layout failed (\(error)); falling back to size-only resize")
+            do {
+                try window.setSize(frame.size)
+                Thread.sleep(forTimeInterval: 0.08)
+            } catch {
+                runner.log("\(label): resize fallback failed (\(error))")
+            }
+        }
     }
 
     private func resolveCachedElement(

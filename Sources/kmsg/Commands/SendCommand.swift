@@ -129,14 +129,10 @@ struct SendCommand: ParsableCommand {
             runner.log("window strategy: focusedWindow -> mainWindow -> windows.first")
             let resolution: ChatWindowResolution
             if let chatID {
-                guard let record = ChatIdentityRegistryStore.shared.record(for: chatID) else {
-                    throw KakaoTalkError.elementNotFound("Unknown chat_id '\(chatID)'. Run 'kmsg chats' first to refresh the local registry.")
-                }
                 print("Looking for chat with \(targetDescription)...")
-                print("Resolved \(targetDescription) to '\(record.displayName)'.")
-                resolution = try chatWindowResolver.resolve(query: record.displayName)
-                if resolution.openedViaSearch {
-                    print("No existing chat window. Opening via search...")
+                resolution = try chatWindowResolver.resolve(chatID: chatID)
+                if resolution.openedTransiently {
+                    print("No existing chat window. Opening via chat list or search...")
                 } else {
                     print("Found existing chat window.")
                 }
@@ -144,7 +140,7 @@ struct SendCommand: ParsableCommand {
                 let recipient = recipient ?? ""
                 print("Looking for chat with \(targetDescription)...")
                 resolution = try chatWindowResolver.resolve(query: recipient)
-                if resolution.openedViaSearch {
+                if resolution.openedTransiently {
                     print("No existing chat window. Opening via search...")
                 } else {
                     print("Found existing chat window.")
