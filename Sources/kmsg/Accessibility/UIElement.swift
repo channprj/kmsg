@@ -150,6 +150,27 @@ public final class UIElement: @unchecked Sendable {
         return CGRect(origin: pos, size: size)
     }
 
+    public func setPosition(_ point: CGPoint) throws {
+        var point = point
+        guard let value = AXValueCreate(.cgPoint, &point) else {
+            throw AccessibilityError.typeMismatch
+        }
+        try setAttribute(kAXPositionAttribute, value: value)
+    }
+
+    public func setSize(_ size: CGSize) throws {
+        var size = size
+        guard let value = AXValueCreate(.cgSize, &size) else {
+            throw AccessibilityError.typeMismatch
+        }
+        try setAttribute(kAXSizeAttribute, value: value)
+    }
+
+    public func setFrame(_ frame: CGRect) throws {
+        try setPosition(frame.origin)
+        try setSize(frame.size)
+    }
+
     // MARK: - Hierarchy
 
     public var parent: UIElement? {
