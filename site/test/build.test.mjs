@@ -25,6 +25,7 @@ const expectedFiles = [
   "assets/demo-captions.vtt",
   "robots.txt",
   "sitemap.xml",
+  "llm.txt",
   "llms.txt",
   "llms-full.txt",
   "site.webmanifest",
@@ -99,6 +100,68 @@ test("legacy Korean route redirects to the canonical root", async () => {
     /rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/"/,
   );
   assert.match(html, /name="robots" content="noindex,follow"/);
+});
+
+test("every content page uses the 1280px site shell and LLM action", async () => {
+  for (const path of [
+    "index.html",
+    "en/index.html",
+    "usage/index.html",
+    "architecture/index.html",
+    "openclaw/index.html",
+    "versioning/index.html",
+  ]) {
+    const html = await readOutput(path);
+    assert.match(
+      html,
+      /<div class="site-shell">[\s\S]*<header[\s\S]*<main[\s\S]*<footer[\s\S]*<\/div>/,
+    );
+    assert.match(html, /class="llm-link"[^>]+href="[^"]*llm\.txt"/);
+  }
+
+  const [root, english, styles] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("en/index.html"),
+    readOutput("assets/styles.css"),
+  ]);
+  assert.match(root, /data-light-label="밝은 테마로 전환"/);
+  assert.match(english, /data-light-label="Switch to light theme"/);
+  assert.match(root, /<div class="story-grid">/);
+  assert.equal((root.match(/<article class="story-card">/g) || []).length, 2);
+  assert.match(english, /<div class="story-grid">/);
+  assert.equal(
+    (english.match(/<article class="story-card">/g) || []).length,
+    2,
+  );
+  assert.match(styles, /--shell-width:\s*1280px/);
+  assert.match(styles, /\.site-shell\s*{[\s\S]*width:\s*min\(100%,\s*var\(--shell-width\)\)/);
+});
+
+test("singular and compatible LLM indexes match", async () => {
+  const [singular, plural] = await Promise.all([
+    readOutput("llm.txt"),
+    readOutput("llms.txt"),
+  ]);
+
+  assert.equal(singular, plural);
+  assert.match(
+    singular,
+    /Canonical website: https:\/\/channprj\.github\.io\/kmsg\//,
+  );
+  assert.match(singular, /English documentation.*\/kmsg\/en\//);
+});
+
+test("wide Markdown tables are keyboard-scrollable", async () => {
+  const [architecture, styles] = await Promise.all([
+    readOutput("architecture/index.html"),
+    readOutput("assets/styles.css"),
+  ]);
+
+  assert.match(
+    architecture,
+    /<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable table"><table>/,
+  );
+  assert.match(styles, /\.table-scroll\s*{[\s\S]*overflow-x:\s*auto/);
 });
 
 test("structured data describes the software, source, page, and FAQ", async () => {

@@ -4,9 +4,14 @@ const themeToggle = document.querySelector("[data-theme-toggle]");
 
 const setTheme = (theme) => {
   root.dataset.theme = theme;
+  const label =
+    theme === "dark"
+      ? themeToggle?.dataset.lightLabel
+      : themeToggle?.dataset.darkLabel;
   themeToggle?.setAttribute(
     "aria-label",
-    theme === "dark" ? "Switch to paper theme" : "Switch to dark theme",
+    label ||
+      (theme === "dark" ? "Switch to light theme" : "Switch to dark theme"),
   );
   try {
     localStorage.setItem("kmsg-theme", theme);

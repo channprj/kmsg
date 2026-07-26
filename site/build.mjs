@@ -253,6 +253,30 @@ const enhanceRenderedMarkdown = (html, page) => {
   );
 
   enhanced = enhanced.replace(
+    /(<h2 id="(?:실사용-후기|featured-video)">[\s\S]*?<\/h2>)\s*<p>(<a[^>]+><img[^>]+><\/a>)<\/p>\s*<p>([\s\S]*?)<\/p>\s*<p>(<a[^>]+><img[^>]+><\/a>)<\/p>\s*<p>([\s\S]*?)<\/p>/,
+    `$1
+<div class="story-grid">
+  <article class="story-card">
+    <div class="story-media">$2</div>
+    <div class="story-copy"><p>$3</p></div>
+  </article>
+  <article class="story-card">
+    <div class="story-media">$4</div>
+    <div class="story-copy"><p>$5</p></div>
+  </article>
+</div>`,
+  );
+
+  const tableLabel =
+    page.lang === "ko" ? "스크롤 가능한 표" : "Scrollable table";
+  enhanced = enhanced
+    .replace(
+      /<table>/g,
+      `<div class="table-scroll" tabindex="0" role="region" aria-label="${tableLabel}"><table>`,
+    )
+    .replace(/<\/table>/g, "</table></div>");
+
+  enhanced = enhanced.replace(
     /<a href="(https?:\/\/[^"]+)">/g,
     '<a href="$1" target="_blank" rel="noopener noreferrer">',
   );
@@ -329,12 +353,23 @@ const renderToc = (headings, page) => {
 const renderHeader = (page) => {
   const rootLink = relativeAsset(page.output, "index.html");
   const usageLink = relativeAsset(page.output, "usage/index.html");
+  const architectureLink = relativeAsset(
+    page.output,
+    "architecture/index.html",
+  );
   const openClawLink = relativeAsset(page.output, "openclaw/index.html");
+  const llmLink = relativeAsset(page.output, "llm.txt");
   const languageLink =
     page.lang === "ko"
       ? relativeAsset(page.output, "en/index.html")
       : rootLink;
   const languageLabel = page.lang === "ko" ? "EN" : "한국어";
+  const navigationLabel =
+    page.lang === "ko" ? "주요 탐색 메뉴" : "Primary navigation";
+  const lightThemeLabel =
+    page.lang === "ko" ? "밝은 테마로 전환" : "Switch to light theme";
+  const darkThemeLabel =
+    page.lang === "ko" ? "어두운 테마로 전환" : "Switch to dark theme";
 
   return `
     <header class="site-header" data-header>
@@ -344,14 +379,16 @@ const renderHeader = (page) => {
           <span>kmsg</span>
           <span class="brand-status" aria-label="project status: online"></span>
         </a>
-        <nav class="primary-nav" aria-label="Primary navigation">
+        <nav class="primary-nav" aria-label="${navigationLabel}">
           <a href="${usageLink}">${page.lang === "ko" ? "사용법" : "Usage"}</a>
+          <a href="${architectureLink}">${page.lang === "ko" ? "구조" : "Architecture"}</a>
           <a href="${openClawLink}">MCP</a>
           <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
         </nav>
         <div class="header-tools">
+          <a class="llm-link" href="${llmLink}" type="text/plain">LLM.txt <span aria-hidden="true">↗</span></a>
           <a class="language-link" href="${languageLink}" hreflang="${page.lang === "ko" ? "en" : "ko"}">${languageLabel}</a>
-          <button class="theme-toggle" type="button" aria-label="Toggle color theme" data-theme-toggle>
+          <button class="theme-toggle" type="button" aria-label="${lightThemeLabel}" data-theme-toggle data-light-label="${lightThemeLabel}" data-dark-label="${darkThemeLabel}">
             <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
           </button>
         </div>
@@ -363,6 +400,17 @@ const renderHomeHero = (page, intro, version) => {
   const installationId = page.lang === "ko" ? "설치" : "installation";
   const docsLink = relativeAsset(page.output, "usage/index.html");
   const copiedLabel = page.lang === "ko" ? "복사됨" : "Copied";
+  const previewLabel =
+    page.lang === "ko" ? "kmsg 터미널 미리보기" : "kmsg terminal preview";
+  const projectHighlightsLabel =
+    page.lang === "ko" ? "프로젝트 주요 정보" : "Project highlights";
+  const chatName = page.lang === "ko" ? "프로젝트" : "Product Team";
+  const firstSender = page.lang === "ko" ? "지나" : "Jina";
+  const firstMessage =
+    page.lang === "ko" ? "배포할까요?" : "Ship it?";
+  const secondSender = page.lang === "ko" ? "나" : "Me";
+  const secondMessage =
+    page.lang === "ko" ? "이미 완료했어요." : "Already did.";
 
   return `
     <section class="hero" aria-labelledby="hero-title">
@@ -385,16 +433,9 @@ const renderHomeHero = (page, intro, version) => {
           <code>brew install channprj/tap/kmsg</code>
           <span class="copy-icon" aria-hidden="true">⧉</span>
         </button>
-        <ul class="hero-signals" aria-label="Project highlights">
-          <li><span>01</span> Native Swift</li>
-          <li><span>02</span> Accessibility API</li>
-          <li><span>03</span> MCP included</li>
-        </ul>
       </div>
 
-      <div class="hero-visual" role="img" aria-label="kmsg terminal preview">
-        <div class="orbit orbit-one" aria-hidden="true"></div>
-        <div class="orbit orbit-two" aria-hidden="true"></div>
+      <div class="hero-visual" role="img" aria-label="${previewLabel}">
         <div class="terminal-window">
           <div class="terminal-bar">
             <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -402,15 +443,15 @@ const renderHomeHero = (page, intro, version) => {
             <span class="terminal-version">v${escapeHtml(version)}</span>
           </div>
           <div class="terminal-body" aria-hidden="true">
-            <p><span class="terminal-prompt">~</span> <span class="terminal-command">kmsg read "Product Team" --limit 2</span></p>
+            <p><span class="terminal-prompt">~</span> <span class="terminal-command">kmsg read "${chatName}" --limit 2</span></p>
             <div class="json-output">
               <p><span class="syntax-brace">{</span></p>
-              <p><span class="syntax-key">"chat"</span>: <span class="syntax-string">"Product Team"</span>,</p>
+              <p><span class="syntax-key">"chat"</span>: <span class="syntax-string">"${chatName}"</span>,</p>
               <p><span class="syntax-key">"messages"</span>: <span class="syntax-brace">[</span></p>
-              <p class="indent"><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"Jina"</span>,</p>
-              <p class="indent-2"><span class="syntax-key">"text"</span>: <span class="syntax-string">"Ship it?"</span> <span class="syntax-brace">}</span>,</p>
-              <p class="indent"><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"Me"</span>,</p>
-              <p class="indent-2"><span class="syntax-key">"text"</span>: <span class="syntax-string">"Already did."</span> <span class="syntax-brace">}</span></p>
+              <p class="indent"><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"${firstSender}"</span>,</p>
+              <p class="indent-2"><span class="syntax-key">"text"</span>: <span class="syntax-string">"${firstMessage}"</span> <span class="syntax-brace">}</span>,</p>
+              <p class="indent"><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"${secondSender}"</span>,</p>
+              <p class="indent-2"><span class="syntax-key">"text"</span>: <span class="syntax-string">"${secondMessage}"</span> <span class="syntax-brace">}</span></p>
               <p><span class="syntax-brace">]</span></p>
               <p><span class="syntax-brace">}</span></p>
             </div>
@@ -421,9 +462,14 @@ const renderHomeHero = (page, intro, version) => {
             <span>JSON · STDOUT</span>
           </div>
         </div>
-        <div class="floating-chip chip-mcp"><span>MCP</span> native server</div>
-        <div class="floating-chip chip-local"><span>LOCAL</span> your Mac, your data</div>
       </div>
+
+      <ul class="hero-signals" aria-label="${projectHighlightsLabel}">
+        <li><span>Swift</span><strong>6</strong></li>
+        <li><span>MCP</span><strong>3 tools</strong></li>
+        <li><span>Output</span><strong>JSON</strong></li>
+        <li><span>Runtime</span><strong>Local AX API</strong></li>
+      </ul>
     </section>`;
 };
 
@@ -634,7 +680,7 @@ const renderDocument = ({
     ${alternateKo ? `<link rel="alternate" hreflang="ko" href="${alternateKo}">` : ""}
     <link rel="alternate" hreflang="x-default" href="${xDefault}">
     <link rel="alternate" type="text/markdown" href="${site.repositoryUrl}/raw/main/${page.source}" title="${escapeHtml(page.source)}">
-    <link rel="alternate" type="text/markdown" href="${pageUrl("llms.txt")}" title="LLM-readable site index">
+    <link rel="alternate" type="text/plain" href="${pageUrl("llm.txt")}" title="LLM-readable site index">
     <link rel="manifest" href="${rootAsset("site.webmanifest")}">
     <link rel="icon" href="${rootAsset("assets/favicon.svg")}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -666,22 +712,24 @@ const renderDocument = ({
   <body data-source="${escapeHtml(page.source)}">
     <a class="skip-link" href="#content">${page.lang === "ko" ? "본문으로 이동" : "Skip to content"}</a>
     <div class="site-grid" aria-hidden="true"></div>
-    ${renderHeader(page)}
-    <main id="content">
-      ${hero}
-      <div class="content-layout">
-        ${renderToc(rendered.headings, page)}
-        <article class="markdown-body" data-markdown-content>
-          <div class="source-stamp">
-            <span class="source-dot"></span>
-            ${escapeHtml(page.sourceLabel ?? page.source)}
-            <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">source ↗</a>
-          </div>
-          ${rendered.html}
-        </article>
-      </div>
-    </main>
-    ${renderFooter(page, version)}
+    <div class="site-shell">
+      ${renderHeader(page)}
+      <main id="content">
+        ${hero}
+        <div class="content-layout">
+          ${renderToc(rendered.headings, page)}
+          <article class="markdown-body" data-markdown-content>
+            <div class="source-stamp">
+              <span class="source-dot"></span>
+              ${escapeHtml(page.sourceLabel ?? page.source)}
+              <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">source ↗</a>
+            </div>
+            ${rendered.html}
+          </article>
+        </div>
+      </main>
+      ${renderFooter(page, version)}
+    </div>
     <script src="${rootAsset("assets/app.js")}" defer></script>
   </body>
 </html>`;
@@ -721,6 +769,7 @@ ${links}
 ## Optional
 
 - [Korean documentation](${site.baseUrl}): 한국어 프로젝트 소개, 설치 방법, 주요 기능, FAQ
+- [English documentation](${pageUrl("en/")}): English project overview, installation, highlights, and FAQ
 - [Full Markdown corpus](${pageUrl("llms-full.txt")}): README and project documentation combined as plain Markdown
 `;
 };
@@ -807,6 +856,8 @@ const main = async () => {
     "utf8",
   );
 
+  const llmsIndex = buildLlmsIndex(version);
+
   await Promise.all([
     copyFile(join(siteDir, "src/styles.css"), join(outputDir, "assets/styles.css")),
     copyFile(join(siteDir, "src/app.js"), join(outputDir, "assets/app.js")),
@@ -821,7 +872,8 @@ const main = async () => {
       "utf8",
     ),
     writeFile(join(outputDir, "sitemap.xml"), buildSitemap(documents), "utf8"),
-    writeFile(join(outputDir, "llms.txt"), buildLlmsIndex(version), "utf8"),
+    writeFile(join(outputDir, "llm.txt"), llmsIndex, "utf8"),
+    writeFile(join(outputDir, "llms.txt"), llmsIndex, "utf8"),
     writeFile(
       join(outputDir, "llms-full.txt"),
       buildLlmsFull(documents, version),
