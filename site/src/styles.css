@@ -379,20 +379,51 @@ main {
 }
 
 .hero {
+  position: relative;
   display: grid;
   width: var(--page);
-  min-height: min(780px, calc(100vh - 66px));
   margin: 0 auto;
-  padding: 86px 0 0;
-  grid-template-columns: minmax(0, 0.96fr) minmax(440px, 1.04fr);
-  align-items: center;
-  column-gap: 64px;
-  row-gap: 76px;
+  padding: 94px 0 0;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  column-gap: 24px;
+}
+
+.hero-heading {
+  position: relative;
+  padding-bottom: 58px;
+  border-bottom: 1px solid var(--line);
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.hero-heading::before,
+.hero-heading::after {
+  position: absolute;
+  bottom: -7px;
+  width: 13px;
+  height: 13px;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 13px;
+  content: "+";
+}
+
+.hero-heading::before {
+  left: -6px;
+}
+
+.hero-heading::after {
+  right: -6px;
 }
 
 .hero-copy {
   position: relative;
   z-index: 2;
+  padding: 52px 0 68px;
+  grid-column: 1 / span 5;
+  grid-row: 2;
 }
 
 .eyebrow {
@@ -425,8 +456,8 @@ main {
 }
 
 .hero h1 {
-  max-width: 620px;
-  font-size: clamp(56px, 6.1vw, 78px);
+  max-width: 1120px;
+  font-size: clamp(52px, 5.75vw, 78px);
 }
 
 .hero h1 em {
@@ -435,9 +466,13 @@ main {
   text-shadow: 0 0 34px rgba(254, 229, 0, 0.1);
 }
 
+html[lang="ko"] .hero h1 em {
+  white-space: nowrap;
+}
+
 .hero-lead {
-  max-width: 590px;
-  margin: 28px 0 0;
+  max-width: 470px;
+  margin: 0;
   color: var(--ink-muted);
   font-size: clamp(16px, 1.35vw, 18px);
   line-height: 1.7;
@@ -445,7 +480,7 @@ main {
 
 .hero-actions {
   display: flex;
-  margin-top: 36px;
+  margin-top: 32px;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -542,6 +577,7 @@ main {
   padding: 0;
   border-block: 1px solid var(--line);
   grid-column: 1 / -1;
+  grid-row: 3;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   color: var(--ink-muted);
   font-family: var(--mono);
@@ -577,13 +613,27 @@ main {
 
 .hero-visual {
   position: relative;
+  padding: 52px 0 68px;
+  grid-column: 6 / -1;
+  grid-row: 2;
+}
+
+.terminal-caption {
+  display: flex;
+  margin-bottom: 10px;
+  justify-content: space-between;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
 }
 
 .terminal-window {
   position: relative;
   z-index: 3;
   overflow: hidden;
-  min-height: 466px;
+  min-height: 432px;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: #0b0b0b;
@@ -592,9 +642,28 @@ main {
     0 0 0 1px rgba(255, 255, 255, 0.025) inset,
     0 0 60px rgba(254, 229, 0, 0.025);
   color: #e9eef4;
+  animation: terminal-arrive 720ms var(--ease) 120ms both;
   transition:
     border-color 240ms ease,
     transform 320ms var(--ease);
+}
+
+.terminal-window::after {
+  position: absolute;
+  z-index: 5;
+  top: -42%;
+  right: 0;
+  left: 0;
+  height: 34%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(254, 229, 0, 0.035),
+    transparent
+  );
+  content: "";
+  pointer-events: none;
+  animation: terminal-scan 6s ease-in-out 3.2s infinite;
 }
 
 .hero-visual:hover .terminal-window {
@@ -641,19 +710,26 @@ main {
 }
 
 .terminal-body {
-  min-height: 372px;
-  padding: 30px 30px 22px;
+  min-height: 337px;
+  padding: 0;
   background:
     linear-gradient(rgba(255, 255, 255, 0.017) 1px, transparent 1px),
     #0b0b0b;
   background-size: 100% 24px;
   font-family: var(--mono);
-  font-size: clamp(11px, 1.15vw, 13px);
-  line-height: 1.9;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
-.terminal-body p {
-  margin: 0;
+.terminal-command-row {
+  display: flex;
+  height: 56px;
+  padding: 0 22px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
 }
 
 .terminal-prompt {
@@ -661,12 +737,168 @@ main {
 }
 
 .terminal-command {
+  display: inline-block;
+  overflow: hidden;
   color: #f6f8fa;
+  clip-path: inset(0 100% 0 0);
+  white-space: nowrap;
+  animation: terminal-type 1.25s steps(34, end) 480ms forwards;
 }
 
-.json-output {
-  margin: 22px 0;
+.tui-workspace {
+  display: grid;
+  min-height: 281px;
+  grid-template-columns: 138px minmax(0, 1fr);
+}
+
+.tui-rail {
+  padding: 20px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.tui-rail-label {
+  display: block;
+  margin-bottom: 18px;
+  color: #66717c;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.tui-rail ol {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 18px;
+  list-style: none;
+}
+
+.tui-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  align-items: start;
+  gap: 9px;
+  color: #66717c;
+  opacity: 0;
+  animation: tui-reveal 460ms var(--ease) forwards;
+}
+
+.tui-step:nth-child(1) {
+  animation-delay: 1.15s;
+}
+
+.tui-step:nth-child(2) {
+  animation-delay: 1.85s;
+}
+
+.tui-step:nth-child(3) {
+  animation-delay: 2.55s;
+}
+
+.tui-step:not(:last-child)::after {
+  position: absolute;
+  top: 23px;
+  bottom: -17px;
+  left: 9px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  content: "";
+}
+
+.tui-step > span {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #343d46;
+  border-radius: 50%;
+  place-items: center;
+  color: #77838f;
+  font-size: 7px;
+}
+
+.tui-step.is-complete > span,
+.tui-step.is-live > span {
+  border-color: rgba(73, 209, 125, 0.48);
+  background: rgba(73, 209, 125, 0.08);
+  color: #78e49e;
+}
+
+.tui-step.is-live > span {
+  animation: ready-pulse 1.8s ease-in-out 3s infinite;
+}
+
+.tui-step div {
+  display: grid;
+  padding-top: 1px;
+  gap: 2px;
+}
+
+.tui-step strong {
+  color: #dce3ea;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.tui-step small {
+  color: #66717c;
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+.tui-stream {
+  display: grid;
+  min-width: 0;
+  padding: 18px 20px;
+  align-content: center;
+  gap: 11px;
+}
+
+.tui-event,
+.tui-tool-call,
+.tui-ready {
+  opacity: 0;
+  animation: tui-reveal 520ms var(--ease) forwards;
+}
+
+.tui-event {
+  padding: 12px 13px;
+  border: 1px solid rgba(121, 192, 255, 0.16);
+  border-radius: 7px;
+  background: rgba(121, 192, 255, 0.035);
+  animation-delay: 1.15s;
+}
+
+.tui-event-head {
+  display: flex;
+  margin-bottom: 7px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tui-event-head span {
+  color: #687581;
+  font-size: 8px;
+}
+
+.tui-event-head strong {
+  color: #8ac7ff;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.tui-event code {
+  display: block;
+  overflow: hidden;
   color: #9aa5b1;
+  font-family: var(--mono);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .syntax-key {
@@ -681,12 +913,113 @@ main {
   color: #7f8a96;
 }
 
-.terminal-body .indent {
-  padding-left: 24px;
+.tui-tool-call {
+  display: grid;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 7px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  background: rgba(255, 255, 255, 0.025);
+  animation-delay: 1.85s;
 }
 
-.terminal-body .indent-2 {
-  padding-left: 42px;
+.tui-tool-icon {
+  color: var(--accent);
+  font-size: 10px;
+  text-shadow: 0 0 12px rgba(254, 229, 0, 0.24);
+}
+
+.tui-tool-call > div {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.tui-tool-call div > span {
+  color: #697580;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tui-tool-call strong {
+  color: #e6e9ec;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.tui-tool-call code {
+  overflow: hidden;
+  color: #75818d;
+  font-family: var(--mono);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tui-tool-call b {
+  padding: 3px 5px;
+  border: 1px solid rgba(73, 209, 125, 0.22);
+  border-radius: 4px;
+  color: #65d68e;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.tui-ready {
+  position: relative;
+  display: grid;
+  padding: 13px;
+  overflow: hidden;
+  border: 1px solid rgba(73, 209, 125, 0.22);
+  border-radius: 7px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 11px;
+  background:
+    linear-gradient(110deg, rgba(73, 209, 125, 0.07), transparent 58%),
+    rgba(73, 209, 125, 0.025);
+  animation-delay: 2.55s;
+}
+
+.tui-ready-icon {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  place-items: center;
+  background: #49d17d;
+  color: #07160d;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tui-ready > div {
+  display: grid;
+  gap: 2px;
+}
+
+.tui-ready strong {
+  color: #dff7e7;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.tui-ready div > span {
+  color: #6f8076;
+  font-size: 8px;
+}
+
+.tui-ready-spark {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #49d17d;
+  box-shadow: 0 0 12px rgba(73, 209, 125, 0.9);
+  animation: ready-pulse 1.8s ease-in-out 3s infinite;
 }
 
 .cursor-block {
@@ -696,6 +1029,55 @@ main {
   transform: translateY(2px);
   background: var(--accent);
   animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes terminal-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes terminal-type {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes tui-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes terminal-scan {
+  0%,
+  22% {
+    transform: translateY(0);
+  }
+
+  78%,
+  100% {
+    transform: translateY(520%);
+  }
+}
+
+@keyframes ready-pulse {
+  50% {
+    box-shadow: 0 0 0 5px rgba(73, 209, 125, 0.08);
+    opacity: 0.74;
+  }
 }
 
 @keyframes blink {
@@ -1273,20 +1655,32 @@ main {
     min-height: auto;
     padding-top: 72px;
     grid-template-columns: 1fr;
-    row-gap: 64px;
+    row-gap: 0;
+  }
+
+  .hero-heading {
+    grid-column: 1;
+    grid-row: 1;
   }
 
   .hero-copy {
     max-width: 760px;
+    padding: 48px 0 56px;
+    grid-column: 1;
+    grid-row: 2;
   }
 
   .hero-visual {
     width: min(760px, 92%);
     margin: 0 auto;
+    padding: 0 0 64px;
+    grid-column: 1;
+    grid-row: 3;
   }
 
   .hero-signals {
     width: 100%;
+    grid-row: 4;
   }
 
   .content-layout {
@@ -1323,16 +1717,26 @@ main {
   }
 
   .hero {
-    padding: 56px 0 84px;
-    row-gap: 54px;
+    padding-top: 56px;
+  }
+
+  .hero-heading {
+    padding-bottom: 42px;
   }
 
   .hero h1 {
-    font-size: clamp(48px, 15.5vw, 72px);
+    font-size: clamp(42px, 12.5vw, 62px);
+  }
+
+  html[lang="ko"] .hero h1 em {
+    white-space: normal;
+  }
+
+  .hero-copy {
+    padding: 38px 0 48px;
   }
 
   .hero-lead {
-    margin-top: 24px;
     font-size: 16px;
   }
 
@@ -1364,25 +1768,44 @@ main {
 
   .hero-visual {
     width: 100%;
+    padding-bottom: 58px;
   }
 
   .terminal-window {
-    min-height: 400px;
+    min-height: 437px;
     transform: none;
   }
 
   .terminal-body {
-    min-height: 306px;
-    padding: 22px 18px;
-    font-size: 9.5px;
+    min-height: 344px;
+    padding: 0;
+    font-size: 10px;
   }
 
-  .terminal-body .indent {
-    padding-left: 14px;
+  .terminal-command-row {
+    padding-inline: 16px;
+    font-size: 10px;
   }
 
-  .terminal-body .indent-2 {
-    padding-left: 26px;
+  .tui-workspace {
+    min-height: 288px;
+    grid-template-columns: 1fr;
+  }
+
+  .tui-rail {
+    display: none;
+  }
+
+  .tui-stream {
+    padding: 17px;
+  }
+
+  .tui-event {
+    padding: 13px;
+  }
+
+  .tui-event code {
+    font-size: 8.5px;
   }
 
   .docs-hero {
@@ -1467,16 +1890,11 @@ main {
 
 @media (max-width: 430px) {
   .llm-link {
-    font-size: 0;
-  }
-
-  .llm-link::before {
-    font-size: 10px;
-    content: "LLM";
+    display: none;
   }
 
   .language-control select {
-    width: 72px;
+    width: 100px;
   }
 
   .hero-actions {
@@ -1493,6 +1911,14 @@ main {
 
   .terminal-bar > span:nth-of-type(1) {
     display: none;
+  }
+
+  .terminal-command-row {
+    font-size: 9px;
+  }
+
+  .tui-stream {
+    padding-inline: 13px;
   }
 }
 

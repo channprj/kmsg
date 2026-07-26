@@ -214,6 +214,40 @@ test("Ubuntu and Nanum fonts apply with keep-all outside code", async () => {
   );
 });
 
+test("home hero presents an animated AI-native watch-to-MCP workflow", async () => {
+  const localizedReadyCopy = {
+    ko: "컨텍스트 준비 완료",
+    en: "Context ready",
+    jp: "コンテキスト準備完了",
+    cn: "上下文已就绪",
+  };
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    assert.match(html, /class="terminal-command">kmsg watch "[^"]+" --json/);
+    assert.match(html, /class="tui-step is-complete"/);
+    assert.match(html, /class="tui-tool-call"/);
+    assert.match(html, /MCP · kmsg_read/);
+    assert.match(html, new RegExp(localizedReadyCopy[localeId]));
+  }
+
+  const [root, styles] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/styles.css"),
+  ]);
+  assert.match(
+    root,
+    /<h1 id="hero-title">카카오톡을<br><em>AI Native 하게 활용하기\.<\/em><\/h1>/,
+  );
+  assert.match(styles, /@keyframes terminal-type/);
+  assert.match(styles, /@keyframes tui-reveal/);
+  assert.match(styles, /@keyframes terminal-scan/);
+  assert.match(
+    styles,
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/,
+  );
+});
+
 test("every content page uses the shared shell and localized navigation", async () => {
   for (const path of contentFiles) {
     const html = await readOutput(path);

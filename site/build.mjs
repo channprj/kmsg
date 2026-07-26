@@ -178,8 +178,6 @@ const pageDefinitions = [
         chatName: "AI 프로젝트",
         firstSender: "지나",
         firstMessage: "새 메시지를 요약해줘.",
-        secondSender: "kmsg",
-        secondMessage: "MCP 도구로 전달했어요.",
       },
       en: {
         title: "kmsg — KakaoTalk CLI & MCP server for macOS",
@@ -197,8 +195,6 @@ const pageDefinitions = [
         chatName: "AI Project",
         firstSender: "Jina",
         firstMessage: "Summarize the new messages.",
-        secondSender: "kmsg",
-        secondMessage: "Passed them to the MCP tool.",
       },
       jp: {
         title: "kmsg — macOS向けKakaoTalk CLI / MCPサーバー",
@@ -216,8 +212,6 @@ const pageDefinitions = [
         chatName: "AIプロジェクト",
         firstSender: "ジナ",
         firstMessage: "新着メッセージを要約して。",
-        secondSender: "kmsg",
-        secondMessage: "MCPツールへ渡しました。",
       },
       cn: {
         title: "kmsg — 面向macOS的KakaoTalk CLI与MCP服务器",
@@ -235,8 +229,6 @@ const pageDefinitions = [
         chatName: "AI项目",
         firstSender: "Jina",
         firstMessage: "请总结新消息。",
-        secondSender: "kmsg",
-        secondMessage: "已传给MCP工具。",
       },
     },
   },
@@ -770,12 +762,52 @@ const renderHomeHero = (page, intro, version) => {
     localizedPage(page.locale, "usage").output,
   );
   const copiedLabel = page.localeConfig.ui.copied;
+  const terminalCopy = {
+    ko: {
+      agentRun: "에이전트 실행",
+      watching: "새 메시지 감시",
+      toolCall: "도구 호출",
+      ready: "컨텍스트 준비 완료",
+      contextMeta: "메시지 2개 · 로컬 처리",
+      connected: "AX 연결됨",
+      output: "JSON · 표준 출력",
+    },
+    en: {
+      agentRun: "Agent run",
+      watching: "Watching for messages",
+      toolCall: "Tool call",
+      ready: "Context ready",
+      contextMeta: "2 messages · local only",
+      connected: "AX connected",
+      output: "JSON · stdout",
+    },
+    jp: {
+      agentRun: "エージェント実行",
+      watching: "新着メッセージを監視",
+      toolCall: "ツール呼び出し",
+      ready: "コンテキスト準備完了",
+      contextMeta: "2件 · ローカル処理",
+      connected: "AX接続済み",
+      output: "JSON · 標準出力",
+    },
+    cn: {
+      agentRun: "智能体运行",
+      watching: "监控新消息",
+      toolCall: "工具调用",
+      ready: "上下文已就绪",
+      contextMeta: "2条消息 · 本地处理",
+      connected: "AX已连接",
+      output: "JSON · 标准输出",
+    },
+  }[page.locale];
 
   return `
     <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
+      <div class="hero-heading">
         <p class="eyebrow"><span></span>${escapeHtml(page.eyebrow)}</p>
         <h1 id="hero-title">${page.heroTitle}</h1>
+      </div>
+      <div class="hero-copy">
         <p class="hero-lead">${escapeHtml(intro)}</p>
         <div class="hero-actions">
           <a class="button button-primary" href="#${installationId}">
@@ -795,30 +827,71 @@ const renderHomeHero = (page, intro, version) => {
       </div>
 
       <div class="hero-visual" role="img" aria-label="${escapeHtml(page.previewLabel)}">
+        <div class="terminal-caption" aria-hidden="true">
+          <span>LIVE WORKFLOW</span>
+          <span>01 — 03</span>
+        </div>
         <div class="terminal-window">
           <div class="terminal-bar">
             <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span>kmsg · zsh</span>
+            <span>kmsg · agent session</span>
             <span class="terminal-version">v${escapeHtml(version)}</span>
           </div>
           <div class="terminal-body" aria-hidden="true">
-            <p><span class="terminal-prompt">~</span> <span class="terminal-command">kmsg read "${escapeHtml(page.chatName)}" --limit 2</span></p>
-            <div class="json-output">
-              <p><span class="syntax-brace">{</span></p>
-              <p><span class="syntax-key">"chat"</span>: <span class="syntax-string">"${escapeHtml(page.chatName)}"</span>,</p>
-              <p><span class="syntax-key">"messages"</span>: <span class="syntax-brace">[</span></p>
-              <p class="indent"><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"${escapeHtml(page.firstSender)}"</span>,</p>
-              <p class="indent-2"><span class="syntax-key">"text"</span>: <span class="syntax-string">"${escapeHtml(page.firstMessage)}"</span> <span class="syntax-brace">}</span>,</p>
-              <p class="indent"><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"${escapeHtml(page.secondSender)}"</span>,</p>
-              <p class="indent-2"><span class="syntax-key">"text"</span>: <span class="syntax-string">"${escapeHtml(page.secondMessage)}"</span> <span class="syntax-brace">}</span></p>
-              <p><span class="syntax-brace">]</span></p>
-              <p><span class="syntax-brace">}</span></p>
+            <div class="terminal-command-row">
+              <span class="terminal-prompt">❯</span>
+              <span class="terminal-command">kmsg watch "${escapeHtml(page.chatName)}" --json</span>
+              <span class="cursor-block"></span>
             </div>
-            <p class="terminal-ready"><span class="terminal-prompt">~</span> <span class="cursor-block"></span></p>
+            <div class="tui-workspace">
+              <aside class="tui-rail">
+                <span class="tui-rail-label">${escapeHtml(terminalCopy.agentRun)}</span>
+                <ol>
+                  <li class="tui-step is-complete">
+                    <span>01</span>
+                    <div><strong>WATCH</strong><small>${escapeHtml(terminalCopy.watching)}</small></div>
+                  </li>
+                  <li class="tui-step is-complete">
+                    <span>02</span>
+                    <div><strong>MCP</strong><small>${escapeHtml(terminalCopy.toolCall)}</small></div>
+                  </li>
+                  <li class="tui-step is-live">
+                    <span>03</span>
+                    <div><strong>READY</strong><small>${escapeHtml(terminalCopy.ready)}</small></div>
+                  </li>
+                </ol>
+              </aside>
+              <div class="tui-stream">
+                <div class="tui-event">
+                  <div class="tui-event-head">
+                    <span>13:42:06.184</span>
+                    <strong>message.received</strong>
+                  </div>
+                  <code><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"${escapeHtml(page.firstSender)}"</span>, <span class="syntax-key">"text"</span>: <span class="syntax-string">"${escapeHtml(page.firstMessage)}"</span> <span class="syntax-brace">}</span></code>
+                </div>
+                <div class="tui-tool-call">
+                  <span class="tui-tool-icon">◆</span>
+                  <div>
+                    <span>${escapeHtml(terminalCopy.toolCall)}</span>
+                    <strong>MCP · kmsg_read</strong>
+                    <code>chat="${escapeHtml(page.chatName)}" · limit=20</code>
+                  </div>
+                  <b>DONE</b>
+                </div>
+                <div class="tui-ready">
+                  <span class="tui-ready-icon">✓</span>
+                  <div>
+                    <strong>${escapeHtml(terminalCopy.ready)}</strong>
+                    <span>${escapeHtml(terminalCopy.contextMeta)}</span>
+                  </div>
+                  <span class="tui-ready-spark" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="terminal-footer">
-            <span><i></i> AX CONNECTED</span>
-            <span>JSON · STDOUT</span>
+            <span><i></i> ${escapeHtml(terminalCopy.connected)}</span>
+            <span>${escapeHtml(terminalCopy.output)}</span>
           </div>
         </div>
       </div>
