@@ -1,513 +1,88 @@
 # kmsg
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Total downloads](https://img.shields.io/github/downloads/channprj/kmsg/total?label=downloads&logo=github)](https://github.com/channprj/kmsg/releases)
+
+[한국어](README.ko.md)
 
 <p><img src="assets/kmsg-logo.jpg" alt="kmsg logo" width="220" /></p>
 
-> **Disclaimer**: `kmsg`는 Kakao Corp. 의 공식 도구가 아닙니다.
-> 사용자는 본인 계정/환경에서 관련 법규, 서비스 약관, 회사 보안 정책을 준수할 책임이 있습니다.
-> 이 도구 사용으로 발생할 수 있는 계정 제한, 오작동, 데이터 손실, 기타 손해에 대한 책임은 사용자에게 있습니다.
-> LOCO Protocol 이 아닌 AX 를 사용한 이유와 계정 제재 가능성에 대한 제 개인적인 판단은 [왜 KakaoTalk 의 LOCO Protocol 을 사용하지 않나요?](#왜-kakaotalk-의-loco-protocol-을-사용하지-않나요) 항목을 참고해 주세요.
+> **Disclaimer:** `kmsg` is not an official Kakao Corp. tool.
+> You are responsible for complying with applicable laws, service terms, and
+> organizational security policies in your own account and environment.
+> Use may result in account restrictions, malfunction, data loss, or other harm.
+> The reasoning behind using macOS Accessibility instead of the private LOCO
+> protocol is documented in [Architecture](ARCHITECTURE.md#accessibility-instead-of-a-private-protocol)
+> and represents the author's personal assessment, not Kakao's position.
 
-`kmsg` 는 macOS에서 카카오톡 메시지를 CLI 로 읽고 보내는 도구입니다. 단순한 수동 CLI 를 넘어, AI Agent 또는 Hook 이벤트 등의 자동화 파이프라인에 연결하기 쉽도록 구현했습니다. kmsg 는 [openclaw](https://github.com/openclaw/openclaw) 의 창시자인 [steipete](https://github.com/steipete) 가 만든 iMessage 컨트롤을 위한 CLI 도구인 [imsg](https://github.com/steipete/imsg) 에 영감을 받아 작성되었습니다.
+`kmsg` is a macOS CLI for reading, watching, and sending KakaoTalk messages.
+It uses the macOS Accessibility API and is designed for both interactive use
+and automation through JSON output, hooks, AI agents, and MCP clients.
 
 ## Demo
 
 https://github.com/user-attachments/assets/c620b2e3-7106-40fa-86d1-ed847e3b1a6f
 
-## 빠른 시작
+## Featured video
 
-요구사항:
+[![Featured video: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다](https://i.ytimg.com/vi/_Pd1G33_R48/hqdefault.jpg)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s)
 
-- macOS 13+
-- [macOS용 KakaoTalk](https://apps.apple.com/kr/app/kakaotalk/id869223134?mt=12) 설치
+**Builder Josh:** [헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다 (AI 엔지니어 샘 호트만님)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s) — starts at 17:00
 
-### 설치 (Homebrew 권장)
+## Highlights
+
+- List chats and assign reusable local `chat_id` values.
+- Read recent messages or watch a chat for new messages.
+- Send text and images by controlling the visible KakaoTalk UI.
+- Produce structured JSON while keeping AX traces on `stderr`.
+- Run a native stdio MCP server with read, send, and image-send tools.
+- Use background-safe reads, configurable window layouts, recovery modes, and
+  a self-healing AX path cache.
+
+## Requirements
+
+- macOS 13 or later
+- [KakaoTalk for macOS](https://apps.apple.com/kr/app/kakaotalk/id869223134?mt=12)
+- Accessibility permission for the installed `kmsg` binary
+
+## Installation
+
+Homebrew is the primary installation path:
 
 ```bash
 brew install channprj/tap/kmsg
 ```
 
-특정 릴리즈를 고정해서 설치하려면 exact version formula를 사용할 수 있습니다.
-tap에는 최신 10개 릴리즈만 유지됩니다.
+Direct-download and source-build instructions are in [USAGE.md](USAGE.md#installation).
 
-```bash
-brew install channprj/tap/kmsg@2026.0422.22
-```
-
-### 설치 (직접 다운로드)
-
-```bash
-mkdir -p ~/.local/bin && curl -fL https://github.com/channprj/kmsg/releases/latest/download/kmsg-macos-universal -o ~/.local/bin/kmsg && chmod +x ~/.local/bin/kmsg
-```
-
-설치 확인은 아래와 같이 진행합니다.
+## Quick start
 
 ```bash
 kmsg status
-```
-
-권한 팝업이 뜨면 허용해 주세요.
-
-## 가장 많이 쓰는 명령
-
-```bash
-kmsg status
-kmsg auth login
-kmsg auth login --auto
-kmsg -v
-kmsg send "본인, 친구, 또는 단톡방 이름" "안녕하세요"
-kmsg send --chat-id "chat_7f42c5e1d9ab" "안녕하세요"
-kmsg send "본인, 친구, 또는 단톡방 이름" "$(date '+%Y-%m-%d %H:%M:%S') 테스트"
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --keep-window
-kmsg send-image "본인, 친구, 또는 단톡방 이름" "/path/to/image.png"
-kmsg mcp-server
 kmsg chats
-kmsg chats --json
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --keep-window
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json --background-safe
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --deep-recovery
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --layout split-right
-kmsg watch "본인, 친구, 또는 단톡방 이름"
-kmsg watch "본인, 친구, 또는 단톡방 이름" --json
-kmsg watch "본인, 친구, 또는 단톡방 이름" --json --poll-interval 0.5
-kmsg inspect --window 0 --depth 20 --debug-layout
+kmsg read "Chat name" --limit 20
+kmsg send "Chat name" "Hello" --dry-run
 ```
 
-## CLI 명령어 레퍼런스
-
-옵션은 빌드 기준 `kmsg --help`, `kmsg <command> --help` 출력과 동일하게 관리됩니다.
-
-### status
-
-```bash
-kmsg status [--verbose]
-```
-
-- `--verbose`: 상세 상태 출력
-
-`status`, `chats`, `read`, `send`, `send-image`, `watch`, `cache warmup`은 카카오톡 로그인이 풀려 있으면 저장된 자격 증명으로 자동 로그인을 시도합니다. 저장된 정보가 없거나 불완전하면 터미널에서 아이디/비밀번호를 입력받아 `~/.config/kmsg/credentials.json`에 저장하고, 비밀번호 암호키는 `~/.config/kmsg/credentials/`에 별도로 보관합니다. 단, `read --background-safe`는 카카오톡 실행/활성화/자동 로그인을 하지 않습니다.
-
-### auth login
-
-```bash
-kmsg auth login [--auto] [--trace-ax]
-```
-
-- `--auto`: 저장된 자격 증명이 있으면 그대로 사용하고, 없으면 입력받아 저장 후 로그인
-- `--trace-ax`: AX 탐색/재시도 로그 출력
-
-기본 `kmsg auth login`은 아이디/비밀번호를 새로 입력받아 저장하고 로그인합니다. 비밀번호는 평문이 아니라 암호화된 형태로 저장됩니다.
-
-### chats
-
-```bash
-kmsg chats [--verbose] [--limit <limit>] [--trace-ax] [--json] [--keep-window]
-```
-
-- `-v, --verbose`: 상세 정보 출력
-- `-l, --limit <limit>`: 최대 채팅 목록 개수 (기본값: 20)
-- `--trace-ax`: AX 탐색/재시도 로그 출력
-- `--json`: `chat_id`를 포함한 구조화 JSON 출력
-- `-k, --keep-window`: `chats` 실행 중 자동으로 연 창을 유지
-
-기본 출력에는 각 채팅의 `chat_id`가 함께 표시됩니다. `chat_id`는 로컬 registry(`~/.kmsg/chat-registry.json`)에 저장되는 synthetic ID이며, 채팅방 이름을 기준으로 생성/재사용됩니다. 같은 이름의 방이 여러 개면 registry가 별도 ID를 유지하고, 방 이름이 바뀌면 새 ID로 취급합니다. `chats`가 실행 중 창을 자동으로 열었다면 기본적으로 종료 시 닫고, `--keep-window`일 때만 유지합니다.
-
-### read
-
-```bash
-kmsg read <chat> [--limit <limit>] [--debug] [--trace-ax] [--keep-window] [--background-safe] [--deep-recovery] [--layout <layout>] [--json]
-```
-
-- `-l, --limit <limit>`: 최대 메시지 개수 (기본값: 20)
-- `--debug`: raw element 디버그 정보 출력
-- `--trace-ax`: AX 탐색/재시도 로그 출력
-- `-k, --keep-window`: 자동으로 연 채팅창과 리스트창 유지
-- `--background-safe`: 카카오톡 실행/활성화/자동 로그인/검색/채팅방 열기/창 크기 변경/자동 닫기를 하지 않고, 이미 노출된 매칭 채팅창만 읽음
-- `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
-- `--layout <layout>`: `preserve`, `left`, `right`, `split-left`, `split-right`. 마케팅 작업자가 브라우저/광고툴과 화면을 나눠 쓸 때는 `split-left` 또는 `split-right`를 사용
-- `--json`: JSON 형식으로 출력
-
-### watch
-
-```bash
-kmsg watch <chat> [--poll-interval <seconds>] [--trace-ax] [--keep-window] [--deep-recovery] [--json] [--include-system]
-```
-
-- `--poll-interval <seconds>`: 폴링 주기 (기본값: `0.2`, 범위: `0.2...10.0`)
-- `--trace-ax`: AX 탐색/재시도 로그 출력
-- `-k, --keep-window`: 자동으로 연 채팅창 유지
-- `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
-- `--json`: 새 메시지 이벤트를 pretty JSON 객체로 계속 출력
-- `--include-system`: 날짜 구분선 등 시스템성 메시지도 포함
-
-`watch`는 시작 시 현재 대화를 baseline으로만 잡고 출력하지 않으며, transcript가 늦게 로딩되는 경우를 피하기 위해 최대 1-2초 정도 silent warm-up으로 baseline을 안정화한 뒤 감시를 시작합니다. 또한 파싱된 날짜/시각을 기준으로 `watch` 시작 시점 이전 메시지는 출력하지 않습니다. 안전한 시각을 추정할 수 없는 행은 보수적으로 숨길 수 있습니다. steady-state에서는 마지막으로 성공한 transcript context를 우선 재사용하고, transcript root도 AX cache happy path를 사용해 200ms polling을 견딜 수 있게 했습니다. 기본 모드는 일반 대화 메시지만 출력하고, `--include-system`일 때만 시스템성 메시지를 포함합니다. `--json`에서는 이벤트마다 별도 JSON 객체가 `stdout`으로 출력되고, `--trace-ax`는 계속 `stderr`에만 기록됩니다.
-
-### send
-
-```bash
-kmsg send <recipient> <message> [--dry-run] [--trace-ax] [--no-cache] [--refresh-cache] [--keep-window] [--deep-recovery]
-kmsg send --chat-id <chat-id> <message> [--dry-run] [--trace-ax] [--no-cache] [--refresh-cache] [--keep-window] [--deep-recovery]
-```
-
-- `--chat-id <chat-id>`: `kmsg chats`에서 출력된 `chat_id`로 전송
-- `--dry-run`: 실제 전송 없이 시뮬레이션
-- `--trace-ax`: AX 탐색/재시도 로그 출력
-- `--no-cache`: 이번 실행에서 AX path cache 비활성화
-- `--refresh-cache`: 이번 실행에서 AX path cache 강제 재구성
-- `-k, --keep-window`: 자동으로 연 채팅창과 리스트창 유지
-- `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
-
-`--chat-id` 전송은 local registry에서 채팅방 이름을 역조회한 뒤 기존 search/open 경로로 채팅을 엽니다. registry에 없는 ID는 즉시 실패합니다. `send`는 기본적으로 전송 후 채팅창과 카톡 리스트창을 정리하고, `--keep-window`일 때만 둘 다 유지합니다.
-
-### send-image
-
-```bash
-kmsg send-image <recipient> <image-path> [--trace-ax] [--no-cache] [--keep-window] [--deep-recovery]
-```
-
-- `--trace-ax`: AX 탐색/재시도 로그 출력
-- `--no-cache`: 이번 실행에서 AX path cache 비활성화
-- `-k, --keep-window`: 자동으로 연 채팅창과 리스트창 유지
-- `--deep-recovery`: 빠른 탐색 실패 시 deep recovery 수행
-
-`send-image`는 기본적으로 전송 후 채팅창과 카톡 리스트창을 정리하고, `--keep-window`일 때만 둘 다 유지합니다. 확인 시트가 매우 빠르게 사라지거나 생략되는 경우도 성공으로 처리하도록 되어 있습니다.
-
-### inspect
-
-```bash
-kmsg inspect [--depth <depth>] [--window <window>] [--show-attributes] [--show-path] [--show-frame] [--show-index] [--show-flags] [--show-actions] [--debug-layout] [--row-summary] [--row-range <start:end>]
-```
-
-- `-d, --depth <depth>`: 최대 탐색 깊이 (기본값: 4)
-- `-w, --window <window>`: inspect 대상 창 인덱스 (기본값: main window)
-- `--show-attributes`: 각 요소의 AX attribute 출력
-- `--show-path`: 각 요소의 AX 경로 출력
-- `--show-frame`: 각 요소 frame 출력
-- `--show-index`: sibling index 출력
-- `--show-flags`: 상태 플래그(`enabled/focused/selected/editable`) 출력
-- `--show-actions`: 지원 AX action 출력
-- `--debug-layout`: `path/frame/index/flags`를 한 번에 켜는 레이아웃 디버그 번들
-- `--row-summary`: 메시지 row 요약 출력
-- `--row-range <start:end>`: `--row-summary` 결과를 특정 범위만 출력 (inclusive, zero-based)
-
-### cache
-
-```bash
-kmsg help cache
-```
-
-- `status` (default): 캐시 상태 출력
-- `clear`: 캐시 삭제
-- `export <output-path>`: 캐시 JSON 내보내기
-- `import <input-path>`: 캐시 JSON 가져오기
-- `warmup [--recipient <recipient>] [--trace-ax] [--keep-window]`: `send`/`chats` happy-path 경로 캐시 워밍업
-
-## 권한 문제 해결
-
-`kmsg`는 손쉬운 사용(Accessibility) 권한이 필요합니다.
-
-앱이 자동 요청에 실패하면:
-
-1. 시스템 설정 열기
-2. `개인정보 보호 및 보안 > 손쉬운 사용`
-3. `kmsg` 토글 켜기
-
-## JSON 출력
-
-`read` 명령은 `--json` 플래그로 구조화된 결과를 반환할 수 있습니다.
-
-```bash
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --json --background-safe
-```
-
-### 출력 형식
-
-```json
-{
-  "chat": "홍길동",
-  "fetched_at": "2026-02-26T01:23:45.678Z",
-  "count": 20,
-  "messages": [
-    {
-      "author": "홍길동",
-      "time_raw": "00:27",
-      "body": "밤이 깊었네",
-      "has_image": false,
-      "image_count": 0,
-      "link_count": 0,
-      "has_attachment": false,
-      "attachment_count": 0
-    }
-  ]
-}
-```
-
-### 필드 설명
-
-- `chat`: 실제로 읽은 채팅방 제목
-- `fetched_at`: 메시지 수집 시각(ISO-8601 UTC)
-- `count`: 반환된 메시지 개수
-- `messages[].author`: 작성자 이름 (`(me)`는 내 메시지 또는 작성자 추론이 불가능한 경우)
-- `messages[].time_raw`: UI에서 읽힌 시각 문자열(없으면 `null`)
-- `messages[].body`: 메시지 본문
-- `messages[].has_image` / `image_count`: 메시지에 포함된 이미지 존재 여부와 개수
-- `messages[].link_count`: 본문에서 감지된 URL 링크 개수
-- `messages[].has_attachment` / `attachment_count`: 이미지를 **제외한** 파일 첨부(문서 등) 존재 여부와 개수. 이미지는 `image_count`로 별도 집계됩니다.
-
-### 주의
-
-- `--json` 사용 시 JSON은 `stdout`으로만 출력됩니다.
-- `--trace-ax` 로그는 `stderr`로 분리되므로 OpenClaw 같은 파이프 연동에서 안전하게 사용할 수 있습니다.
-
-`watch --json`은 배열 하나를 반환하는 대신, 새 메시지가 감지될 때마다 pretty JSON 객체 하나씩을 연속 출력합니다.
-
-```bash
-kmsg watch "본인, 친구, 또는 단톡방 이름" --json
-```
-
-예시 이벤트:
-
-```json
-{
-  "chat": "홍길동",
-  "detected_at": "2026-03-25T10:20:30.123Z",
-  "event": "message",
-  "message": {
-    "author": "홍길동",
-    "time_raw": "10:20",
-    "body": "새 메시지"
-  }
-}
-```
-
-`--include-system`을 같이 쓰면 `event` 값이 `system`인 객체도 함께 출력될 수 있습니다.
-
-`chats --json`도 동일하게 `stdout`에만 JSON을 출력하며, 각 채팅 항목에 `chat_id`와 `last_message`를 포함합니다. 첫 실행이나 캐시 self-heal 시에는 더 느릴 수 있지만, 이후 실행은 저장된 happy-path AX cache를 우선 사용합니다.
-
-## MCP 연동
-
-`kmsg` 는 MCP 로 붙여서 사용할 수 있습니다.
-현재 구조는 다음처럼 나뉩니다.
-
-- MCP: `kmsg_read`, `kmsg_send`, `kmsg_send_image`
-- 실시간 감시: `kmsg watch "<chat>" --json`
-
-즉, OpenClaw 연동은 보통 아래 두 프로세스로 구성합니다.
-
-```bash
-kmsg mcp-server
-kmsg watch "채팅방 이름" --json
-```
-
-```bash
-$HOME/.local/bin/kmsg mcp-server
-```
-
-OpenClaw MCP 설정 예시:
-
-```json
-{
-  "mcpServers": {
-    "kmsg": {
-      "command": "$HOME/.local/bin/kmsg",
-      "args": ["mcp-server"],
-      "env": {
-        "KMSG_DEFAULT_DEEP_RECOVERY": "false",
-        "KMSG_DEFAULT_BACKGROUND_SAFE": "false",
-        "KMSG_TRACE_DEFAULT": "false",
-        "KMSG_DEFAULT_READ_LAYOUT": "split-right"
-      }
-    }
-  }
-}
-```
-
-`mcp-server` 는 MCP `Content-Length` 프레이밍과 줄 단위 JSON-RPC 입력을 모두 받습니다. 요청이 `Content-Length` 방식이면 같은 방식으로 응답하고, JSON 한 줄 요청이면 JSON 한 줄로 응답합니다.
-
-추천 운영 순서는 아래와 같습니다.
-
-1. `watch --json` 으로 새 메시지 감지
-2. OpenClaw 가 답변 초안 생성
-3. 필요하면 사용자 승인
-4. `kmsg_send` 또는 `kmsg send` 로 전송
-
-상세 운영 가이드는 [docs/openclaw.md](./docs/openclaw.md) 를 참고하세요.
-설정 템플릿은 [docs/openclaw.mcp.example.json](./docs/openclaw.mcp.example.json) 에 있습니다.
-
-기존 `tools/kmsg-mcp.py` 는 레거시/개발용 참조 구현으로 남아 있지만, 설치형 사용 흐름의 기본 진입점은 `kmsg mcp-server` 입니다.
-
-## 로컬 빌드 및 개발
-
-```bash
-git clone https://github.com/channprj/kmsg.git
-cd kmsg
-swift build -c release
-install -m 755 .build/release/kmsg ~/.local/bin/kmsg
-```
-
-### 고급 옵션
-
-```bash
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --trace-ax
-kmsg send --chat-id "chat_7f42c5e1d9ab" "테스트" --dry-run
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --dry-run --trace-ax
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --no-cache
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --refresh-cache
-kmsg chats --json
-kmsg send-image "본인, 친구, 또는 단톡방 이름" "/path/to/image.png" --trace-ax
-KMSG_AX_TIMEOUT=0.25 kmsg send "본인, 친구, 또는 단톡방 이름" "테스트"
-kmsg inspect --window 0 --depth 20 --debug-layout
-kmsg inspect --window 0 --depth 20 --row-summary
-kmsg inspect --window 0 --depth 20 --row-summary --row-range 10:35
-kmsg cache status
-kmsg cache warmup --recipient "본인, 친구, 또는 단톡방 이름" --trace-ax
-kmsg cache warmup --recipient "본인, 친구, 또는 단톡방 이름" --keep-window
-kmsg cache export ./ax-cache.json
-kmsg cache import ./ax-cache.json
-kmsg read "본인, 친구, 또는 단톡방 이름" --deep-recovery --trace-ax
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --deep-recovery --trace-ax
-kmsg send-image "본인, 친구, 또는 단톡방 이름" "/path/to/image.png" --deep-recovery --trace-ax --keep-window
-```
-
-`--deep-recovery`는 빠른 창 탐색이 실패할 때만 relaunch/open 복구를 추가로 수행합니다.
-기본적으로 자동으로 연 카카오톡 창은 명령 종료 시 닫히며, `--keep-window`(또는 `-k`)로 유지할 수 있습니다.
-
-### 디버깅 가이드 (inspect / trace-ax)
-
-메시지 읽기/보내기가 기대와 다르면 아래 순서로 상태를 수집해 주세요.
-
-```bash
-# 1) 대상 채팅창 구조 확인
-kmsg inspect --window 0 --depth 20 --debug-layout
-
-# 1-1) 메시지 row 파싱 진단
-kmsg inspect --window 0 --depth 20 --row-summary
-kmsg inspect --window 0 --depth 20 --row-summary --row-range 10:30
-
-# 2) 읽기 경로/AX 로그 확인
-kmsg read "본인, 친구, 또는 단톡방 이름" --limit 20 --trace-ax
-
-# 3) 보내기 경로/AX 로그 확인
-kmsg send "본인, 친구, 또는 단톡방 이름" "테스트" --trace-ax --dry-run
-```
-
-- `AXTextArea, value: "..."` 는 실제 메시지 본문 후보입니다.
-- `AXStaticText, value: "5\n00:27"` 같은 값은 보통 카운트/시간 메타 정보입니다.
-- `--debug-layout`을 켜면 `path/frame/index/flags`가 함께 출력되어 위치 기반 분석이 쉬워집니다.
-- `--row-summary`는 `read` 파서 기준으로 row별 `authorCandidates`, `time`, `buttonTitles`를 빠르게 점검할 때 유용합니다.
-- 이슈 보고 시 `inspect` 출력과 `--trace-ax` 출력을 함께 첨부하면 원인 파악이 빨라집니다.
-
-### Coding Agent에게 요청하기
-
-개발을 진행하거나 버그 수정을 원할 때 Coding Agent에게 아래 정보와 함께 요청하면 좋습니다.
-
-1. 실행한 명령어: `kmsg read ... --trace-ax`, `kmsg inspect ...`
-2. 기대 결과: 무엇이 보여야 하는지
-3. 실제 결과: 현재 무엇이 출력되는지
-4. 관련 로그: `inspect` 본문 구간 (`AXRow > AXCell > AXTextArea`) + `trace-ax`
-
-```text
-kmsg read가 메시지 본문 대신 시간/숫자를 출력합니다.
-inspect 결과를 기준으로 AXRow > AXCell > AXTextArea.value를 우선 추출하도록 수정해 주세요.
-README 디버깅 가이드도 함께 업데이트해 주세요.
-```
-
-## Deploy
-
-`v*` 태그를 푸시하면 GitHub Actions가 자동으로 빌드해서 `kmsg-macos-universal` 파일을 Releases에 업로드합니다.
-같은 workflow가 `channprj/homebrew-tap` 리모트까지 자동으로 동기화하며, `TAP_REPO_TOKEN`이 없거나 tap push가 실패하면 릴리즈도 실패합니다.
-
-배포 전에 `VERSION` 파일 값을 먼저 업데이트하세요.
-버전 규칙은 [VERSIONING.md](VERSIONING.md)를 따릅니다.
-
-```bash
-# gh 토큰이 만료됐으면 재로그인
-gh auth login -h github.com
-
-# 배포 태그 생성/푸시
-git tag v2026.0422.22
-git push origin v2026.0422.22
-```
-
-필요하면 Actions를 수동 실행할 수 있습니다.
-`workflow_dispatch`에서 `tag`를 비워두면 `VERSION` 파일을 읽어 `v<version>`으로 자동 생성합니다.
-`tag`를 직접 입력할 경우 `vYYYY.MMDD.COUNT` 형식만 허용됩니다.
-
-```bash
-# 태그를 직접 지정해서 실행
-gh workflow run release.yml -f tag=v2026.0422.22
-
-# tag 미지정 시 VERSION(예: 2026.0422.22) 기반으로 실행
-gh workflow run release.yml
-```
-
-### Homebrew 자동 동기화 설정 (최초 1회)
-
-1. `channprj/homebrew-tap` 저장소를 만들고 `Formula/` 디렉터리를 준비합니다.
-2. `kmsg` 저장소 Secrets에 `TAP_REPO_TOKEN`을 추가합니다.
-   - 권한: `homebrew-tap` 저장소 `contents: write`
-3. tap 저장소 기본 브랜치가 `main`이 아니면
-   `.github/workflows/release.yml`의 `TAP_REPO_REF` 값을 맞춰 주세요.
-
-이제 `TAP_REPO_TOKEN`은 선택이 아니라 필수입니다.
-secret이 없으면 바이너리 release만 만들고 끝내지 않고, workflow 전체가 실패해서 tap 반영 누락을 바로 잡도록 동작합니다.
-
-릴리즈 후 사용자는 아래 명령으로 설치할 수 있습니다.
-
-```bash
-brew install channprj/tap/kmsg
-brew install channprj/tap/kmsg@2026.0422.22
-```
-
-`kmsg` formula는 항상 최신 릴리즈를 가리키고, `kmsg@YYYY.MMDD.COUNT` formula는 최근 10개 exact release만 유지됩니다.
-이미 다른 버전을 설치했다면 아래처럼 링크를 전환할 수 있습니다.
-
-```bash
-brew unlink kmsg
-brew link --overwrite kmsg@2026.0422.22
-```
-
-## 기타
-
-### 왜 Swift 로 만들었나요?
-
-`kmsg` 는 macOS 전용 도구이고, 핵심 기능이 `AppKit`, `ApplicationServices`, `AXUIElement`, `CGEvent` 같은 macOS native API 위에 올라가 있습니다. Swift 는 이 API 들과의 연결이 가장 직접적이고 안정적이며, Objective-C 계열 프레임워크와의 상호운용도 자연스럽습니다.
-반대로 Python 은 런타임/배포 의존성이 늘어나고, Rust 는 macOS framework binding 과 FFI 관리 복잡도가 커지기 때문에 현재 목적에는 Swift 쪽이 구현과 유지보수 모두 더 실용적이었습니다.
-
-### AX 가 뭔가요?
-
-AX 는 macOS Accessibility(손쉬운 사용) API 를 뜻합니다. 앱의 창, 버튼, 입력창, 텍스트 같은 UI 요소를 `AXUIElement` 로 읽고 제어할 수 있게 해주는 시스템 인터페이스입니다.
-
-### 왜 AX 를 사용하나요?
-
-KakaoTalk 은 공식적으로 CLI 를 제공하지 않습니다. 그래서 실제 사용자가 보고 클릭하는 UI 를 시스템 레벨에서 읽고 조작할 수 있는 현실적인 방법이 AX 입니다.
-`kmsg` 의 채팅 목록 읽기, 검색, 메시지 전송, 이미지 전송, 창 제어가 모두 이 레이어 위에서 동작하기 때문에 Accessibility permission 이 필요합니다.
-
-### 왜 KakaoTalk 의 LOCO Protocol 을 사용하지 않나요?
-
-LOCO Protocol 을 쓰려면 사실상 비공개 동작을 리버스 엔지니어링해야 하는데, 저는 이 접근이 명백한 약관 위반으로 해석될 여지가 크다고 봅니다. 실제로 이런 방식의 자동화나 비공식 프로토콜 사용과 관련해 계정이 영구정지된 사례도 이미 적지 않게 알려져 있어서, 기능적으로 가능하더라도 감수해야 하는 리스크가 너무 크다고 판단했습니다.
-
-반면 AX 방식은 사용자가 실제로 보고 조작하는 KakaoTalk UI 를 macOS 의 공식 Accessibility API 로 읽고 제어하는 접근이라, 적어도 LOCO 를 직접 건드리는 방식보다는 상대적으로 안전할 것이라고 판단했습니다. 다만 이것도 어디까지나 제 개인적인 판단일 뿐이며, 카카오의 공식 입장이나 카카오 법무팀의 해석과는 다를 수 있습니다. 실제 약관 해석과 제재 기준은 카카오 측 판단이 우선합니다.
-
-### 이 기능을 Rust 로 작성하면 더 빨라질까요?
-
-일부 구간은 빨라질 수 있지만, 체감 성능 향상은 제한적일 가능성이 큽니다. `kmsg` 의 주된 지연은 언어 런타임보다 `AXUIElement` 호출, UI 탐색, KakaoTalk 창 활성화/복구, 실제 앱 응답 시간에서 발생합니다.
-Rust 로 바꾸면 단발 CLI cold start, 순수 stdio 프레이밍, JSON encode/decode 같은 좁은 구간은 유리할 수 있습니다. 하지만 MCP 서버처럼 프로세스가 이미 떠 있는 경로에서는 그 이득이 더 작아지고, 전체 end-to-end latency 는 여전히 macOS AX 와 KakaoTalk UI 응답 시간이 지배합니다. 대신 Rust 는 macOS native framework binding 과 FFI 관리 비용이 Swift 보다 커질 수 있습니다.
+`kmsg status` requests Accessibility permission, launches KakaoTalk when
+needed, and checks authentication. The final command is a dry run and does not
+send a message.
+
+## More documentation
+
+- [Usage](USAGE.md) — installation, commands, configuration, examples, and troubleshooting
+- [Architecture](ARCHITECTURE.md) — components, data flow, state, and design decisions
+- [OpenClaw integration](docs/openclaw.md) — MCP and real-time watch integration
+- [Versioning](VERSIONING.md) — release format and automation
+- [Korean README](README.ko.md) — Korean mirror of this document
 
 ## Inspiration
 
-This project is strongly inspired by [steipete](https://github.com/steipete) and his works.
+This project is strongly inspired by
+[steipete](https://github.com/steipete) and his work on
+[imsg](https://github.com/steipete/imsg), as well as
+[OpenClaw](https://github.com/openclaw/openclaw).
 
 ## License
 
-`kmsg` is available under the [MIT License](./LICENSE).
-
-## References
-
-- https://github.com/steipete/imsg
-- https://github.com/openclaw/openclaw
+`kmsg` is available under the [MIT License](LICENSE).
