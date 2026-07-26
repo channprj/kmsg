@@ -25,11 +25,11 @@ https://github.com/user-attachments/assets/c620b2e3-7106-40fa-86d1-ed847e3b1a6f
 
 ## Featured video
 
-[![Featured video: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다](https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s)
+<a href="https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s"><img src="https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg" alt="Featured video: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다" width="400" /></a>
 
 **Builder Josh:** [헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다 (AI 엔지니어 샘 호트만님)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s) — starts at 17:00
 
-[![Featured video: 나만의 Hermes 시스템 구축 방법](https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg)](https://www.youtube.com/watch?v=xz5fA7OyvQ0)
+<a href="https://www.youtube.com/watch?v=xz5fA7OyvQ0"><img src="https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg" alt="Featured video: 나만의 Hermes 시스템 구축 방법" width="400" /></a>
 
 **Sam Hottman:** [나만의 Hermes 시스템 구축 방법 (문제정의부터 구축까지, 해외 AI 인사이트 발굴하기)](https://www.youtube.com/watch?v=xz5fA7OyvQ0)
 
