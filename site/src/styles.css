@@ -17,14 +17,19 @@
   --code-key: #a4c8ff;
   --code-string: #a9ddb7;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
-  --display: "Syne", "IBM Plex Sans KR", sans-serif;
-  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
-  --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --display: "Ubuntu Sans", "Noto Sans JP", "Noto Sans SC", sans-serif;
+  --body: "Ubuntu Sans", "Noto Sans JP", "Noto Sans SC", sans-serif;
+  --mono: "Ubuntu Mono", "SFMono-Regular", Consolas, monospace;
   --shell-width: 1280px;
   --content-width: 1120px;
   --page: min(var(--content-width), calc(100% - 64px));
   --radius: 12px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[lang="ko"] {
+  --display: "Nanum Gothic Coding", "Ubuntu Sans", sans-serif;
+  --body: "Nanum Gothic Coding", "Ubuntu Sans", sans-serif;
 }
 
 :root[data-theme="paper"] {
@@ -68,8 +73,20 @@ body {
   font-family: var(--body);
   font-size: 16px;
   line-height: 1.7;
+  overflow-wrap: break-word;
+  word-break: keep-all;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
+
+code,
+pre,
+kbd,
+samp,
+.terminal-window,
+.install-command {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 ::selection {
@@ -89,6 +106,10 @@ a {
 }
 
 button {
+  font: inherit;
+}
+
+select {
   font: inherit;
 }
 
@@ -115,6 +136,18 @@ video {
 
 .skip-link:focus {
   transform: translateY(0);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  margin: -1px;
+  white-space: nowrap;
 }
 
 .site-grid {
@@ -204,7 +237,6 @@ video {
 }
 
 .primary-nav a,
-.language-link,
 .llm-link {
   position: relative;
   color: var(--ink-muted);
@@ -231,7 +263,6 @@ video {
 }
 
 .primary-nav a:hover,
-.language-link:hover,
 .llm-link:hover {
   color: var(--ink);
 }
@@ -257,6 +288,57 @@ video {
 .llm-link:hover {
   border-color: var(--line-strong);
   background: var(--panel-solid);
+}
+
+.language-control {
+  position: relative;
+  display: inline-flex;
+  height: 31px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  align-items: center;
+  background: var(--canvas-raised);
+  color: var(--ink-muted);
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.language-control:hover,
+.language-control:focus-within {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.language-control select {
+  width: 108px;
+  height: 100%;
+  padding: 0 24px 0 9px;
+  appearance: none;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.language-control option {
+  background: var(--panel-solid);
+  color: var(--ink);
+}
+
+.language-chevron {
+  position: absolute;
+  right: 8px;
+  transform: translateY(-1px);
+  font-family: var(--mono);
+  font-size: 11px;
+  pointer-events: none;
 }
 
 .theme-toggle {
@@ -1391,6 +1473,10 @@ main {
   .llm-link::before {
     font-size: 10px;
     content: "LLM";
+  }
+
+  .language-control select {
+    width: 72px;
   }
 
   .hero-actions {

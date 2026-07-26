@@ -1,6 +1,11 @@
 const root = document.documentElement;
 const header = document.querySelector("[data-header]");
 const themeToggle = document.querySelector("[data-theme-toggle]");
+const languageSelect = document.querySelector("[data-language-select]");
+const copyLabel = document.body.dataset.copyLabel || "Copy";
+const copiedLabel = document.body.dataset.copiedLabel || "Copied";
+const copyFailedLabel =
+  document.body.dataset.copyFailedLabel || "Copy failed";
 
 const setTheme = (theme) => {
   root.dataset.theme = theme;
@@ -24,6 +29,19 @@ setTheme(root.dataset.theme === "paper" ? "paper" : "dark");
 
 themeToggle?.addEventListener("click", () => {
   setTheme(root.dataset.theme === "dark" ? "paper" : "dark");
+});
+
+languageSelect?.addEventListener("change", () => {
+  const selected = languageSelect.selectedOptions[0];
+  const locale = selected?.dataset.locale;
+  if (!selected?.value || !locale) return;
+
+  try {
+    localStorage.setItem("kmsg-locale", locale);
+  } catch {
+    // The locale-specific route still preserves the choice for this visit.
+  }
+  window.location.assign(selected.value);
 });
 
 const updateHeader = () => {
@@ -50,7 +68,7 @@ const copyText = async (value) => {
   area.remove();
 };
 
-const markCopied = (button, fallbackLabel = "Copied") => {
+const markCopied = (button, fallbackLabel = copiedLabel) => {
   const originalLabel = button.getAttribute("aria-label");
   const textNode = button.querySelector(".copy-icon");
   const originalText = textNode?.textContent;
@@ -75,7 +93,10 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
       await copyText(button.dataset.copy || "");
       markCopied(button);
     } catch {
-      button.setAttribute("aria-label", "Copy failed");
+      button.setAttribute(
+        "aria-label",
+        button.dataset.copyFailedLabel || copyFailedLabel,
+      );
     }
   });
 });
@@ -87,17 +108,17 @@ document.querySelectorAll(".markdown-body pre").forEach((pre) => {
   const button = document.createElement("button");
   button.className = "code-copy";
   button.type = "button";
-  button.textContent = "COPY";
-  button.setAttribute("aria-label", "Copy code");
+  button.textContent = copyLabel;
+  button.setAttribute("aria-label", copyLabel);
   button.addEventListener("click", async () => {
     try {
       await copyText(code.textContent || "");
-      button.textContent = "COPIED";
+      button.textContent = copiedLabel;
       window.setTimeout(() => {
-        button.textContent = "COPY";
+        button.textContent = copyLabel;
       }, 1400);
     } catch {
-      button.textContent = "FAILED";
+      button.textContent = copyFailedLabel;
     }
   });
   pre.append(button);
