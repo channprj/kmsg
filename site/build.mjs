@@ -26,21 +26,6 @@ const pages = [
     source: "README.md",
     output: "index.html",
     path: "",
-    lang: "en",
-    type: "home",
-    title: "kmsg — KakaoTalk CLI & MCP server for macOS",
-    description:
-      "Unofficial KakaoTalk CLI and native MCP server for macOS. Read, watch, and send messages through Accessibility automation for scripts and AI agents.",
-    eyebrow: "KakaoTalk automation · macOS 13+",
-    heroTitle: "Your KakaoTalk.<br><em>Now in the terminal.</em>",
-    primaryAction: "Install kmsg",
-    docsAction: "Read the docs",
-    sourceLabel: "Generated from README.md",
-  },
-  {
-    source: "README.ko.md",
-    output: "ko/index.html",
-    path: "ko/",
     lang: "ko",
     type: "home",
     title: "kmsg — macOS용 카카오톡 CLI 및 MCP 서버",
@@ -50,7 +35,22 @@ const pages = [
     heroTitle: "카카오톡을<br><em>터미널 안으로.</em>",
     primaryAction: "kmsg 설치하기",
     docsAction: "문서 읽기",
-    sourceLabel: "README.ko.md에서 자동 생성",
+    sourceLabel: "README.md에서 자동 생성",
+  },
+  {
+    source: "README.en.md",
+    output: "en/index.html",
+    path: "en/",
+    lang: "en",
+    type: "home",
+    title: "kmsg — KakaoTalk CLI & MCP server for macOS",
+    description:
+      "Unofficial KakaoTalk CLI and native MCP server for macOS. Read, watch, and send messages through Accessibility automation for scripts and AI agents.",
+    eyebrow: "KakaoTalk automation · macOS 13+",
+    heroTitle: "Your KakaoTalk.<br><em>Now in the terminal.</em>",
+    primaryAction: "Install kmsg",
+    docsAction: "Read the docs",
+    sourceLabel: "Generated from README.en.md",
   },
   {
     source: "USAGE.md",
@@ -100,7 +100,7 @@ const pages = [
 
 const markdownRouteMap = new Map([
   ["README.md", ""],
-  ["README.ko.md", "ko/"],
+  ["README.en.md", "en/"],
   ["USAGE.md", "usage/"],
   ["ARCHITECTURE.md", "architecture/"],
   ["docs/openclaw.md", "openclaw/"],
@@ -332,8 +332,8 @@ const renderHeader = (page) => {
   const openClawLink = relativeAsset(page.output, "openclaw/index.html");
   const languageLink =
     page.lang === "ko"
-      ? rootLink
-      : relativeAsset(page.output, "ko/index.html");
+      ? relativeAsset(page.output, "en/index.html")
+      : rootLink;
   const languageLabel = page.lang === "ko" ? "EN" : "한국어";
 
   return `
@@ -601,8 +601,9 @@ const renderDocument = ({
 }) => {
   const canonical = pageUrl(page.path);
   const rootAsset = (target) => relativeAsset(page.output, target);
-  const alternateEn = page.type === "home" ? pageUrl("") : canonical;
-  const alternateKo = page.type === "home" ? pageUrl("ko/") : null;
+  const alternateEn = page.type === "home" ? pageUrl("en/") : canonical;
+  const alternateKo = page.type === "home" ? pageUrl("") : null;
+  const xDefault = page.type === "home" ? pageUrl("") : canonical;
   const structuredData = buildStructuredData({
     page,
     version,
@@ -631,7 +632,7 @@ const renderDocument = ({
     <link rel="canonical" href="${canonical}">
     <link rel="alternate" hreflang="en" href="${alternateEn}">
     ${alternateKo ? `<link rel="alternate" hreflang="ko" href="${alternateKo}">` : ""}
-    <link rel="alternate" hreflang="x-default" href="${alternateEn}">
+    <link rel="alternate" hreflang="x-default" href="${xDefault}">
     <link rel="alternate" type="text/markdown" href="${site.repositoryUrl}/raw/main/${page.source}" title="${escapeHtml(page.source)}">
     <link rel="alternate" type="text/markdown" href="${pageUrl("llms.txt")}" title="LLM-readable site index">
     <link rel="manifest" href="${rootAsset("site.webmanifest")}">
@@ -688,7 +689,6 @@ const renderDocument = ({
 
 const buildLlmsIndex = (version) => {
   const links = pages
-    .filter(({ path }) => path !== "ko/")
     .map(
       ({ path, title, description }) =>
         `- [${title}](${pageUrl(path)}): ${description}`,
@@ -720,7 +720,7 @@ ${links}
 
 ## Optional
 
-- [Korean documentation](${pageUrl("ko/")}): 한국어 프로젝트 소개, 설치 방법, 주요 기능, FAQ
+- [Korean documentation](${site.baseUrl}): 한국어 프로젝트 소개, 설치 방법, 주요 기능, FAQ
 - [Full Markdown corpus](${pageUrl("llms-full.txt")}): README and project documentation combined as plain Markdown
 `;
 };
@@ -764,6 +764,13 @@ ${entries}
 `;
 };
 
+const buildRedirect = (target, lang = "ko") =>
+  `<!doctype html><html lang="${lang}"><head><meta charset="utf-8">` +
+  `<meta http-equiv="refresh" content="0; url=${target}">` +
+  `<link rel="canonical" href="${target}">` +
+  `<meta name="robots" content="noindex,follow"></head>` +
+  `<body><p><a href="${target}">kmsg 문서로 이동</a></p></body></html>`;
+
 const main = async () => {
   const version = (await readFile(join(repoDir, "VERSION"), "utf8")).trim();
   const documents = await Promise.all(
@@ -792,6 +799,13 @@ const main = async () => {
       "utf8",
     );
   }
+
+  await mkdir(join(outputDir, "ko"), { recursive: true });
+  await writeFile(
+    join(outputDir, "ko/index.html"),
+    buildRedirect(site.baseUrl),
+    "utf8",
+  );
 
   await Promise.all([
     copyFile(join(siteDir, "src/styles.css"), join(outputDir, "assets/styles.css")),

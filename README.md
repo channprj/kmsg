@@ -1,125 +1,121 @@
-# kmsg — KakaoTalk CLI & MCP server for macOS
+# kmsg — macOS용 카카오톡 CLI 및 MCP 서버
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Total downloads](https://img.shields.io/github/downloads/channprj/kmsg/total?label=downloads&logo=github)](https://github.com/channprj/kmsg/releases)
 
-[Project website](https://channprj.github.io/kmsg/) · [한국어](README.ko.md)
+[프로젝트 홈페이지](https://channprj.github.io/kmsg/) · [English](README.en.md)
 
 <p><img src="assets/kmsg-logo.jpg" alt="kmsg logo" width="220" /></p>
 
-`kmsg` is an unofficial KakaoTalk CLI and native MCP server for macOS.
-It reads, watches, and sends messages through the macOS Accessibility API,
-with structured output for local automation and AI agents.
+`kmsg`는 macOS용 비공식 카카오톡 CLI이자 네이티브 MCP 서버입니다.
+macOS 손쉬운 사용 API로 메시지를 읽고, 감시하고, 전송하며 로컬 자동화와
+AI 에이전트를 위한 구조화된 출력을 제공합니다.
 
-> **Disclaimer:** `kmsg` is not an official Kakao Corp. tool.
-> You are responsible for complying with applicable laws, service terms, and
-> organizational security policies in your own account and environment.
-> Use may result in account restrictions, malfunction, data loss, or other harm.
-> The reasoning behind using macOS Accessibility instead of the private LOCO
-> protocol is documented in [Architecture](ARCHITECTURE.md#accessibility-instead-of-a-private-protocol)
-> and represents the author's personal assessment, not Kakao's position.
+> **Disclaimer**: `kmsg`는 Kakao Corp. 의 공식 도구가 아닙니다.
+> 사용자는 본인 계정/환경에서 관련 법규, 서비스 약관, 회사 보안 정책을 준수할 책임이 있습니다.
+> 이 도구 사용으로 발생할 수 있는 계정 제한, 오작동, 데이터 손실, 기타 손해에 대한 책임은 사용자에게 있습니다.
+> LOCO Protocol 이 아닌 AX 를 사용한 이유와 계정 제재 가능성에 대한 제 개인적인 판단은 [왜 KakaoTalk 의 LOCO Protocol 을 사용하지 않나요?](ARCHITECTURE.md#accessibility-instead-of-a-private-protocol) 항목을 참고해 주세요.
 
-## Demo
+## 데모
 
 https://github.com/user-attachments/assets/c620b2e3-7106-40fa-86d1-ed847e3b1a6f
 
-## Featured video
+## 실사용 후기
 
-<a href="https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s"><img src="https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg" alt="Featured video: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다" width="400" /></a>
+<a href="https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s"><img src="https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg" alt="실사용 후기: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다" width="400" /></a>
 
-**Builder Josh:** [헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다 (AI 엔지니어 샘 호트만님)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s) — starts at 17:00
+**Builder Josh:** [헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다 (AI 엔지니어 샘 호트만님)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s) — 17:00부터 재생
 
-<a href="https://www.youtube.com/watch?v=xz5fA7OyvQ0"><img src="https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg" alt="Featured video: 나만의 Hermes 시스템 구축 방법" width="400" /></a>
+<a href="https://www.youtube.com/watch?v=xz5fA7OyvQ0"><img src="https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg" alt="실사용 후기: 나만의 Hermes 시스템 구축 방법" width="400" /></a>
 
-**Sam Hottman:** [나만의 Hermes 시스템 구축 방법 (문제정의부터 구축까지, 해외 AI 인사이트 발굴하기)](https://www.youtube.com/watch?v=xz5fA7OyvQ0)
+**샘 호트만:** [나만의 Hermes 시스템 구축 방법 (문제정의부터 구축까지, 해외 AI 인사이트 발굴하기)](https://www.youtube.com/watch?v=xz5fA7OyvQ0)
 
-## Highlights
+## 주요 기능
 
-- List chats and assign reusable local `chat_id` values.
-- Read recent messages or watch a chat for new messages.
-- Send text and images by controlling the visible KakaoTalk UI.
-- Produce structured JSON while keeping AX traces on `stderr`.
-- Run a native stdio MCP server with read, send, and image-send tools.
-- Use background-safe reads, configurable window layouts, recovery modes, and
-  a self-healing AX path cache.
+- 채팅 목록을 조회하고 재사용 가능한 로컬 `chat_id`를 생성합니다.
+- 최근 메시지를 읽거나 새 메시지를 실시간으로 감시합니다.
+- 화면에 표시되는 KakaoTalk UI를 제어해 텍스트와 이미지를 전송합니다.
+- 구조화된 JSON을 `stdout`으로 출력하고 AX 추적 로그는 `stderr`로 분리합니다.
+- 읽기, 텍스트 전송, 이미지 전송 도구를 제공하는 native stdio MCP 서버를 실행합니다.
+- background-safe 읽기, 창 레이아웃, 복구 모드, self-healing AX path cache를 지원합니다.
 
-## Requirements
+## 요구사항
 
-- macOS 13 or later
-- [KakaoTalk for macOS](https://apps.apple.com/kr/app/kakaotalk/id869223134?mt=12)
-- Accessibility permission for the installed `kmsg` binary
+- macOS 13 이상
+- [macOS용 KakaoTalk](https://apps.apple.com/kr/app/kakaotalk/id869223134?mt=12)
+- 설치된 `kmsg` 바이너리에 대한 손쉬운 사용 권한
 
-## Installation
+## 설치
 
-Homebrew is the primary installation path:
+Homebrew 설치를 권장합니다.
 
 ```bash
 brew install channprj/tap/kmsg
 ```
 
-Direct-download and source-build instructions are in [USAGE.md](USAGE.md#installation).
+직접 다운로드와 소스 빌드 방법은 [USAGE.md](USAGE.md#installation)를 참고하세요.
 
-## Quick start
+## 빠른 시작
 
 ```bash
 kmsg status
 kmsg chats
-kmsg read "Chat name" --limit 20
-kmsg send "Chat name" "Hello" --dry-run
+kmsg read "채팅방 이름" --limit 20
+kmsg send "채팅방 이름" "안녕하세요" --dry-run
 ```
 
-`kmsg status` requests Accessibility permission, launches KakaoTalk when
-needed, and checks authentication. The final command is a dry run and does not
-send a message.
+`kmsg status`는 손쉬운 사용 권한을 요청하고, 필요하면 KakaoTalk을 실행한
+뒤 로그인 상태를 확인합니다. 마지막 명령은 dry run이므로 실제 메시지를
+전송하지 않습니다.
 
-## More documentation
+## 자세한 문서
 
-- [Usage](USAGE.md) — installation, commands, configuration, examples, and troubleshooting
-- [Architecture](ARCHITECTURE.md) — components, data flow, state, and design decisions
-- [OpenClaw integration](docs/openclaw.md) — MCP and real-time watch integration
-- [Versioning](VERSIONING.md) — release format and automation
-- [Korean README](README.ko.md) — Korean mirror of this document
+- [사용법](USAGE.md) — 설치, 명령, 설정, 예제, 문제 해결
+- [아키텍처](ARCHITECTURE.md) — 구성 요소, 데이터 흐름, 상태, 설계 결정
+- [OpenClaw 연동](docs/openclaw.md) — MCP 및 실시간 watch 연동
+- [버전 관리](VERSIONING.md) — 릴리즈 형식과 자동화
+- [영문 README](README.en.md) — 이 문서의 영문 버전
 
-## Frequently asked questions
+## 자주 묻는 질문
 
-### What is kmsg?
+### kmsg는 무엇인가요?
 
-`kmsg` is an unofficial, open-source KakaoTalk CLI and native MCP server for
-macOS. It lets people, scripts, and AI agents read, watch, and send KakaoTalk
-messages from the command line.
+`kmsg`는 macOS용 비공식 오픈소스 카카오톡 CLI이자 네이티브 MCP
+서버입니다. 사용자, 스크립트, AI 에이전트가 명령줄에서 카카오톡
+메시지를 읽고, 감시하고, 전송할 수 있게 해줍니다.
 
-### Is kmsg an official KakaoTalk tool?
+### kmsg는 카카오톡 공식 도구인가요?
 
-No. `kmsg` is an independent open-source project and is not affiliated with,
-endorsed by, or maintained by Kakao Corp.
+아닙니다. `kmsg`는 Kakao Corp.와 제휴하거나 Kakao Corp.의 보증을 받은
+도구가 아니며, 독립적으로 관리되는 오픈소스 프로젝트입니다.
 
-### Which operating systems does kmsg support?
+### 어떤 운영체제를 지원하나요?
 
-`kmsg` supports macOS 13 or later and requires KakaoTalk for macOS. It does not
-support Windows, Linux, Android, or iOS.
+`kmsg`는 macOS 13 이상과 macOS용 KakaoTalk을 필요로 합니다. Windows,
+Linux, Android, iOS는 지원하지 않습니다.
 
-### How does kmsg access KakaoTalk?
+### kmsg는 카카오톡에 어떻게 접근하나요?
 
-`kmsg` controls the visible KakaoTalk macOS application through Apple's
-Accessibility API. It does not implement KakaoTalk's private LOCO protocol.
+Apple의 macOS 손쉬운 사용 API를 통해 화면에 표시되는 KakaoTalk
+애플리케이션을 제어합니다. KakaoTalk의 비공개 LOCO 프로토콜은 구현하지
+않습니다.
 
-### Does kmsg include an MCP server?
+### MCP 서버가 포함되어 있나요?
 
-Yes. The native `kmsg mcp-server` command exposes read, text-send, and
-image-send tools over stdio for MCP-compatible clients and AI agents.
+네. 네이티브 `kmsg mcp-server` 명령은 MCP 호환 클라이언트와 AI
+에이전트에 읽기, 텍스트 전송, 이미지 전송 도구를 stdio로 제공합니다.
 
-### How do I install kmsg?
+### kmsg는 어떻게 설치하나요?
 
-Install it with Homebrew by running `brew install channprj/tap/kmsg`. Direct
-downloads and source-build instructions are available in [Usage](USAGE.md).
+`brew install channprj/tap/kmsg`를 실행해 Homebrew로 설치할 수 있습니다.
+직접 다운로드와 소스 빌드 방법은 [사용법](USAGE.md)에서 확인할 수 있습니다.
 
-## Inspiration
+## 영감
 
-This project is strongly inspired by
-[steipete](https://github.com/steipete) and his work on
-[imsg](https://github.com/steipete/imsg), as well as
-[OpenClaw](https://github.com/openclaw/openclaw).
+이 프로젝트는 [steipete](https://github.com/steipete)와 그의
+[imsg](https://github.com/steipete/imsg), 그리고
+[OpenClaw](https://github.com/openclaw/openclaw)에서 큰 영감을 받았습니다.
 
-## License
+## 라이선스
 
-`kmsg` is available under the [MIT License](LICENSE).
+`kmsg`는 [MIT License](LICENSE)로 제공됩니다.

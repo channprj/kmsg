@@ -7,7 +7,7 @@ on:
     paths:
       - ".github/workflows/pages.yml"
       - "README.md"
-      - "README.ko.md"
+      - "README.en.md"
       - "USAGE.md"
       - "ARCHITECTURE.md"
       - "VERSIONING.md"
