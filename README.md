@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Total downloads](https://img.shields.io/github/downloads/channprj/kmsg/total?label=downloads&logo=github)](https://github.com/channprj/kmsg/releases)
 
-[한국어](README.ko.md)
+[Project website](https://channprj.github.io/kmsg/) · [한국어](README.ko.md)
 
 <p><img src="assets/kmsg-logo.jpg" alt="kmsg logo" width="220" /></p>
 
