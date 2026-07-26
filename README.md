@@ -1,4 +1,4 @@
-# kmsg
+# kmsg — KakaoTalk CLI & MCP server for macOS
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Total downloads](https://img.shields.io/github/downloads/channprj/kmsg/total?label=downloads&logo=github)](https://github.com/channprj/kmsg/releases)
@@ -6,6 +6,10 @@
 [한국어](README.ko.md)
 
 <p><img src="assets/kmsg-logo.jpg" alt="kmsg logo" width="220" /></p>
+
+`kmsg` is an unofficial KakaoTalk CLI and native MCP server for macOS.
+It reads, watches, and sends messages through the macOS Accessibility API,
+with structured output for local automation and AI agents.
 
 > **Disclaimer:** `kmsg` is not an official Kakao Corp. tool.
 > You are responsible for complying with applicable laws, service terms, and
@@ -15,19 +19,19 @@
 > protocol is documented in [Architecture](ARCHITECTURE.md#accessibility-instead-of-a-private-protocol)
 > and represents the author's personal assessment, not Kakao's position.
 
-`kmsg` is a macOS CLI for reading, watching, and sending KakaoTalk messages.
-It uses the macOS Accessibility API and is designed for both interactive use
-and automation through JSON output, hooks, AI agents, and MCP clients.
-
 ## Demo
 
 https://github.com/user-attachments/assets/c620b2e3-7106-40fa-86d1-ed847e3b1a6f
 
 ## Featured video
 
-[![Featured video: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다](https://i.ytimg.com/vi/_Pd1G33_R48/hqdefault.jpg)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s)
+[![Featured video: 헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다](https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s)
 
 **Builder Josh:** [헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법 전부 공개합니다 (AI 엔지니어 샘 호트만님)](https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s) — starts at 17:00
+
+[![Featured video: 나만의 Hermes 시스템 구축 방법](https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg)](https://www.youtube.com/watch?v=xz5fA7OyvQ0)
+
+**Sam Hottman:** [나만의 Hermes 시스템 구축 방법 (문제정의부터 구축까지, 해외 AI 인사이트 발굴하기)](https://www.youtube.com/watch?v=xz5fA7OyvQ0)
 
 ## Highlights
 
@@ -75,6 +79,39 @@ send a message.
 - [OpenClaw integration](docs/openclaw.md) — MCP and real-time watch integration
 - [Versioning](VERSIONING.md) — release format and automation
 - [Korean README](README.ko.md) — Korean mirror of this document
+
+## Frequently asked questions
+
+### What is kmsg?
+
+`kmsg` is an unofficial, open-source KakaoTalk CLI and native MCP server for
+macOS. It lets people, scripts, and AI agents read, watch, and send KakaoTalk
+messages from the command line.
+
+### Is kmsg an official KakaoTalk tool?
+
+No. `kmsg` is an independent open-source project and is not affiliated with,
+endorsed by, or maintained by Kakao Corp.
+
+### Which operating systems does kmsg support?
+
+`kmsg` supports macOS 13 or later and requires KakaoTalk for macOS. It does not
+support Windows, Linux, Android, or iOS.
+
+### How does kmsg access KakaoTalk?
+
+`kmsg` controls the visible KakaoTalk macOS application through Apple's
+Accessibility API. It does not implement KakaoTalk's private LOCO protocol.
+
+### Does kmsg include an MCP server?
+
+Yes. The native `kmsg mcp-server` command exposes read, text-send, and
+image-send tools over stdio for MCP-compatible clients and AI agents.
+
+### How do I install kmsg?
+
+Install it with Homebrew by running `brew install channprj/tap/kmsg`. Direct
+downloads and source-build instructions are available in [Usage](USAGE.md).
 
 ## Inspiration
 
