@@ -173,11 +173,17 @@ const pageDefinitions = [
         sourceLabel: "README.md에서 자동 생성",
         installAnchor: "설치",
         faqHeading: "자주 묻는 질문",
-        previewLabel: "kmsg 터미널 미리보기",
+        previewLabel:
+          "kmsg로 채팅 목록을 확인하고 메시지를 읽은 뒤 답장을 보내는 터미널 미리보기",
         highlightsLabel: "프로젝트 주요 정보",
         chatName: "AI 프로젝트",
+        secondaryChat: "출시 준비",
         firstSender: "지나",
-        firstMessage: "새 메시지를 요약해줘.",
+        firstMessage: "새 메시지를 확인해줘.",
+        secondMessage: "지금 확인할게요.",
+        replyMessage: "확인했어요.",
+        firstTime: "오후 1:41",
+        secondTime: "오후 1:42",
       },
       en: {
         title: "kmsg — KakaoTalk CLI & MCP server for macOS",
@@ -190,11 +196,17 @@ const pageDefinitions = [
         sourceLabel: "Generated from README.en.md",
         installAnchor: "installation",
         faqHeading: "Frequently asked questions",
-        previewLabel: "kmsg terminal preview",
+        previewLabel:
+          "Terminal replay showing kmsg listing chats, reading messages, and sending a reply",
         highlightsLabel: "Project highlights",
         chatName: "AI Project",
+        secondaryChat: "Release Prep",
         firstSender: "Jina",
-        firstMessage: "Summarize the new messages.",
+        firstMessage: "Please check the latest messages.",
+        secondMessage: "I will check them now.",
+        replyMessage: "I've checked them.",
+        firstTime: "1:41 PM",
+        secondTime: "1:42 PM",
       },
       jp: {
         title: "kmsg — macOS向けKakaoTalk CLI / MCPサーバー",
@@ -207,11 +219,17 @@ const pageDefinitions = [
         sourceLabel: "日本語ドキュメント",
         installAnchor: "インストール",
         faqHeading: "よくある質問",
-        previewLabel: "kmsgターミナルプレビュー",
+        previewLabel:
+          "kmsgでチャット一覧を確認し、メッセージを読んで返信するターミナル",
         highlightsLabel: "プロジェクトの概要",
         chatName: "AIプロジェクト",
+        secondaryChat: "リリース準備",
         firstSender: "ジナ",
-        firstMessage: "新着メッセージを要約して。",
+        firstMessage: "新着メッセージを確認して。",
+        secondMessage: "今確認します。",
+        replyMessage: "確認しました。",
+        firstTime: "午後1:41",
+        secondTime: "午後1:42",
       },
       cn: {
         title: "kmsg — 面向macOS的KakaoTalk CLI与MCP服务器",
@@ -224,11 +242,16 @@ const pageDefinitions = [
         sourceLabel: "简体中文文档",
         installAnchor: "安装",
         faqHeading: "常见问题",
-        previewLabel: "kmsg终端预览",
+        previewLabel: "使用kmsg查看聊天列表、读取消息并发送回复的终端演示",
         highlightsLabel: "项目概览",
         chatName: "AI项目",
+        secondaryChat: "发布准备",
         firstSender: "Jina",
-        firstMessage: "请总结新消息。",
+        firstMessage: "请确认最新消息。",
+        secondMessage: "我现在确认。",
+        replyMessage: "已经确认。",
+        firstTime: "下午1:41",
+        secondTime: "下午1:42",
       },
     },
   },
@@ -755,6 +778,21 @@ const renderHeader = (page) => {
     </header>`;
 };
 
+const renderReplayCommand = (stage, command) => `
+  <div class="terminal-line terminal-command-line" data-replay-line data-replay-stage="${stage}" data-replay-kind="command">
+    <span class="terminal-prompt">❯</span>
+    <span class="terminal-command" data-replay-command>${escapeHtml(command)}</span>
+    <span class="cursor-block" aria-hidden="true"></span>
+  </div>`;
+
+const renderReplayOutput = (stage, output, tone = "") => `
+  <div class="terminal-line terminal-output-line${tone ? ` ${tone}` : ""}" data-replay-line data-replay-stage="${stage}">
+    ${escapeHtml(output)}
+  </div>`;
+
+const renderReplayGap = (stage) => `
+  <div class="terminal-line terminal-output-gap" data-replay-line data-replay-stage="${stage}" aria-hidden="true"></div>`;
+
 const renderHomeHero = (page, intro, version) => {
   const installationId = slugify(page.installAnchor);
   const docsLink = relativeAsset(
@@ -764,42 +802,24 @@ const renderHomeHero = (page, intro, version) => {
   const copiedLabel = page.localeConfig.ui.copied;
   const terminalCopy = {
     ko: {
-      agentRun: "에이전트 실행",
-      watching: "새 메시지 감시",
-      toolCall: "도구 호출",
-      ready: "컨텍스트 준비 완료",
-      contextMeta: "메시지 2개 · 로컬 처리",
       connected: "AX 연결됨",
-      output: "JSON · 표준 출력",
+      output: "텍스트 · 표준 출력",
     },
     en: {
-      agentRun: "Agent run",
-      watching: "Watching for messages",
-      toolCall: "Tool call",
-      ready: "Context ready",
-      contextMeta: "2 messages · local only",
       connected: "AX connected",
-      output: "JSON · stdout",
+      output: "text · stdout",
     },
     jp: {
-      agentRun: "エージェント実行",
-      watching: "新着メッセージを監視",
-      toolCall: "ツール呼び出し",
-      ready: "コンテキスト準備完了",
-      contextMeta: "2件 · ローカル処理",
       connected: "AX接続済み",
-      output: "JSON · 標準出力",
+      output: "テキスト · 標準出力",
     },
     cn: {
-      agentRun: "智能体运行",
-      watching: "监控新消息",
-      toolCall: "工具调用",
-      ready: "上下文已就绪",
-      contextMeta: "2条消息 · 本地处理",
       connected: "AX已连接",
-      output: "JSON · 标准输出",
+      output: "文本 · 标准输出",
     },
   }[page.locale];
+  const chatID = "chat_7f42c5e1d9ab";
+  const secondaryChatID = "chat_81e0c8b9a214";
 
   return `
     <section class="hero" aria-labelledby="hero-title">
@@ -829,63 +849,49 @@ const renderHomeHero = (page, intro, version) => {
       <div class="hero-visual" role="img" aria-label="${escapeHtml(page.previewLabel)}">
         <div class="terminal-caption" aria-hidden="true">
           <span>LIVE WORKFLOW</span>
-          <span>01 — 03</span>
+          <span data-replay-progress>03 / 03</span>
         </div>
-        <div class="terminal-window">
+        <div class="terminal-window" data-terminal-replay>
           <div class="terminal-bar">
             <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span>kmsg · agent session</span>
+            <span>kmsg · zsh</span>
             <span class="terminal-version">v${escapeHtml(version)}</span>
           </div>
           <div class="terminal-body" aria-hidden="true">
-            <div class="terminal-command-row">
-              <span class="terminal-prompt">❯</span>
-              <span class="terminal-command">kmsg watch "${escapeHtml(page.chatName)}" --json</span>
-              <span class="cursor-block"></span>
-            </div>
-            <div class="tui-workspace">
-              <aside class="tui-rail">
-                <span class="tui-rail-label">${escapeHtml(terminalCopy.agentRun)}</span>
-                <ol>
-                  <li class="tui-step is-complete">
-                    <span>01</span>
-                    <div><strong>WATCH</strong><small>${escapeHtml(terminalCopy.watching)}</small></div>
-                  </li>
-                  <li class="tui-step is-complete">
-                    <span>02</span>
-                    <div><strong>MCP</strong><small>${escapeHtml(terminalCopy.toolCall)}</small></div>
-                  </li>
-                  <li class="tui-step is-live">
-                    <span>03</span>
-                    <div><strong>READY</strong><small>${escapeHtml(terminalCopy.ready)}</small></div>
-                  </li>
-                </ol>
-              </aside>
-              <div class="tui-stream">
-                <div class="tui-event">
-                  <div class="tui-event-head">
-                    <span>13:42:06.184</span>
-                    <strong>message.received</strong>
-                  </div>
-                  <code><span class="syntax-brace">{</span> <span class="syntax-key">"sender"</span>: <span class="syntax-string">"${escapeHtml(page.firstSender)}"</span>, <span class="syntax-key">"text"</span>: <span class="syntax-string">"${escapeHtml(page.firstMessage)}"</span> <span class="syntax-brace">}</span></code>
-                </div>
-                <div class="tui-tool-call">
-                  <span class="tui-tool-icon">◆</span>
-                  <div>
-                    <span>${escapeHtml(terminalCopy.toolCall)}</span>
-                    <strong>MCP · kmsg_read</strong>
-                    <code>chat="${escapeHtml(page.chatName)}" · limit=20</code>
-                  </div>
-                  <b>DONE</b>
-                </div>
-                <div class="tui-ready">
-                  <span class="tui-ready-icon">✓</span>
-                  <div>
-                    <strong>${escapeHtml(terminalCopy.ready)}</strong>
-                    <span>${escapeHtml(terminalCopy.contextMeta)}</span>
-                  </div>
-                  <span class="tui-ready-spark" aria-hidden="true"></span>
-                </div>
+            <div class="terminal-transcript" data-replay-transcript data-replay-viewport>
+              ${renderReplayCommand(1, "kmsg chats --limit 2")}
+              ${renderReplayOutput(1, "Searching for chat list in KakaoTalk...", "terminal-muted")}
+              ${renderReplayGap(1)}
+              ${renderReplayOutput(1, "Found 2 chat(s):")}
+              ${renderReplayGap(1)}
+              ${renderReplayOutput(1, `[1] ${page.chatName}`, "terminal-highlight")}
+              ${renderReplayOutput(1, `    chat_id: ${chatID}`, "terminal-muted")}
+              ${renderReplayOutput(1, `[2] ${page.secondaryChat}`)}
+              ${renderReplayOutput(1, `    chat_id: ${secondaryChatID}`, "terminal-muted")}
+              ${renderReplayGap(1)}
+              ${renderReplayCommand(2, `kmsg read "${page.chatName}" --limit 2 --keep-window`)}
+              ${renderReplayOutput(2, `Reading messages from: ${page.chatName}`)}
+              ${renderReplayGap(2)}
+              ${renderReplayOutput(2, "Recent messages (2):")}
+              ${renderReplayGap(2)}
+              ${renderReplayOutput(2, `[1] author: ${page.firstSender}`, "terminal-highlight")}
+              ${renderReplayOutput(2, `    time: ${page.firstTime}`, "terminal-muted")}
+              ${renderReplayOutput(2, `    body: ${page.firstMessage}`)}
+              ${renderReplayGap(2)}
+              ${renderReplayOutput(2, "[2] author: (me)")}
+              ${renderReplayOutput(2, `    time: ${page.secondTime}`, "terminal-muted")}
+              ${renderReplayOutput(2, `    body: ${page.secondMessage}`)}
+              ${renderReplayGap(2)}
+              ${renderReplayCommand(3, `kmsg send "${page.chatName}" "${page.replyMessage}"`)}
+              ${renderReplayOutput(3, `Looking for chat with '${page.chatName}'...`)}
+              ${renderReplayOutput(3, "Found existing chat window.")}
+              ${renderReplayOutput(3, `✓ Message sent to '${page.chatName}'`, "terminal-success")}
+              ${renderReplayOutput(3, "✓ Chat window closed.", "terminal-success")}
+              ${renderReplayGap(3)}
+              <div class="terminal-line terminal-command-line terminal-return-line" data-replay-line data-replay-stage="3">
+                <span class="terminal-prompt">❯</span>
+                <span class="terminal-command" data-replay-command></span>
+                <span class="cursor-block" aria-hidden="true"></span>
               </div>
             </div>
           </div>

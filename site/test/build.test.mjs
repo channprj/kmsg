@@ -214,37 +214,133 @@ test("Ubuntu and Nanum fonts apply with keep-all outside code", async () => {
   );
 });
 
-test("home hero presents an animated AI-native watch-to-MCP workflow", async () => {
-  const localizedReadyCopy = {
-    ko: "컨텍스트 준비 완료",
-    en: "Context ready",
-    jp: "コンテキスト準備完了",
-    cn: "上下文已就绪",
+test("home hero renders the real localized chats-read-send transcript", async () => {
+  const scenarios = {
+    ko: {
+      label:
+        "kmsg로 채팅 목록을 확인하고 메시지를 읽은 뒤 답장을 보내는 터미널 미리보기",
+      primaryChat: "AI 프로젝트",
+      secondaryChat: "출시 준비",
+      sender: "지나",
+      incoming: "새 메시지를 확인해줘.",
+      outgoing: "지금 확인할게요.",
+      reply: "확인했어요.",
+    },
+    en: {
+      label:
+        "Terminal replay showing kmsg listing chats, reading messages, and sending a reply",
+      primaryChat: "AI Project",
+      secondaryChat: "Release Prep",
+      sender: "Jina",
+      incoming: "Please check the latest messages.",
+      outgoing: "I will check them now.",
+      reply: "I've checked them.",
+    },
+    jp: {
+      label:
+        "kmsgでチャット一覧を確認し、メッセージを読んで返信するターミナル",
+      primaryChat: "AIプロジェクト",
+      secondaryChat: "リリース準備",
+      sender: "ジナ",
+      incoming: "新着メッセージを確認して。",
+      outgoing: "今確認します。",
+      reply: "確認しました。",
+    },
+    cn: {
+      label: "使用kmsg查看聊天列表、读取消息并发送回复的终端演示",
+      primaryChat: "AI项目",
+      secondaryChat: "发布准备",
+      sender: "Jina",
+      incoming: "请确认最新消息。",
+      outgoing: "我现在确认。",
+      reply: "已经确认。",
+    },
   };
 
-  for (const localeId of Object.keys(locales)) {
+  for (const [localeId, scenario] of Object.entries(scenarios)) {
     const html = await readOutput(localizedPath(localeId, "home"));
-    assert.match(html, /class="terminal-command">kmsg watch "[^"]+" --json/);
-    assert.match(html, /class="tui-step is-complete"/);
-    assert.match(html, /class="tui-tool-call"/);
-    assert.match(html, /MCP · kmsg_read/);
-    assert.match(html, new RegExp(localizedReadyCopy[localeId]));
-  }
+    const encodedReply = scenario.reply.replaceAll("'", "&#039;");
+    const commands = [
+      "kmsg chats --limit 2",
+      `kmsg read &quot;${scenario.primaryChat}&quot; --limit 2 --keep-window`,
+      `kmsg send &quot;${scenario.primaryChat}&quot; &quot;${encodedReply}&quot;`,
+    ];
+    const commandPositions = commands.map((command) => html.indexOf(command));
 
-  const [root, styles] = await Promise.all([
-    readOutput("index.html"),
+    assert.match(html, /data-terminal-replay/);
+    assert.match(
+      html,
+      /class="terminal-transcript" data-replay-transcript data-replay-viewport/,
+    );
+    assert.doesNotMatch(
+      html,
+      /class="terminal-body"[^>]*data-replay-viewport/,
+    );
+    assert.match(html, /data-replay-progress>03 \/ 03/);
+    assert.ok(html.includes(`aria-label="${scenario.label}"`));
+    assert.ok(commandPositions.every((position) => position >= 0));
+    assert.ok(
+      commandPositions[0] < commandPositions[1] &&
+        commandPositions[1] < commandPositions[2],
+    );
+    assert.match(html, new RegExp(scenario.secondaryChat));
+    assert.match(html, new RegExp(scenario.sender));
+    assert.match(
+      html,
+      new RegExp(scenario.incoming.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+    );
+    assert.match(
+      html,
+      new RegExp(scenario.outgoing.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+    );
+    assert.ok(html.includes(encodedReply));
+    assert.match(html, /Looking for chat with/);
+    assert.match(html, /Found existing chat window\./);
+    assert.match(html, /✓ Message sent to/);
+    assert.match(html, /✓ Chat window closed\./);
+    assert.doesNotMatch(html, /kmsg watch|class="tui-|MCP · kmsg_read/);
+  }
+});
+
+test("terminal replay is cancellable, motion-aware, and locale-safe", async () => {
+  const [app, styles] = await Promise.all([
+    readOutput("assets/app.js"),
     readOutput("assets/styles.css"),
   ]);
+
+  assert.match(app, /class TerminalReplay/);
+  assert.match(app, /Array\.from\(fullText\)/);
+  assert.match(app, /new AbortController\(\)/);
+  assert.match(app, /IntersectionObserver/);
+  assert.match(app, /visibilitychange/);
+  assert.match(app, /prefers-reduced-motion: reduce/);
+  assert.match(app, /scrollTo\(/);
+  assert.match(app, /showComplete\(\)/);
+
   assert.match(
-    root,
-    /<h1 id="hero-title">카카오톡을<br><em>AI Native 하게 활용하기\.<\/em><\/h1>/,
+    styles,
+    /\.terminal-transcript\s*{[\s\S]*overflow-y:\s*auto/,
   );
-  assert.match(styles, /@keyframes terminal-type/);
-  assert.match(styles, /@keyframes tui-reveal/);
-  assert.match(styles, /@keyframes terminal-scan/);
+  assert.match(
+    styles,
+    /\.terminal-line\s*{[\s\S]*min-width:\s*0;[\s\S]*overflow-wrap:\s*anywhere;[\s\S]*white-space:\s*pre-wrap/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-command\s*{[\s\S]*min-width:\s*0/,
+  );
+  assert.match(styles, /\.hero\s*>\s*\*\s*{[\s\S]*min-width:\s*0/);
+  assert.match(
+    styles,
+    /\.terminal-window\.is-replaying[\s\S]*\.terminal-line\.is-visible/,
+  );
   assert.match(
     styles,
     /@media \(prefers-reduced-motion: reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.tui-(?:workspace|rail|stream|event|tool-call|ready)/,
   );
 });
 
