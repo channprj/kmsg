@@ -66,7 +66,7 @@ test("Korean is canonical at root and on every default documentation route", asy
     versioning: "site/content/ko/versioning.md",
   };
   const visibleCopy = {
-    home: "AI Native 하게 활용하기.",
+    home: "카카오톡을 터미널에서 읽고, 감시하고, 보냅니다.",
     usage: "kmsg 사용법",
     architecture: "kmsg 아키텍처",
     openclaw: "OpenClaw 연동 가이드",
@@ -79,7 +79,7 @@ test("Korean is canonical at root and on every default documentation route", asy
     assert.match(
       html,
       new RegExp(
-        `<body data-source="${sources[pageKey].replaceAll(".", "\\.")}" data-locale="ko"`,
+        `<body class="is-${pageKey === "home" ? "home" : "docs"}" data-source="${sources[pageKey].replaceAll(".", "\\.")}" data-locale="ko"`,
       ),
     );
     assert.match(html, new RegExp(visibleCopy[pageKey]));
@@ -94,16 +94,22 @@ test("Korean is canonical at root and on every default documentation route", asy
 
 test("all four locales render localized home and documentation content", async () => {
   const homeCopy = {
-    ko: "AI Native 하게 활용하기.",
-    en: "The AI-native way.",
-    jp: "AIネイティブに活用。",
-    cn: "以AI原生方式工作。",
+    ko: "카카오톡을 터미널에서 읽고, 감시하고, 보냅니다.",
+    en: "Read, watch, and send KakaoTalk messages from your terminal.",
+    jp: "KakaoTalkをターミナルから読み取り、監視、送信。",
+    cn: "在终端中读取、监控和发送KakaoTalk消息。",
   };
   const usageCopy = {
     ko: "안전한 읽기",
     en: "Background-safe read fails",
     jp: "安全な読み取り",
     cn: "安全读取",
+  };
+  const storyCopy = {
+    ko: "헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법",
+    en: "How five Hermes agents automate news curation and stock trading",
+    jp: "5つのHermesエージェントでニュース収集から株式取引まで自動化",
+    cn: "用5个Hermes智能体自动完成新闻整理与股票交易",
   };
 
   for (const [localeId, locale] of Object.entries(locales)) {
@@ -116,11 +122,77 @@ test("all four locales render localized home and documentation content", async (
       new RegExp(`<html lang="${locale.lang}" data-locale="${localeId}"`),
     );
     assert.match(home, new RegExp(homeCopy[localeId]));
+    assert.ok(home.includes(storyCopy[localeId]));
     assert.match(usage, new RegExp(usageCopy[localeId]));
     assert.match(usage, /--dry-run/);
     assert.match(usage, /confirm=true/);
     assert.equal((home.match(/<h1(?:\s|>)/g) || []).length, 1);
     assert.equal((usage.match(/<h1(?:\s|>)/g) || []).length, 1);
+  }
+});
+
+test("home routes render the curated product page instead of README layout", async () => {
+  const sectionIds = [
+    "workflow",
+    "principles",
+    "capabilities",
+    "stories",
+    "install",
+  ];
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.match(html, /<body class="is-home"/);
+    assert.match(html, /<div class="product-home" data-product-home>/);
+    for (const id of sectionIds) {
+      assert.match(html, new RegExp(`<section[^>]+id="${id}"`));
+    }
+    assert.doesNotMatch(html, /class="content-layout"/);
+    assert.doesNotMatch(html, /class="toc"/);
+    assert.doesNotMatch(html, /data-markdown-content/);
+    assert.doesNotMatch(
+      html,
+      /AI Native|AI-native way|AIネイティブ|AI原生方式/,
+    );
+  }
+});
+
+test("curated home keeps product proof, stories, and install actions", async () => {
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.match(html, /data-home-header/);
+    assert.match(html, /kmsg chats --limit 2/);
+    assert.match(html, /kmsg read &quot;/);
+    assert.match(html, /kmsg send &quot;/);
+    assert.match(html, /kmsg watch --json/);
+    assert.equal(
+      (html.match(/<article class="principle-card">/g) || []).length,
+      3,
+    );
+    assert.equal(
+      (html.match(/<article class="capability-row/g) || []).length,
+      3,
+    );
+    assert.equal(
+      (html.match(/<article class="story-card">/g) || []).length,
+      2,
+    );
+    assert.match(html, /brew install channprj\/tap\/kmsg/);
+    assert.match(html, /github\.com\/channprj\/kmsg\/releases/);
+  }
+});
+
+test("documentation routes retain Markdown content and table of contents", async () => {
+  for (const localeId of Object.keys(locales)) {
+    for (const pageKey of ["usage", "architecture", "openclaw", "versioning"]) {
+      const html = await readOutput(localizedPath(localeId, pageKey));
+      assert.match(html, /<body class="is-docs"/);
+      assert.match(html, /class="content-layout"/);
+      assert.match(html, /class="toc"/);
+      assert.match(html, /data-markdown-content/);
+    }
   }
 });
 
@@ -193,19 +265,19 @@ test("legacy ko routes redirect to canonical Korean routes", async () => {
   }
 });
 
-test("Ubuntu and Nanum fonts apply with keep-all outside code", async () => {
+test("IBM Plex and locale fonts keep prose readable and code distinct", async () => {
   const [root, styles] = await Promise.all([
     readOutput("index.html"),
     readOutput("assets/styles.css"),
   ]);
-  assert.match(root, /family=Nanum\+Gothic\+Coding/);
-  assert.match(root, /family=Ubuntu\+Mono/);
-  assert.match(root, /family=Ubuntu\+Sans/);
-  assert.match(styles, /--body:\s*"Ubuntu Sans"/);
-  assert.match(styles, /--mono:\s*"Ubuntu Mono"/);
+  assert.match(root, /family=IBM\+Plex\+Sans/);
+  assert.match(root, /family=IBM\+Plex\+Sans\+KR/);
+  assert.match(root, /family=IBM\+Plex\+Mono/);
+  assert.match(styles, /--body:\s*"IBM Plex Sans"/);
+  assert.match(styles, /--mono:\s*"IBM Plex Mono"/);
   assert.match(
     styles,
-    /html\[lang="ko"\]\s*{[\s\S]*--body:\s*"Nanum Gothic Coding"/,
+    /html\[lang="ko"\]\s*{[\s\S]*--body:\s*"IBM Plex Sans KR"/,
   );
   assert.match(styles, /body\s*{[\s\S]*word-break:\s*keep-all/);
   assert.match(
@@ -268,6 +340,7 @@ test("home hero renders the real localized chats-read-send transcript", async ()
     const commandPositions = commands.map((command) => html.indexOf(command));
 
     assert.match(html, /data-terminal-replay/);
+    assert.match(html, /<section class="product-workflow"[^>]*data-replay-scope/);
     assert.match(
       html,
       /class="terminal-transcript" data-replay-transcript data-replay-viewport/,
@@ -298,7 +371,10 @@ test("home hero renders the real localized chats-read-send transcript", async ()
     assert.match(html, /Found existing chat window\./);
     assert.match(html, /✓ Message sent to/);
     assert.match(html, /✓ Chat window closed\./);
-    assert.doesNotMatch(html, /kmsg watch|class="tui-|MCP · kmsg_read/);
+    assert.doesNotMatch(
+      html,
+      /data-replay-command>kmsg watch|class="tui-|MCP · kmsg_read/,
+    );
   }
 });
 
@@ -316,6 +392,10 @@ test("terminal replay is cancellable, motion-aware, and locale-safe", async () =
   assert.match(app, /prefers-reduced-motion: reduce/);
   assert.match(app, /scrollTo\(/);
   assert.match(app, /showComplete\(\)/);
+  assert.match(
+    app,
+    /closest\("\[data-replay-scope\]"\)[\s\S]*querySelector\("\[data-replay-progress\]"\)/,
+  );
 
   assert.match(
     styles,
@@ -329,7 +409,7 @@ test("terminal replay is cancellable, motion-aware, and locale-safe", async () =
     styles,
     /\.terminal-command\s*{[\s\S]*min-width:\s*0/,
   );
-  assert.match(styles, /\.hero\s*>\s*\*\s*{[\s\S]*min-width:\s*0/);
+  assert.match(styles, /\.workflow-frame\s*{[\s\S]*min-width:\s*0/);
   assert.match(
     styles,
     /\.terminal-window\.is-replaying[\s\S]*\.terminal-line\.is-visible/,
@@ -351,7 +431,14 @@ test("every content page uses the shared shell and localized navigation", async 
       html,
       /<div class="site-shell">[\s\S]*<header[\s\S]*<main[\s\S]*<footer[\s\S]*<\/div>/,
     );
-    assert.match(html, /class="llm-link"[^>]+href="[^"]*llm\.txt"/);
+    if (/<body class="is-home"/.test(html)) {
+      assert.match(
+        html,
+        /class="footer-llm-link"[^>]+href="[^"]*llm\.txt"/,
+      );
+    } else {
+      assert.match(html, /class="llm-link"[^>]+href="[^"]*llm\.txt"/);
+    }
     assert.match(html, /class="language-control"/);
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
     assert.doesNotMatch(html, /href="(?:\.\/|\.\.\/)[^"]+\.md(?:#|")/);
@@ -359,15 +446,41 @@ test("every content page uses the shared shell and localized navigation", async 
   }
 });
 
-test("Korean homepage retains real-world stories and accessible media", async () => {
+test("Korean homepage retains both real-world stories and install target", async () => {
   const html = await readOutput("index.html");
   assert.match(html, /실사용 후기/);
   assert.match(html, /_Pd1G33_R48\/maxresdefault\.jpg/);
   assert.match(html, /xz5fA7OyvQ0\/maxresdefault\.jpg/);
   assert.equal((html.match(/<article class="story-card">/g) || []).length, 2);
-  assert.match(html, /<track kind="captions"/);
-  assert.match(html, /href="#설치"/);
-  assert.match(html, /id="설치"/);
+  assert.match(html, /href="#install"/);
+  assert.match(html, /id="install"/);
+  assert.doesNotMatch(html, /<track kind="captions"/);
+});
+
+test("curated home styles define the responsive product system", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(styles, /--page:\s*min\(1120px,\s*calc\(100% - 48px\)\)/);
+  assert.match(
+    styles,
+    /\.is-home \.site-header\s*{[\s\S]*border-radius:\s*999px/,
+  );
+  assert.match(
+    styles,
+    /\.principle-grid\s*{[\s\S]*grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.principle-grid,[\s\S]*\.story-grid\s*{[\s\S]*grid-template-columns:\s*1fr/,
+  );
+  assert.match(
+    styles,
+    /\.command-panel\s*{[\s\S]*overflow-x:\s*auto/,
+  );
+  assert.match(
+    styles,
+    /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/,
+  );
 });
 
 test("wide Markdown tables remain keyboard-scrollable in every locale", async () => {

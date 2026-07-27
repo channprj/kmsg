@@ -176,7 +176,7 @@ class TerminalReplay {
     this.motionPreference = motionPreference;
     this.viewport = element.querySelector("[data-replay-viewport]");
     this.progress = element
-      .closest(".hero-visual")
+      .closest("[data-replay-scope]")
       ?.querySelector("[data-replay-progress]");
     this.lines = [...element.querySelectorAll("[data-replay-line]")];
     this.abortController = null;

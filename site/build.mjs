@@ -150,6 +150,318 @@ const locales = {
   },
 };
 
+const homeContent = {
+  ko: {
+    kicker: "macOS용 KakaoTalk CLI · MCP 서버",
+    headline: "카카오톡을 터미널에서 읽고, 감시하고, 보냅니다.",
+    description:
+      "macOS 손쉬운 사용 API로 동작하는 비공식 CLI입니다. 로컬 자동화와 MCP 클라이언트에서 같은 명령을 사용합니다.",
+    installAction: "설치하기",
+    docsAction: "사용법",
+    currentVersion: "현재 버전",
+    workflowLabel: "실제 CLI 흐름",
+    principlesLabel: "왜 kmsg인가",
+    principlesTitle: "로컬 자동화에 필요한 것만 담았습니다.",
+    capabilitiesLabel: "주요 기능",
+    capabilitiesTitle: "읽기부터 전송까지, 하나의 명령 체계로.",
+    storiesLabel: "실사용 후기",
+    storiesTitle: "실제 자동화 워크플로에서 사용되고 있습니다.",
+    storiesDescription:
+      "kmsg를 에이전트와 로컬 자동화에 연결한 사용 사례입니다.",
+    installLabel: "설치",
+    installTitle: "Homebrew로 바로 시작하세요.",
+    installDescription:
+      "macOS 13 이상, macOS용 KakaoTalk, 손쉬운 사용 권한이 필요합니다.",
+    releaseAction: "최신 릴리즈",
+    disclaimer: "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+    principles: [
+      {
+        token: "AX",
+        title: "macOS에서 로컬로",
+        description:
+          "화면에 표시되는 KakaoTalk을 손쉬운 사용 API로 제어합니다.",
+      },
+      {
+        token: "MCP",
+        title: "CLI와 네이티브 MCP",
+        description:
+          "터미널, 스크립트, MCP 클라이언트에서 같은 기능을 사용합니다.",
+      },
+      {
+        token: "{}",
+        title: "구조화된 출력",
+        description:
+          "JSON과 텍스트는 stdout으로, AX 진단은 stderr로 분리합니다.",
+      },
+    ],
+    capabilities: [
+      {
+        title: "메시지 읽기",
+        description:
+          "채팅을 찾고 재사용 가능한 chat_id와 최근 메시지를 가져옵니다.",
+        points: ["채팅 목록 조회", "최근 메시지", "background-safe 읽기"],
+        command: 'kmsg read "AI 프로젝트" --limit 20 --json',
+        output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
+      },
+      {
+        title: "새 메시지 감시",
+        description:
+          "사용 중인 KakaoTalk 창을 방해하지 않으면서 새 메시지를 확인합니다.",
+        points: ["실시간 이벤트", "JSON 스트림", "복구 모드"],
+        command: "kmsg watch --json --background-safe",
+        output: '{"event":"message","author":"지나","body":"확인해줘."}',
+      },
+      {
+        title: "안전하게 전송",
+        description:
+          "실제 UI로 텍스트와 이미지를 보내며 dry-run으로 먼저 검증합니다.",
+        points: ["텍스트 전송", "이미지 전송", "dry-run 확인"],
+        command: 'kmsg send "AI 프로젝트" "확인했어요." --dry-run',
+        output: 'Would send to "AI 프로젝트": 확인했어요.',
+      },
+    ],
+  },
+  en: {
+    kicker: "KakaoTalk CLI · MCP server for macOS",
+    headline: "Read, watch, and send KakaoTalk messages from your terminal.",
+    description:
+      "An unofficial CLI built on the macOS Accessibility API. Use the same commands in local automation and MCP clients.",
+    installAction: "Install",
+    docsAction: "Usage",
+    currentVersion: "Current version",
+    workflowLabel: "Real CLI workflow",
+    principlesLabel: "Why kmsg",
+    principlesTitle: "Only what local automation needs.",
+    capabilitiesLabel: "Core capabilities",
+    capabilitiesTitle: "One command model, from reading to sending.",
+    storiesLabel: "In use",
+    storiesTitle: "Used in real automation workflows.",
+    storiesDescription:
+      "Examples of kmsg connected to agents and local automation.",
+    installLabel: "Install",
+    installTitle: "Start with Homebrew.",
+    installDescription:
+      "Requires macOS 13+, KakaoTalk for macOS, and Accessibility permission.",
+    releaseAction: "Latest release",
+    disclaimer: "Independent open source. Not affiliated with Kakao Corp.",
+    principles: [
+      {
+        token: "AX",
+        title: "Local on macOS",
+        description:
+          "Controls the visible KakaoTalk app through the Accessibility API.",
+      },
+      {
+        token: "MCP",
+        title: "CLI and native MCP",
+        description:
+          "Use the same capabilities from terminals, scripts, and MCP clients.",
+      },
+      {
+        token: "{}",
+        title: "Structured output",
+        description:
+          "JSON and text go to stdout while AX diagnostics stay on stderr.",
+      },
+    ],
+    capabilities: [
+      {
+        title: "Read messages",
+        description:
+          "Find chats and return stable chat IDs with recent messages.",
+        points: ["Chat discovery", "Recent messages", "Background-safe reads"],
+        command: 'kmsg read "AI Project" --limit 20 --json',
+        output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
+      },
+      {
+        title: "Watch new messages",
+        description:
+          "Stream new messages without taking over the active KakaoTalk window.",
+        points: ["Live events", "JSON stream", "Recovery mode"],
+        command: "kmsg watch --json --background-safe",
+        output: '{"event":"message","author":"Jina","body":"Please check."}',
+      },
+      {
+        title: "Send safely",
+        description:
+          "Send text and images through the visible UI, with dry-run first.",
+        points: ["Text", "Images", "Dry-run confirmation"],
+        command: 'kmsg send "AI Project" "Checked." --dry-run',
+        output: 'Would send to "AI Project": Checked.',
+      },
+    ],
+  },
+  jp: {
+    kicker: "macOS向けKakaoTalk CLI · MCPサーバー",
+    headline: "KakaoTalkをターミナルから読み取り、監視、送信。",
+    description:
+      "macOSアクセシビリティAPIで動作する非公式CLIです。ローカル自動化とMCPクライアントで同じコマンドを利用できます。",
+    installAction: "インストール",
+    docsAction: "使い方",
+    currentVersion: "現在のバージョン",
+    workflowLabel: "実際のCLIフロー",
+    principlesLabel: "kmsgを選ぶ理由",
+    principlesTitle: "ローカル自動化に必要な機能だけ。",
+    capabilitiesLabel: "主な機能",
+    capabilitiesTitle: "読み取りから送信まで、一つのコマンド体系で。",
+    storiesLabel: "活用事例",
+    storiesTitle: "実際の自動化ワークフローで使われています。",
+    storiesDescription:
+      "kmsgをエージェントとローカル自動化に接続した事例です。",
+    installLabel: "インストール",
+    installTitle: "Homebrewですぐに開始。",
+    installDescription:
+      "macOS 13以降、macOS版KakaoTalk、アクセシビリティ権限が必要です。",
+    releaseAction: "最新リリース",
+    disclaimer:
+      "Kakao Corp.とは無関係の独立したオープンソースです。",
+    principles: [
+      {
+        token: "AX",
+        title: "macOS上でローカル動作",
+        description:
+          "表示中のKakaoTalkをアクセシビリティAPIで操作します。",
+      },
+      {
+        token: "MCP",
+        title: "CLIとネイティブMCP",
+        description:
+          "ターミナル、スクリプト、MCPクライアントで同じ機能を使えます。",
+      },
+      {
+        token: "{}",
+        title: "構造化出力",
+        description:
+          "JSONとテキストはstdoutへ、AX診断はstderrへ分離します。",
+      },
+    ],
+    capabilities: [
+      {
+        title: "メッセージを読む",
+        description:
+          "チャットを検索し、再利用可能なchat_idと最近のメッセージを取得します。",
+        points: [
+          "チャット検索",
+          "最近のメッセージ",
+          "安全なバックグラウンド読み取り",
+        ],
+        command: 'kmsg read "AIプロジェクト" --limit 20 --json',
+        output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
+      },
+      {
+        title: "新着を監視",
+        description:
+          "使用中のKakaoTalkウィンドウを妨げず、新着を継続的に確認します。",
+        points: ["リアルタイムイベント", "JSONストリーム", "復旧モード"],
+        command: "kmsg watch --json --background-safe",
+        output: '{"event":"message","author":"ジナ","body":"確認して。"}',
+      },
+      {
+        title: "安全に送信",
+        description:
+          "表示中のUIからテキストと画像を送り、dry-runで事前確認できます。",
+        points: ["テキスト", "画像", "dry-run確認"],
+        command: 'kmsg send "AIプロジェクト" "確認しました。" --dry-run',
+        output: 'Would send to "AIプロジェクト": 確認しました。',
+      },
+    ],
+  },
+  cn: {
+    kicker: "面向macOS的KakaoTalk CLI · MCP服务器",
+    headline: "在终端中读取、监控和发送KakaoTalk消息。",
+    description:
+      "基于macOS辅助功能API的非官方CLI。在本地自动化和MCP客户端中使用同一套命令。",
+    installAction: "安装",
+    docsAction: "使用指南",
+    currentVersion: "当前版本",
+    workflowLabel: "真实CLI流程",
+    principlesLabel: "为什么选择kmsg",
+    principlesTitle: "只保留本地自动化所需的功能。",
+    capabilitiesLabel: "核心功能",
+    capabilitiesTitle: "从读取到发送，使用同一套命令体系。",
+    storiesLabel: "实际案例",
+    storiesTitle: "已用于真实的自动化工作流。",
+    storiesDescription:
+      "kmsg连接智能体与本地自动化的实际案例。",
+    installLabel: "安装",
+    installTitle: "使用Homebrew立即开始。",
+    installDescription:
+      "需要macOS 13或更高版本、macOS版KakaoTalk和辅助功能权限。",
+    releaseAction: "最新版本",
+    disclaimer: "独立开源项目，与Kakao Corp.无隶属关系。",
+    principles: [
+      {
+        token: "AX",
+        title: "在macOS本地运行",
+        description:
+          "通过辅助功能API控制屏幕上可见的KakaoTalk应用。",
+      },
+      {
+        token: "MCP",
+        title: "CLI与原生MCP",
+        description:
+          "在终端、脚本和MCP客户端中使用相同功能。",
+      },
+      {
+        token: "{}",
+        title: "结构化输出",
+        description:
+          "JSON和文本写入stdout，AX诊断信息保留在stderr。",
+      },
+    ],
+    capabilities: [
+      {
+        title: "读取消息",
+        description: "查找聊天并返回可复用的chat_id与最近消息。",
+        points: ["聊天查找", "最近消息", "安全后台读取"],
+        command: 'kmsg read "AI项目" --limit 20 --json',
+        output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
+      },
+      {
+        title: "监控新消息",
+        description:
+          "不干扰正在使用的KakaoTalk窗口，持续获取新消息。",
+        points: ["实时事件", "JSON流", "恢复模式"],
+        command: "kmsg watch --json --background-safe",
+        output: '{"event":"message","author":"Jina","body":"请确认。"}',
+      },
+      {
+        title: "安全发送",
+        description:
+          "通过可见界面发送文本和图片，并先用dry-run确认。",
+        points: ["文本", "图片", "dry-run确认"],
+        command: 'kmsg send "AI项目" "已确认。" --dry-run',
+        output: 'Would send to "AI项目": 已确认。',
+      },
+    ],
+  },
+};
+
+const homeStories = [
+  {
+    publisher: "Builder Josh",
+    title: {
+      ko: "헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법",
+      en: "How five Hermes agents automate news curation and stock trading",
+      jp: "5つのHermesエージェントでニュース収集から株式取引まで自動化",
+      cn: "用5个Hermes智能体自动完成新闻整理与股票交易",
+    },
+    href: "https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s",
+    image: "https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg",
+  },
+  {
+    publisher: "Sam Hottman",
+    title: {
+      ko: "나만의 Hermes 시스템 구축 방법",
+      en: "How to build your own Hermes system",
+      jp: "自分専用のHermesシステムを構築する方法",
+      cn: "如何构建自己的Hermes系统",
+    },
+    href: "https://www.youtube.com/watch?v=xz5fA7OyvQ0",
+    image: "https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg",
+  },
+];
+
 const pageDefinitions = [
   {
     key: "home",
@@ -167,15 +479,10 @@ const pageDefinitions = [
         description:
           "macOS용 비공식 카카오톡 CLI 및 네이티브 MCP 서버입니다. 손쉬운 사용 자동화로 메시지를 읽고, 감시하고, 전송합니다.",
         eyebrow: "카카오톡 자동화 · macOS 13 이상",
-        heroTitle: "카카오톡을<br><em>AI Native 하게 활용하기.</em>",
-        primaryAction: "kmsg 설치하기",
-        docsAction: "문서 읽기",
         sourceLabel: "README.md에서 자동 생성",
-        installAnchor: "설치",
         faqHeading: "자주 묻는 질문",
         previewLabel:
           "kmsg로 채팅 목록을 확인하고 메시지를 읽은 뒤 답장을 보내는 터미널 미리보기",
-        highlightsLabel: "프로젝트 주요 정보",
         chatName: "AI 프로젝트",
         secondaryChat: "출시 준비",
         firstSender: "지나",
@@ -190,15 +497,10 @@ const pageDefinitions = [
         description:
           "Unofficial KakaoTalk CLI and native MCP server for macOS. Read, watch, and send messages through Accessibility automation for scripts and AI agents.",
         eyebrow: "KakaoTalk automation · macOS 13+",
-        heroTitle: "Use KakaoTalk.<br><em>The AI-native way.</em>",
-        primaryAction: "Install kmsg",
-        docsAction: "Read the docs",
         sourceLabel: "Generated from README.en.md",
-        installAnchor: "installation",
         faqHeading: "Frequently asked questions",
         previewLabel:
           "Terminal replay showing kmsg listing chats, reading messages, and sending a reply",
-        highlightsLabel: "Project highlights",
         chatName: "AI Project",
         secondaryChat: "Release Prep",
         firstSender: "Jina",
@@ -213,15 +515,10 @@ const pageDefinitions = [
         description:
           "KakaoTalkをmacOSのアクセシビリティAPIで読み取り、監視、送信できる非公式CLI兼ネイティブMCPサーバーです。",
         eyebrow: "KakaoTalk自動化 · macOS 13以降",
-        heroTitle: "KakaoTalkを<br><em>AIネイティブに活用。</em>",
-        primaryAction: "kmsgをインストール",
-        docsAction: "ドキュメントを読む",
         sourceLabel: "日本語ドキュメント",
-        installAnchor: "インストール",
         faqHeading: "よくある質問",
         previewLabel:
           "kmsgでチャット一覧を確認し、メッセージを読んで返信するターミナル",
-        highlightsLabel: "プロジェクトの概要",
         chatName: "AIプロジェクト",
         secondaryChat: "リリース準備",
         firstSender: "ジナ",
@@ -236,14 +533,9 @@ const pageDefinitions = [
         description:
           "通过macOS辅助功能API读取、监控和发送KakaoTalk消息的非官方CLI与原生MCP服务器。",
         eyebrow: "KakaoTalk自动化 · macOS 13+",
-        heroTitle: "让KakaoTalk<br><em>以AI原生方式工作。</em>",
-        primaryAction: "安装kmsg",
-        docsAction: "阅读文档",
         sourceLabel: "简体中文文档",
-        installAnchor: "安装",
         faqHeading: "常见问题",
         previewLabel: "使用kmsg查看聊天列表、读取消息并发送回复的终端演示",
-        highlightsLabel: "项目概览",
         chatName: "AI项目",
         secondaryChat: "发布准备",
         firstSender: "Jina",
@@ -721,6 +1013,7 @@ const renderToc = (headings, page) => {
 };
 
 const renderHeader = (page) => {
+  const isHome = page.type === "home";
   const { ui } = page.localeConfig;
   const rootLink = relativeAsset(
     page.output,
@@ -746,9 +1039,36 @@ const renderHeader = (page) => {
       return `<option value="${relativeAsset(page.output, target.output)}" data-locale="${localeId}"${localeId === page.locale ? " selected" : ""}>${locale.label} · ${locale.name}</option>`;
     })
     .join("");
+  const primaryLinks = isHome
+    ? `
+          <a href="${usageLink}">${ui.usage}</a>
+          <a href="${openClawLink}">MCP</a>`
+    : `
+          <a href="${usageLink}">${ui.usage}</a>
+          <a href="${architectureLink}">${ui.architecture}</a>
+          <a href="${openClawLink}">MCP</a>
+          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>`;
+  const homeGitHub = isHome
+    ? `
+          <a class="home-github" href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.82a9.6 9.6 0 0 1 2.5.34c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>
+            </svg>
+            <span class="github-label">GitHub</span>
+          </a>`
+    : "";
+  const themeControl = isHome
+    ? `
+            <span class="theme-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3.25"></circle>
+                <path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.46 5.46l1.42 1.42M17.12 17.12l1.42 1.42M18.54 5.46l-1.42 1.42M6.88 17.12l-1.42 1.42"></path>
+              </svg>
+            </span>`
+    : `<span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>`;
 
   return `
-    <header class="site-header" data-header>
+    <header class="site-header" data-header${isHome ? " data-home-header" : ""}>
       <div class="header-inner">
         <a class="brand" href="${rootLink}" aria-label="kmsg home">
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="36" height="36">
@@ -756,13 +1076,10 @@ const renderHeader = (page) => {
           <span class="brand-status" aria-label="project status: online"></span>
         </a>
         <nav class="primary-nav" aria-label="${ui.navigation}">
-          <a href="${usageLink}">${ui.usage}</a>
-          <a href="${architectureLink}">${ui.architecture}</a>
-          <a href="${openClawLink}">MCP</a>
-          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+          ${primaryLinks}
         </nav>
         <div class="header-tools">
-          <a class="llm-link" href="${llmLink}" type="text/plain">LLM.txt <span aria-hidden="true">↗</span></a>
+          ${isHome ? "" : `<a class="llm-link" href="${llmLink}" type="text/plain">LLM.txt <span aria-hidden="true">↗</span></a>`}
           <label class="language-control">
             <span class="sr-only">${ui.language}</span>
             <select aria-label="${ui.language}" data-language-select>
@@ -771,8 +1088,9 @@ const renderHeader = (page) => {
             <span class="language-chevron" aria-hidden="true">⌄</span>
           </label>
           <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
-            <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+            ${themeControl}
           </button>
+          ${homeGitHub}
         </div>
       </div>
     </header>`;
@@ -793,13 +1111,7 @@ const renderReplayOutput = (stage, output, tone = "") => `
 const renderReplayGap = (stage) => `
   <div class="terminal-line terminal-output-gap" data-replay-line data-replay-stage="${stage}" aria-hidden="true"></div>`;
 
-const renderHomeHero = (page, intro, version) => {
-  const installationId = slugify(page.installAnchor);
-  const docsLink = relativeAsset(
-    page.output,
-    localizedPage(page.locale, "usage").output,
-  );
-  const copiedLabel = page.localeConfig.ui.copied;
+const renderWorkflowTerminal = (page, version) => {
   const terminalCopy = {
     ko: {
       connected: "AX 연결됨",
@@ -822,94 +1134,225 @@ const renderHomeHero = (page, intro, version) => {
   const secondaryChatID = "chat_81e0c8b9a214";
 
   return `
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-heading">
-        <p class="eyebrow"><span></span>${escapeHtml(page.eyebrow)}</p>
-        <h1 id="hero-title">${page.heroTitle}</h1>
+    <div class="terminal-window" data-terminal-replay>
+      <div class="terminal-bar">
+        <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
+        <span>kmsg · zsh</span>
+        <span class="terminal-version">v${escapeHtml(version)}</span>
       </div>
-      <div class="hero-copy">
-        <p class="hero-lead">${escapeHtml(intro)}</p>
-        <div class="hero-actions">
-          <a class="button button-primary" href="#${installationId}">
-            ${escapeHtml(page.primaryAction)}
-            <span aria-hidden="true">↓</span>
-          </a>
-          <a class="button button-ghost" href="${docsLink}">
-            ${escapeHtml(page.docsAction)}
-            <span aria-hidden="true">→</span>
-          </a>
+      <div class="terminal-body" aria-hidden="true">
+        <div class="terminal-transcript" data-replay-transcript data-replay-viewport>
+          ${renderReplayCommand(1, "kmsg chats --limit 2")}
+          ${renderReplayOutput(1, "Searching for chat list in KakaoTalk...", "terminal-muted")}
+          ${renderReplayGap(1)}
+          ${renderReplayOutput(1, "Found 2 chat(s):")}
+          ${renderReplayGap(1)}
+          ${renderReplayOutput(1, `[1] ${page.chatName}`, "terminal-highlight")}
+          ${renderReplayOutput(1, `    chat_id: ${chatID}`, "terminal-muted")}
+          ${renderReplayOutput(1, `[2] ${page.secondaryChat}`)}
+          ${renderReplayOutput(1, `    chat_id: ${secondaryChatID}`, "terminal-muted")}
+          ${renderReplayGap(1)}
+          ${renderReplayCommand(2, `kmsg read "${page.chatName}" --limit 2 --keep-window`)}
+          ${renderReplayOutput(2, `Reading messages from: ${page.chatName}`)}
+          ${renderReplayGap(2)}
+          ${renderReplayOutput(2, "Recent messages (2):")}
+          ${renderReplayGap(2)}
+          ${renderReplayOutput(2, `[1] author: ${page.firstSender}`, "terminal-highlight")}
+          ${renderReplayOutput(2, `    time: ${page.firstTime}`, "terminal-muted")}
+          ${renderReplayOutput(2, `    body: ${page.firstMessage}`)}
+          ${renderReplayGap(2)}
+          ${renderReplayOutput(2, "[2] author: (me)")}
+          ${renderReplayOutput(2, `    time: ${page.secondTime}`, "terminal-muted")}
+          ${renderReplayOutput(2, `    body: ${page.secondMessage}`)}
+          ${renderReplayGap(2)}
+          ${renderReplayCommand(3, `kmsg send "${page.chatName}" "${page.replyMessage}"`)}
+          ${renderReplayOutput(3, `Looking for chat with '${page.chatName}'...`)}
+          ${renderReplayOutput(3, "Found existing chat window.")}
+          ${renderReplayOutput(3, `✓ Message sent to '${page.chatName}'`, "terminal-success")}
+          ${renderReplayOutput(3, "✓ Chat window closed.", "terminal-success")}
+          ${renderReplayGap(3)}
+          <div class="terminal-line terminal-command-line terminal-return-line" data-replay-line data-replay-stage="3">
+            <span class="terminal-prompt">❯</span>
+            <span class="terminal-command" data-replay-command></span>
+            <span class="cursor-block" aria-hidden="true"></span>
+          </div>
         </div>
-        <button class="install-command copy-control" type="button" data-copy="brew install channprj/tap/kmsg" data-copied-label="${copiedLabel}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+      </div>
+      <div class="terminal-footer">
+        <span><i></i> ${escapeHtml(terminalCopy.connected)}</span>
+        <span>${escapeHtml(terminalCopy.output)}</span>
+      </div>
+    </div>`;
+};
+
+const renderSectionHeading = (label, title, description = "") => `
+  <header class="section-heading">
+    <p class="section-label">${escapeHtml(label)}</p>
+    <h2>${escapeHtml(title)}</h2>
+    ${description ? `<p>${escapeHtml(description)}</p>` : ""}
+  </header>`;
+
+const renderCommandPanel = (command, output) => `
+  <div class="command-panel" tabindex="0" role="region" aria-label="${escapeHtml(command)}">
+    <div class="command-panel-bar" aria-hidden="true">
+      <span class="traffic-lights"><i></i><i></i><i></i></span>
+      <span>kmsg · output</span>
+    </div>
+    <pre><code><span class="command-prompt">$</span> ${escapeHtml(command)}
+<span class="command-output">${escapeHtml(output)}</span></code></pre>
+  </div>`;
+
+const renderHomeWorkflow = (page, version, copy) => `
+  <section class="product-workflow" id="workflow" aria-labelledby="workflow-title" data-replay-scope>
+    <div class="workflow-meta" id="workflow-title">
+      <span>${escapeHtml(copy.workflowLabel)}</span>
+      <span data-replay-progress>03 / 03</span>
+    </div>
+    <div class="workflow-frame" role="img" aria-label="${escapeHtml(page.previewLabel)}">
+      ${renderWorkflowTerminal(page, version)}
+    </div>
+  </section>`;
+
+const renderPrinciples = (copy) => `
+  <section class="product-section principles-section" id="principles">
+    ${renderSectionHeading(copy.principlesLabel, copy.principlesTitle)}
+    <div class="principle-grid">
+      ${copy.principles
+        .map(
+          (item) => `
+        <article class="principle-card">
+          <span class="principle-token" aria-hidden="true">${escapeHtml(item.token)}</span>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.description)}</p>
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </section>`;
+
+const renderCapabilities = (copy) => `
+  <section class="product-section capabilities-section" id="capabilities">
+    ${renderSectionHeading(copy.capabilitiesLabel, copy.capabilitiesTitle)}
+    <div class="capability-list">
+      ${copy.capabilities
+        .map(
+          (item, index) => `
+        <article class="capability-row${index % 2 ? " is-reversed" : ""}">
+          <div class="capability-copy">
+            <span class="capability-index">0${index + 1}</span>
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.description)}</p>
+            <ul>
+              ${item.points.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}
+            </ul>
+          </div>
+          ${renderCommandPanel(item.command, item.output)}
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </section>`;
+
+const renderHomeStories = (copy, locale) => `
+  <section class="product-section stories-section" id="stories">
+    ${renderSectionHeading(
+      copy.storiesLabel,
+      copy.storiesTitle,
+      copy.storiesDescription,
+    )}
+    <div class="story-grid">
+      ${homeStories
+        .map(
+          (story) => `
+        <article class="story-card">
+          <a class="story-media" href="${story.href}" target="_blank" rel="noopener noreferrer">
+            <img src="${story.image}" alt="${escapeHtml(story.title[locale])}" width="640" height="360" loading="lazy" decoding="async">
+          </a>
+          <div class="story-copy">
+            <span class="story-publisher">${escapeHtml(story.publisher)}</span>
+            <h3><a href="${story.href}" target="_blank" rel="noopener noreferrer">${escapeHtml(story.title[locale])}</a></h3>
+            <span class="story-arrow" aria-hidden="true">↗</span>
+          </div>
+        </article>`,
+        )
+        .join("")}
+    </div>
+  </section>`;
+
+const renderHomeInstall = (page, copy) => {
+  const usageLink = relativeAsset(
+    page.output,
+    localizedPage(page.locale, "usage").output,
+  );
+
+  return `
+    <section class="product-section install-section" id="install">
+      <div class="install-panel">
+        <p class="section-label">${escapeHtml(copy.installLabel)}</p>
+        <h2>${escapeHtml(copy.installTitle)}</h2>
+        <p class="install-description">${escapeHtml(copy.installDescription)}</p>
+        <button class="install-command copy-control" type="button" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code>brew install channprj/tap/kmsg</code>
           <span class="copy-icon" aria-hidden="true">⧉</span>
         </button>
-      </div>
-
-      <div class="hero-visual" role="img" aria-label="${escapeHtml(page.previewLabel)}">
-        <div class="terminal-caption" aria-hidden="true">
-          <span>LIVE WORKFLOW</span>
-          <span data-replay-progress>03 / 03</span>
+        <div class="requirement-list" aria-label="${escapeHtml(copy.installDescription)}">
+          <span>macOS 13+</span>
+          <span>KakaoTalk for macOS</span>
+          <span>Accessibility</span>
         </div>
-        <div class="terminal-window" data-terminal-replay>
-          <div class="terminal-bar">
-            <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
-            <span>kmsg · zsh</span>
-            <span class="terminal-version">v${escapeHtml(version)}</span>
-          </div>
-          <div class="terminal-body" aria-hidden="true">
-            <div class="terminal-transcript" data-replay-transcript data-replay-viewport>
-              ${renderReplayCommand(1, "kmsg chats --limit 2")}
-              ${renderReplayOutput(1, "Searching for chat list in KakaoTalk...", "terminal-muted")}
-              ${renderReplayGap(1)}
-              ${renderReplayOutput(1, "Found 2 chat(s):")}
-              ${renderReplayGap(1)}
-              ${renderReplayOutput(1, `[1] ${page.chatName}`, "terminal-highlight")}
-              ${renderReplayOutput(1, `    chat_id: ${chatID}`, "terminal-muted")}
-              ${renderReplayOutput(1, `[2] ${page.secondaryChat}`)}
-              ${renderReplayOutput(1, `    chat_id: ${secondaryChatID}`, "terminal-muted")}
-              ${renderReplayGap(1)}
-              ${renderReplayCommand(2, `kmsg read "${page.chatName}" --limit 2 --keep-window`)}
-              ${renderReplayOutput(2, `Reading messages from: ${page.chatName}`)}
-              ${renderReplayGap(2)}
-              ${renderReplayOutput(2, "Recent messages (2):")}
-              ${renderReplayGap(2)}
-              ${renderReplayOutput(2, `[1] author: ${page.firstSender}`, "terminal-highlight")}
-              ${renderReplayOutput(2, `    time: ${page.firstTime}`, "terminal-muted")}
-              ${renderReplayOutput(2, `    body: ${page.firstMessage}`)}
-              ${renderReplayGap(2)}
-              ${renderReplayOutput(2, "[2] author: (me)")}
-              ${renderReplayOutput(2, `    time: ${page.secondTime}`, "terminal-muted")}
-              ${renderReplayOutput(2, `    body: ${page.secondMessage}`)}
-              ${renderReplayGap(2)}
-              ${renderReplayCommand(3, `kmsg send "${page.chatName}" "${page.replyMessage}"`)}
-              ${renderReplayOutput(3, `Looking for chat with '${page.chatName}'...`)}
-              ${renderReplayOutput(3, "Found existing chat window.")}
-              ${renderReplayOutput(3, `✓ Message sent to '${page.chatName}'`, "terminal-success")}
-              ${renderReplayOutput(3, "✓ Chat window closed.", "terminal-success")}
-              ${renderReplayGap(3)}
-              <div class="terminal-line terminal-command-line terminal-return-line" data-replay-line data-replay-stage="3">
-                <span class="terminal-prompt">❯</span>
-                <span class="terminal-command" data-replay-command></span>
-                <span class="cursor-block" aria-hidden="true"></span>
-              </div>
-            </div>
-          </div>
-          <div class="terminal-footer">
-            <span><i></i> ${escapeHtml(terminalCopy.connected)}</span>
-            <span>${escapeHtml(terminalCopy.output)}</span>
-          </div>
+        <div class="install-links">
+          <a href="${usageLink}">${escapeHtml(copy.docsAction)} <span aria-hidden="true">→</span></a>
+          <a href="${site.releasesUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.releaseAction)} <span aria-hidden="true">↗</span></a>
         </div>
+        <small>${escapeHtml(copy.disclaimer)}</small>
       </div>
-
-      <ul class="hero-signals" aria-label="${escapeHtml(page.highlightsLabel)}">
-        <li><span>Swift</span><strong>6</strong></li>
-        <li><span>MCP</span><strong>3 tools</strong></li>
-        <li><span>Output</span><strong>JSON</strong></li>
-        <li><span>Runtime</span><strong>Local AX API</strong></li>
-      </ul>
     </section>`;
 };
+
+const renderProductHome = (page, version) => {
+  const copy = homeContent[page.locale];
+  const docsLink = relativeAsset(
+    page.output,
+    localizedPage(page.locale, "usage").output,
+  );
+
+  if (!copy) {
+    throw new Error(
+      `Missing product homepage content for locale: ${page.locale}`,
+    );
+  }
+
+  return `
+    <section class="product-hero" aria-labelledby="hero-title">
+      <div class="product-mark">
+        <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="112" height="112">
+      </div>
+      <p class="hero-kicker">${escapeHtml(copy.kicker)}</p>
+      <h1 id="hero-title">${escapeHtml(copy.headline)}</h1>
+      <p class="hero-lead">${escapeHtml(copy.description)}</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
+        <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} <span aria-hidden="true">→</span></a>
+      </div>
+      <p class="hero-version">${escapeHtml(copy.currentVersion)} <strong>v${escapeHtml(version)}</strong></p>
+    </section>
+    ${renderHomeWorkflow(page, version, copy)}
+    ${renderPrinciples(copy)}
+    ${renderCapabilities(copy)}
+    ${renderHomeStories(copy, page.locale)}
+    ${renderHomeInstall(page, copy)}`;
+};
+
+const renderMarkdownArticle = (page, rendered) => `
+  <article class="markdown-body" data-markdown-content>
+    <div class="source-stamp">
+      <span class="source-dot"></span>
+      ${escapeHtml(page.sourceLabel ?? page.source)}
+      <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${page.localeConfig.ui.sourceAction}</a>
+    </div>
+    ${rendered.html}
+  </article>`;
 
 const renderDocsHero = (page, markdown, lastModified) => {
   const sourceTitle = markdown.match(/^#\s+(.+)$/m)?.[1] ?? page.title;
@@ -941,6 +1384,7 @@ const renderFooter = (page, version) => {
     page.output,
     localizedPage(page.locale, "versioning").output,
   );
+  const llmLink = relativeAsset(page.output, "llm.txt");
 
   return `
     <footer class="site-footer">
@@ -951,6 +1395,7 @@ const renderFooter = (page, version) => {
       <div class="footer-links">
         <a href="${architectureLink}">${page.localeConfig.ui.architecture}</a>
         <a href="${versioningLink}">v${escapeHtml(version)}</a>
+        <a class="footer-llm-link" href="${llmLink}" type="text/plain">LLM.txt</a>
         <a href="${site.licenseUrl}" target="_blank" rel="noopener noreferrer">MIT License</a>
       </div>
       <p>${page.localeConfig.ui.footerDisclaimer}</p>
@@ -1109,10 +1554,16 @@ const renderDocument = ({
     lastModified,
     faqs,
   });
-  const hero =
+  const mainContent =
     page.type === "home"
-      ? renderHomeHero(page, intro, version)
-      : renderDocsHero(page, markdown, lastModified);
+      ? `<div class="product-home" data-product-home>
+          ${renderProductHome(page, version)}
+        </div>`
+      : `${renderDocsHero(page, markdown, lastModified)}
+        <div class="content-layout">
+          ${renderToc(rendered.headings, page)}
+          ${renderMarkdownArticle(page, rendered)}
+        </div>`;
 
   return `<!doctype html>
 <html lang="${page.lang}" data-locale="${page.locale}" data-page-key="${page.pageKey}" data-theme="dark">
@@ -1136,7 +1587,7 @@ const renderDocument = ({
     <link rel="icon" href="${rootAsset("assets/favicon.svg")}" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Ubuntu+Mono:wght@400;700&family=Ubuntu+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${rootAsset("assets/styles.css")}">
 
     <meta property="og:type" content="website">
@@ -1173,24 +1624,13 @@ const renderDocument = ({
       } catch {}
     </script>
   </head>
-  <body data-source="${escapeHtml(page.source)}" data-locale="${page.locale}" data-copy-label="${page.localeConfig.ui.copy}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+  <body class="${page.type === "home" ? "is-home" : "is-docs"}" data-source="${escapeHtml(page.source)}" data-locale="${page.locale}" data-copy-label="${page.localeConfig.ui.copy}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
     <a class="skip-link" href="#content">${page.localeConfig.ui.skip}</a>
     <div class="site-grid" aria-hidden="true"></div>
     <div class="site-shell">
       ${renderHeader(page)}
       <main id="content">
-        ${hero}
-        <div class="content-layout">
-          ${renderToc(rendered.headings, page)}
-          <article class="markdown-body" data-markdown-content>
-            <div class="source-stamp">
-              <span class="source-dot"></span>
-              ${escapeHtml(page.sourceLabel ?? page.source)}
-              <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${page.localeConfig.ui.sourceAction}</a>
-            </div>
-            ${rendered.html}
-          </article>
-        </div>
+        ${mainContent}
       </main>
       ${renderFooter(page, version)}
     </div>
