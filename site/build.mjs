@@ -159,8 +159,6 @@ const homeContent = {
       "macOS 손쉬운 사용 API로 동작하는 비공식 CLI입니다. 로컬 자동화와 MCP 클라이언트에서 같은 명령을 사용합니다.",
     installAction: "설치하기",
     docsAction: "사용법",
-    currentVersion: "현재 버전",
-    workflowLabel: "실제 CLI 흐름",
     principlesLabel: "왜 kmsg인가",
     principlesTitle: "로컬 자동화에 필요한 것만 담았습니다.",
     capabilitiesLabel: "주요 기능",
@@ -229,8 +227,6 @@ const homeContent = {
       "An unofficial CLI built on the macOS Accessibility API. Use the same commands in local automation and MCP clients.",
     installAction: "Install",
     docsAction: "Usage",
-    currentVersion: "Current version",
-    workflowLabel: "Real CLI workflow",
     principlesLabel: "Why kmsg",
     principlesTitle: "Only what local automation needs.",
     capabilitiesLabel: "Core capabilities",
@@ -299,8 +295,6 @@ const homeContent = {
       "macOSアクセシビリティAPIで動作する非公式CLIです。ローカル自動化とMCPクライアントで同じコマンドを利用できます。",
     installAction: "インストール",
     docsAction: "使い方",
-    currentVersion: "現在のバージョン",
-    workflowLabel: "実際のCLIフロー",
     principlesLabel: "kmsgを選ぶ理由",
     principlesTitle: "ローカル自動化に必要な機能だけ。",
     capabilitiesLabel: "主な機能",
@@ -370,8 +364,6 @@ const homeContent = {
       "基于macOS辅助功能API的非官方CLI。在本地自动化和MCP客户端中使用同一套命令。",
     installAction: "安装",
     docsAction: "使用指南",
-    currentVersion: "当前版本",
-    workflowLabel: "真实CLI流程",
     principlesLabel: "为什么选择kmsg",
     principlesTitle: "只保留本地自动化所需的功能。",
     capabilitiesLabel: "核心功能",
@@ -1108,25 +1100,7 @@ const renderReplayOutput = (stage, output, tone = "") => `
 const renderReplayGap = (stage) => `
   <div class="terminal-line terminal-output-gap" data-replay-line data-replay-stage="${stage}" aria-hidden="true"></div>`;
 
-const renderWorkflowTerminal = (page, version) => {
-  const terminalCopy = {
-    ko: {
-      connected: "AX 연결됨",
-      output: "텍스트 · 표준 출력",
-    },
-    en: {
-      connected: "AX connected",
-      output: "text · stdout",
-    },
-    jp: {
-      connected: "AX接続済み",
-      output: "テキスト · 標準出力",
-    },
-    cn: {
-      connected: "AX已连接",
-      output: "文本 · 标准输出",
-    },
-  }[page.locale];
+const renderWorkflowTerminal = (page) => {
   const chatID = "chat_7f42c5e1d9ab";
   const secondaryChatID = "chat_81e0c8b9a214";
 
@@ -1134,8 +1108,6 @@ const renderWorkflowTerminal = (page, version) => {
     <div class="terminal-window" data-terminal-replay>
       <div class="terminal-bar">
         <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
-        <span>kmsg · zsh</span>
-        <span class="terminal-version">v${escapeHtml(version)}</span>
       </div>
       <div class="terminal-body" aria-hidden="true">
         <div class="terminal-transcript" data-replay-transcript data-replay-viewport>
@@ -1175,10 +1147,6 @@ const renderWorkflowTerminal = (page, version) => {
           </div>
         </div>
       </div>
-      <div class="terminal-footer">
-        <span><i></i> ${escapeHtml(terminalCopy.connected)}</span>
-        <span>${escapeHtml(terminalCopy.output)}</span>
-      </div>
     </div>`;
 };
 
@@ -1205,14 +1173,10 @@ const renderCommandPanel = (command, output) => `
 <span class="command-output">${escapeHtml(output)}</span></code></pre>
   </div>`;
 
-const renderHomeWorkflow = (page, version, copy) => `
-  <section class="product-workflow" id="workflow" aria-labelledby="workflow-title" data-replay-scope>
-    <div class="workflow-meta" id="workflow-title">
-      <span>${escapeHtml(copy.workflowLabel)}</span>
-      <span data-replay-progress>03 / 03</span>
-    </div>
+const renderHomeWorkflow = (page) => `
+  <section class="product-workflow" id="workflow" data-replay-scope>
     <div class="workflow-frame" role="img" aria-label="${escapeHtml(page.previewLabel)}">
-      ${renderWorkflowTerminal(page, version)}
+      ${renderWorkflowTerminal(page)}
     </div>
   </section>`;
 
@@ -1335,7 +1299,7 @@ const renderHomeHeadline = (copy) => {
     .join("\n");
 };
 
-const renderProductHome = (page, version) => {
+const renderProductHome = (page) => {
   const copy = homeContent[page.locale];
   const docsLink = relativeAsset(
     page.output,
@@ -1360,9 +1324,8 @@ const renderProductHome = (page, version) => {
         <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
         <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} <span aria-hidden="true">→</span></a>
       </div>
-      <p class="hero-version">${escapeHtml(copy.currentVersion)} <strong>v${escapeHtml(version)}</strong></p>
     </section>
-    ${renderHomeWorkflow(page, version, copy)}
+    ${renderHomeWorkflow(page)}
     ${renderPrinciples(copy)}
     ${renderCapabilities(copy)}
     ${renderHomeStories(copy, page.locale)}
@@ -1410,6 +1373,10 @@ const renderFooter = (page, version) => {
     localizedPage(page.locale, "versioning").output,
   );
   const llmLink = relativeAsset(page.output, "llm.txt");
+  const versioningFooterLink =
+    page.type === "home"
+      ? ""
+      : `<a href="${versioningLink}">v${escapeHtml(version)}</a>`;
 
   return `
     <footer class="site-footer">
@@ -1419,7 +1386,7 @@ const renderFooter = (page, version) => {
       </div>
       <div class="footer-links">
         <a href="${architectureLink}">${page.localeConfig.ui.architecture}</a>
-        <a href="${versioningLink}">v${escapeHtml(version)}</a>
+        ${versioningFooterLink}
         <a class="footer-llm-link" href="${llmLink}" type="text/plain">LLM.txt</a>
         <a href="${site.licenseUrl}" target="_blank" rel="noopener noreferrer">MIT License</a>
       </div>
@@ -1582,7 +1549,7 @@ const renderDocument = ({
   const mainContent =
     page.type === "home"
       ? `<div class="product-home" data-product-home>
-          ${renderProductHome(page, version)}
+          ${renderProductHome(page)}
         </div>`
       : `${renderDocsHero(page, markdown, lastModified)}
         <div class="content-layout">

@@ -359,6 +359,34 @@ test("IBM Plex and locale fonts keep prose readable and code distinct", async ()
   );
 });
 
+test("home workflow omits non-terminal chrome and visible release labels", async () => {
+  const forbiddenCopy = {
+    ko: ["실제 CLI 흐름", "AX 연결됨", "텍스트 · 표준 출력"],
+    en: ["Real CLI workflow", "AX connected", "text · stdout"],
+    jp: ["実際のCLIフロー", "AX接続済み", "テキスト · 標準出力"],
+    cn: ["真实CLI流程", "AX已连接", "文本 · 标准输出"],
+  };
+
+  for (const [localeId, labels] of Object.entries(forbiddenCopy)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    for (const label of labels) {
+      assert.ok(!html.includes(label), `${localeId} still renders ${label}`);
+    }
+
+    assert.ok(!html.includes("kmsg · zsh"));
+    assert.doesNotMatch(
+      html,
+      /class="(?:workflow-meta|hero-version|terminal-version|terminal-footer)"/,
+    );
+    assert.doesNotMatch(html, /data-replay-progress/);
+    assert.doesNotMatch(
+      html,
+      /<(?:strong|span|a)[^>]*>v\d+\.\d+\.\d+<\/(?:strong|span|a)>/,
+    );
+  }
+});
+
 test("home hero renders the real localized chats-read-send transcript", async () => {
   const scenarios = {
     ko: {
@@ -422,7 +450,7 @@ test("home hero renders the real localized chats-read-send transcript", async ()
       html,
       /class="terminal-body"[^>]*data-replay-viewport/,
     );
-    assert.match(html, /data-replay-progress>03 \/ 03/);
+    assert.doesNotMatch(html, /data-replay-progress/);
     assert.ok(html.includes(`aria-label="${scenario.label}"`));
     assert.ok(commandPositions.every((position) => position >= 0));
     assert.ok(
@@ -465,10 +493,7 @@ test("terminal replay is cancellable, motion-aware, and locale-safe", async () =
   assert.match(app, /prefers-reduced-motion: reduce/);
   assert.match(app, /scrollTo\(/);
   assert.match(app, /showComplete\(\)/);
-  assert.match(
-    app,
-    /closest\("\[data-replay-scope\]"\)[\s\S]*querySelector\("\[data-replay-progress\]"\)/,
-  );
+  assert.doesNotMatch(app, /data-replay-progress|this\.progress/);
 
   assert.match(
     styles,

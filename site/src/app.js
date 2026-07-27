@@ -175,14 +175,11 @@ class TerminalReplay {
     this.element = element;
     this.motionPreference = motionPreference;
     this.viewport = element.querySelector("[data-replay-viewport]");
-    this.progress = element
-      .closest("[data-replay-scope]")
-      ?.querySelector("[data-replay-progress]");
     this.lines = [...element.querySelectorAll("[data-replay-line]")];
     this.abortController = null;
     this.isIntersecting = false;
 
-    if (!this.viewport || !this.progress || this.lines.length === 0) {
+    if (!this.viewport || this.lines.length === 0) {
       throw new Error("Incomplete terminal replay markup");
     }
 
@@ -198,7 +195,6 @@ class TerminalReplay {
       const command = line.querySelector("[data-replay-command]");
       if (command) command.textContent = command.dataset.replayText || "";
     }
-    this.progress.textContent = "03 / 03";
     this.viewport.scrollTop = this.viewport.scrollHeight;
   }
 
@@ -210,7 +206,6 @@ class TerminalReplay {
       const command = line.querySelector("[data-replay-command]");
       if (command) command.textContent = "";
     }
-    this.progress.textContent = "01 / 03";
     this.viewport.scrollTop = 0;
   }
 
@@ -245,7 +240,6 @@ class TerminalReplay {
       await replaySleep(550, signal);
 
       for (const stage of ["1", "2", "3"]) {
-        this.progress.textContent = `0${stage} / 03`;
         const stageLines = this.lines.filter(
           (line) => line.dataset.replayStage === stage,
         );
