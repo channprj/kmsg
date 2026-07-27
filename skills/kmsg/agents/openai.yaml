@@ -1,0 +1,8 @@
+interface:
+  display_name: "KMSG"
+  short_description: "Use KakaoTalk safely from a coding agent"
+  brand_color: "#FEE500"
+  default_prompt: "Use $kmsg to handle this KakaoTalk task safely."
+
+policy:
+  allow_implicit_invocation: true
