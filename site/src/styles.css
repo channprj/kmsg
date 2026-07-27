@@ -1131,10 +1131,8 @@ html[lang="ko"] .hero h1 em {
 }
 
 .product-hero .hero-highlight {
-  padding: 0 0.12em 0.04em;
-  border-radius: 0.08em;
-  background: var(--accent);
-  color: var(--accent-ink);
+  background: transparent;
+  color: var(--accent);
 }
 
 .product-hero .hero-lead {

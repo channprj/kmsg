@@ -140,12 +140,12 @@ test("Korean home renders the requested two-line AI Native headline", async () =
   );
 });
 
-test("AI Native headline highlight uses the Kakao yellow palette", async () => {
+test("AI Native headline uses yellow text on a transparent background", async () => {
   const styles = await readOutput("assets/styles.css");
 
   assert.match(
     styles,
-    /\.hero-highlight\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--accent-ink\);[^}]*\}/s,
+    /\.hero-highlight\s*\{[^}]*background:\s*transparent;[^}]*color:\s*var\(--accent\);[^}]*\}/s,
   );
 });
 
