@@ -166,7 +166,7 @@ const homeContent = {
     capabilitiesLabel: "주요 기능",
     capabilitiesTitle: "읽기부터 전송까지, 하나의 명령 체계로.",
     storiesLabel: "실사용 후기",
-    storiesTitle: "실제 자동화 워크플로에서 사용되고 있습니다.",
+    storiesTitle: "실제 자동화 워크플로우에서\n널리 사용되고 있습니다",
     storiesDescription:
       "kmsg를 에이전트와 로컬 자동화에 연결한 사용 사례입니다.",
     installLabel: "설치",
@@ -1182,10 +1182,16 @@ const renderWorkflowTerminal = (page, version) => {
     </div>`;
 };
 
+const renderTextWithLineBreaks = (text) =>
+  text
+    .split("\n")
+    .map((line) => escapeHtml(line))
+    .join("<br>");
+
 const renderSectionHeading = (label, title, description = "") => `
   <header class="section-heading">
     <p class="section-label">${escapeHtml(label)}</p>
-    <h2>${escapeHtml(title)}</h2>
+    <h2>${renderTextWithLineBreaks(title)}</h2>
     ${description ? `<p>${escapeHtml(description)}</p>` : ""}
   </header>`;
 

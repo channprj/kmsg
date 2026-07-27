@@ -238,6 +238,25 @@ test("home routes render valid localized watch commands", async () => {
   }
 });
 
+test("Korean stories heading uses the requested two-line workflow message", async () => {
+  const html = await readOutput(localizedPath("ko", "home"));
+
+  assert.ok(
+    html.includes(
+      "<h2>실제 자동화 워크플로우에서<br>널리 사용되고 있습니다</h2>",
+    ),
+  );
+});
+
+test("Korean stories heading stays compact on narrow screens", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /html\[lang="ko"\] \.stories-section \.section-heading h2\s*\{[^}]*font-size:\s*clamp\(26px,\s*8\.4vw,\s*34px\);[^}]*\}/s,
+  );
+});
+
 test("documentation routes retain Markdown content and table of contents", async () => {
   for (const localeId of Object.keys(locales)) {
     for (const pageKey of ["usage", "architecture", "openclaw", "versioning"]) {

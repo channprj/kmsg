@@ -2315,6 +2315,10 @@ html[lang="ko"] .hero h1 em {
     font-size: clamp(31px, 9.8vw, 42px);
   }
 
+  html[lang="ko"] .stories-section .section-heading h2 {
+    font-size: clamp(26px, 8.4vw, 34px);
+  }
+
   .section-heading > p:last-child:not(.section-label) {
     margin-left: 0;
   }
