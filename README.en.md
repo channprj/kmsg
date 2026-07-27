@@ -72,6 +72,35 @@ kmsg send "Chat name" "Hello" --dry-run
 needed, and checks authentication. The final command is a dry run and does not
 send a message.
 
+## Coding agent skill
+
+The bundled `kmsg` skill gives Claude Code and Codex the same structured
+workflow for finding chats as JSON, reading through stable `chat_id` values,
+and previewing sends with a dry run. Install the `kmsg` binary with Homebrew
+first, then install the skill globally:
+
+```bash
+npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y
+```
+
+Invoke it with the selector for your agent:
+
+| Agent | Invocation |
+| --- | --- |
+| Claude Code | `/kmsg` |
+| Codex | `$kmsg` |
+
+```text
+/kmsg Summarize the 10 latest messages in Release Prep
+$kmsg Send 'Deployment complete.' to Release Prep
+```
+
+The skill always checks the recipient and text with `dry-run` before a text
+send. It runs the real `send` once only when the user explicitly asks to send;
+draft and preview requests never send. Because `send-image` has no dry-run, it
+runs only when both the recipient and actual image delivery are explicit.
+Restart the agent session if the newly installed skill does not appear.
+
 ## More documentation
 
 - [Usage](USAGE.md) — installation, commands, configuration, examples, and troubleshooting
