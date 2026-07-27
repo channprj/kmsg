@@ -1126,6 +1126,17 @@ html[lang="ko"] .hero h1 em {
   line-height: 1.08;
 }
 
+.product-hero .hero-title-line {
+  display: block;
+}
+
+.product-hero .hero-highlight {
+  padding: 0 0.12em 0.04em;
+  border-radius: 0.08em;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
 .product-hero .hero-lead {
   max-width: 680px;
   margin: 24px auto 0;
@@ -2254,6 +2265,10 @@ html[lang="ko"] .hero h1 em {
     margin-top: 18px;
     font-size: clamp(38px, 11.6vw, 56px);
     letter-spacing: -0.052em;
+  }
+
+  html[lang="ko"] .product-hero .hero-title-line:last-child {
+    font-size: 0.7em;
   }
 
   .product-hero .hero-lead {

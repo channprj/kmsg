@@ -66,7 +66,7 @@ test("Korean is canonical at root and on every default documentation route", asy
     versioning: "site/content/ko/versioning.md",
   };
   const visibleCopy = {
-    home: "카카오톡을 터미널에서 읽고, 감시하고, 보냅니다.",
+    home: "하게 사용하세요\\.",
     usage: "kmsg 사용법",
     architecture: "kmsg 아키텍처",
     openclaw: "OpenClaw 연동 가이드",
@@ -94,7 +94,7 @@ test("Korean is canonical at root and on every default documentation route", asy
 
 test("all four locales render localized home and documentation content", async () => {
   const homeCopy = {
-    ko: "카카오톡을 터미널에서 읽고, 감시하고, 보냅니다.",
+    ko: "하게 사용하세요\\.",
     en: "Read, watch, and send KakaoTalk messages from your terminal.",
     jp: "KakaoTalkをターミナルから読み取り、監視、送信。",
     cn: "在终端中读取、监控和发送KakaoTalk消息。",
@@ -131,6 +131,33 @@ test("all four locales render localized home and documentation content", async (
   }
 });
 
+test("Korean home renders the requested two-line AI Native headline", async () => {
+  const html = await readOutput(localizedPath("ko", "home"));
+
+  assert.match(
+    html,
+    /<h1 id="hero-title">\s*<span class="hero-title-line">카카오톡을<\/span>\s*<span class="hero-title-line"><mark class="hero-highlight">AI Native<\/mark> 하게 사용하세요\.<\/span>\s*<\/h1>/,
+  );
+});
+
+test("AI Native headline highlight uses the Kakao yellow palette", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /\.hero-highlight\s*\{[^}]*background:\s*var\(--accent\);[^}]*color:\s*var\(--accent-ink\);[^}]*\}/s,
+  );
+});
+
+test("Korean headline keeps its second line compact on narrow screens", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /html\[lang="ko"\] \.product-hero \.hero-title-line:last-child\s*\{[^}]*font-size:\s*0\.7em;[^}]*\}/s,
+  );
+});
+
 test("home routes render the curated product page instead of README layout", async () => {
   const sectionIds = [
     "workflow",
@@ -151,10 +178,12 @@ test("home routes render the curated product page instead of README layout", asy
     assert.doesNotMatch(html, /class="content-layout"/);
     assert.doesNotMatch(html, /class="toc"/);
     assert.doesNotMatch(html, /data-markdown-content/);
-    assert.doesNotMatch(
-      html,
-      /AI Native|AI-native way|AIネイティブ|AI原生方式/,
-    );
+    if (localeId !== "ko") {
+      assert.doesNotMatch(
+        html,
+        /AI Native|AI-native way|AIネイティブ|AI原生方式/,
+      );
+    }
   }
 });
 

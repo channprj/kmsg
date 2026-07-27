@@ -153,7 +153,8 @@ const locales = {
 const homeContent = {
   ko: {
     kicker: "macOS용 KakaoTalk CLI · MCP 서버",
-    headline: "카카오톡을 터미널에서 읽고, 감시하고, 보냅니다.",
+    headline: "카카오톡을\nAI Native 하게 사용하세요.",
+    headlineHighlight: "AI Native",
     description:
       "macOS 손쉬운 사용 API로 동작하는 비공식 CLI입니다. 로컬 자동화와 MCP 클라이언트에서 같은 명령을 사용합니다.",
     installAction: "설치하기",
@@ -1310,6 +1311,28 @@ const renderHomeInstall = (page, copy) => {
     </section>`;
 };
 
+const renderHomeHeadline = (copy) => {
+  if (!copy.headlineHighlight) {
+    return escapeHtml(copy.headline);
+  }
+
+  return copy.headline
+    .split("\n")
+    .map((line) => {
+      const highlightIndex = line.indexOf(copy.headlineHighlight);
+
+      if (highlightIndex === -1) {
+        return `<span class="hero-title-line">${escapeHtml(line)}</span>`;
+      }
+
+      const before = line.slice(0, highlightIndex);
+      const after = line.slice(highlightIndex + copy.headlineHighlight.length);
+
+      return `<span class="hero-title-line">${escapeHtml(before)}<mark class="hero-highlight">${escapeHtml(copy.headlineHighlight)}</mark>${escapeHtml(after)}</span>`;
+    })
+    .join("\n");
+};
+
 const renderProductHome = (page, version) => {
   const copy = homeContent[page.locale];
   const docsLink = relativeAsset(
@@ -1329,7 +1352,7 @@ const renderProductHome = (page, version) => {
         <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="112" height="112">
       </div>
       <p class="hero-kicker">${escapeHtml(copy.kicker)}</p>
-      <h1 id="hero-title">${escapeHtml(copy.headline)}</h1>
+      <h1 id="hero-title">${renderHomeHeadline(copy)}</h1>
       <p class="hero-lead">${escapeHtml(copy.description)}</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
