@@ -346,6 +346,7 @@ test("IBM Plex and locale fonts keep prose readable and code distinct", async ()
   assert.match(root, /family=IBM\+Plex\+Sans/);
   assert.match(root, /family=IBM\+Plex\+Sans\+KR/);
   assert.match(root, /family=IBM\+Plex\+Mono/);
+  assert.match(root, /family=JetBrains\+Mono:wght@400;500;600/);
   assert.match(styles, /--body:\s*"IBM Plex Sans"/);
   assert.match(styles, /--mono:\s*"IBM Plex Mono"/);
   assert.match(
@@ -519,6 +520,59 @@ test("terminal replay is cancellable, motion-aware, and locale-safe", async () =
   assert.doesNotMatch(
     styles,
     /\.tui-(?:workspace|rail|stream|event|tool-call|ready)/,
+  );
+});
+
+test("home workflow uses the compact Ghostty visual contract", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /\.terminal-window\s*{[\s\S]*border-radius:\s*12px;[\s\S]*background:\s*#282c34;[\s\S]*color:\s*#ffffff;/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-bar\s*{[\s\S]*height:\s*36px;[\s\S]*background:\s*#282c34;/,
+  );
+  assert.match(
+    styles,
+    /\.traffic-lights i\s*{[\s\S]*width:\s*10px;[\s\S]*height:\s*10px/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.18;/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-transcript\s*{[\s\S]*padding:\s*10px 12px 12px;/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-command-line\s*{[\s\S]*margin-top:\s*7px;[\s\S]*gap:\s*8px;/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-output-gap\s*{[\s\S]*height:\s*3px;/,
+  );
+  assert.match(
+    styles,
+    /\.terminal-muted\s*{[\s\S]*color:\s*#9399a5;/,
+  );
+  assert.match(
+    styles,
+    /\.workflow-frame\s*{[\s\S]*padding:\s*0;[\s\S]*border:\s*0;[\s\S]*background:\s*transparent;[\s\S]*box-shadow:\s*none;/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*760px\)[\s\S]*\.terminal-body\s*{[\s\S]*font-size:\s*12px;/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*350px\)[\s\S]*\.terminal-body\s*{[\s\S]*font-size:\s*11px;/,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.terminal-(?:footer|version)|\.workflow-meta|@keyframes terminal-scan|\.terminal-window::after|\.hero-visual:hover \.terminal-window/,
   );
 });
 
