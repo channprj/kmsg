@@ -1,6 +1,7 @@
 const root = document.documentElement;
 const header = document.querySelector("[data-header]");
 const themeToggle = document.querySelector("[data-theme-toggle]");
+const themeColor = document.querySelector('meta[name="theme-color"]');
 const languageSelect = document.querySelector("[data-language-select]");
 const copyLabel = document.body.dataset.copyLabel || "Copy";
 const copiedLabel = document.body.dataset.copiedLabel || "Copied";
@@ -9,6 +10,7 @@ const copyFailedLabel =
 
 const setTheme = (theme) => {
   root.dataset.theme = theme;
+  themeColor?.setAttribute("content", theme === "paper" ? "#eeeeec" : "#080808");
   const label =
     theme === "dark"
       ? themeToggle?.dataset.lightLabel
@@ -120,6 +122,7 @@ document.querySelectorAll(".markdown-body pre").forEach((pre) => {
   button.type = "button";
   button.textContent = copyLabel;
   button.setAttribute("aria-label", copyLabel);
+  button.setAttribute("aria-live", "polite");
   button.addEventListener("click", async () => {
     try {
       await copyText(code.textContent || "");

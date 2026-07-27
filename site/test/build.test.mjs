@@ -249,8 +249,14 @@ test("home routes document cross-agent skill installation and use", async () => 
       (html.match(/<article class="agent-invocation">/g) || []).length,
       2,
     );
-    assert.match(html, /<span>Claude Code<\/span>\s*<code>\/kmsg<\/code>/);
-    assert.match(html, /<span>Codex<\/span>\s*<code>\$kmsg<\/code>/);
+    assert.match(
+      html,
+      /<span>Claude Code<\/span>\s*<code translate="no">\/kmsg<\/code>/,
+    );
+    assert.match(
+      html,
+      /<span>Codex<\/span>\s*<code translate="no">\$kmsg<\/code>/,
+    );
   }
 });
 
@@ -730,6 +736,61 @@ test("editorial homepage uses asymmetric hierarchy and distinct rhythms", async 
   assert.match(
     styles,
     /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/,
+  );
+});
+
+test("home interface metadata follows the installed web design guidelines", async () => {
+  const [html, styles, app] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/styles.css"),
+    readOutput("assets/app.js"),
+  ]);
+
+  assert.match(
+    html,
+    /<a class="brand"[^>]*translate="no"[^>]*>[\s\S]*?<img[^>]*width="36"[^>]*height="36"/,
+  );
+  assert.match(
+    html,
+    /<div class="product-mark">[\s\S]*?<img[^>]*width="112"[^>]*height="112"[^>]*fetchpriority="high"[^>]*decoding="async"/,
+  );
+  assert.match(
+    html,
+    /<div class="terminal-window"[^>]*translate="no"/,
+  );
+  assert.match(
+    html,
+    /<button class="agent-skill-command copy-control"[^>]*aria-label="[^"]+"[^>]*aria-live="polite"[^>]*translate="no"/,
+  );
+  assert.match(
+    html,
+    /<button class="install-command copy-control"[^>]*aria-label="[^"]+"[^>]*aria-live="polite"[^>]*translate="no"/,
+  );
+  assert.match(
+    html,
+    /<footer[\s\S]*?<img[^>]*width="56"[^>]*height="56"[^>]*loading="lazy"[^>]*decoding="async"/,
+  );
+  assert.match(html, /<meta name="theme-color" content="#080808">/);
+  assert.match(
+    styles,
+    /button,\s*a,\s*select\s*{[^}]*touch-action:\s*manipulation;/s,
+  );
+  assert.match(
+    styles,
+    /\.language-control select\s*{[^}]*background-color:\s*var\(--canvas-raised\);[^}]*color:\s*var\(--ink-muted\);/s,
+  );
+  assert.match(
+    styles,
+    /\.language-control select:focus-visible\s*{[^}]*outline:\s*2px solid var\(--accent-text\);/s,
+  );
+  assert.match(
+    styles,
+    /\.skip-link\s*{[^}]*transform:\s*translateY\(calc\(-100% - 20px\)\);/s,
+  );
+  assert.match(app, /button\.setAttribute\("aria-live", "polite"\)/);
+  assert.match(
+    app,
+    /themeColor\?\.setAttribute\("content", theme === "paper" \? "#eeeeec" : "#080808"\)/,
   );
 });
 

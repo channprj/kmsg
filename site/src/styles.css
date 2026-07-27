@@ -106,8 +106,10 @@ a {
 }
 
 button,
-a {
+a,
+select {
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 button {
@@ -124,13 +126,19 @@ video {
   max-width: 100%;
 }
 
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
 .skip-link {
   position: fixed;
   z-index: 1000;
   top: 12px;
   left: 12px;
   padding: 10px 14px;
-  transform: translateY(-150%);
+  transform: translateY(calc(-100% - 20px));
   border-radius: 8px;
   background: var(--accent);
   color: var(--accent-ink);
@@ -322,14 +330,19 @@ video {
   appearance: none;
   border: 0;
   outline: 0;
-  background: transparent;
-  color: inherit;
+  background-color: var(--canvas-raised);
+  color: var(--ink-muted);
   cursor: pointer;
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.language-control select:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 4px;
 }
 
 .language-control option {
@@ -889,6 +902,7 @@ html[lang="ko"] .hero h1 em {
 .is-home .language-control select {
   width: 102px;
   padding-inline: 12px 24px;
+  background-color: transparent;
   font-size: 9px;
 }
 

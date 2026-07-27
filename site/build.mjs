@@ -1107,7 +1107,7 @@ const renderHeader = (page) => {
   return `
     <header class="site-header" data-header${isHome ? " data-home-header" : ""}>
       <div class="header-inner">
-        <a class="brand" href="${rootLink}" aria-label="kmsg home">
+        <a class="brand" href="${rootLink}" aria-label="kmsg home" translate="no">
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="36" height="36">
           <span>kmsg</span>
           <span class="brand-status" aria-label="project status: online"></span>
@@ -1151,7 +1151,7 @@ const renderWorkflowTerminal = (page) => {
   const secondaryChatID = "chat_81e0c8b9a214";
 
   return `
-    <div class="terminal-window" data-terminal-replay>
+    <div class="terminal-window" data-terminal-replay translate="no">
       <div class="terminal-bar">
         <div class="traffic-lights" aria-hidden="true"><i></i><i></i><i></i></div>
       </div>
@@ -1210,12 +1210,12 @@ const renderSectionHeading = (label, title, description = "") => `
   </header>`;
 
 const renderCommandPanel = (command, output) => `
-  <div class="command-panel" tabindex="0" role="region" aria-label="${escapeHtml(command)}">
+  <div class="command-panel" tabindex="0" role="region" aria-label="${escapeHtml(command)}" translate="no">
     <div class="command-panel-bar" aria-hidden="true">
       <span class="traffic-lights"><i></i><i></i><i></i></span>
       <span>kmsg · output</span>
     </div>
-    <pre><code><span class="command-prompt">$</span> ${escapeHtml(command)}
+    <pre><code translate="no"><span class="command-prompt">$</span> ${escapeHtml(command)}
 <span class="command-output">${escapeHtml(output)}</span></code></pre>
   </div>`;
 
@@ -1281,9 +1281,9 @@ const renderAgentSkill = (page, copy) => `
         <span class="agent-skill-step">01</span>
         <h3>${escapeHtml(copy.agentSkillInstallTitle)}</h3>
         <p>${escapeHtml(copy.agentSkillInstallDescription)}</p>
-        <button class="agent-skill-command copy-control" type="button" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+        <button class="agent-skill-command copy-control" type="button" aria-label="${page.localeConfig.ui.copy}" aria-live="polite" translate="no" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
-          <code>${agentSkillInstallCommand}</code>
+          <code translate="no">${agentSkillInstallCommand}</code>
           <span class="copy-icon" aria-hidden="true">⧉</span>
         </button>
       </article>
@@ -1294,16 +1294,16 @@ const renderAgentSkill = (page, copy) => `
         <div class="agent-invocation-grid">
           <article class="agent-invocation">
             <span>Claude Code</span>
-            <code>/kmsg</code>
+            <code translate="no">/kmsg</code>
           </article>
           <article class="agent-invocation">
             <span>Codex</span>
-            <code>$kmsg</code>
+            <code translate="no">$kmsg</code>
           </article>
         </div>
         <div class="agent-prompt-example">
           <span>prompt</span>
-          <code>${escapeHtml(copy.agentSkillPrompt)}</code>
+          <code translate="no">${escapeHtml(copy.agentSkillPrompt)}</code>
         </div>
       </article>
     </div>
@@ -1347,9 +1347,9 @@ const renderHomeInstall = (page, copy) => {
         <p class="section-label">${escapeHtml(copy.installLabel)}</p>
         <h2>${escapeHtml(copy.installTitle)}</h2>
         <p class="install-description">${escapeHtml(copy.installDescription)}</p>
-        <button class="install-command copy-control" type="button" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+        <button class="install-command copy-control" type="button" aria-label="${page.localeConfig.ui.copy}" aria-live="polite" translate="no" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
-          <code>brew install channprj/tap/kmsg</code>
+          <code translate="no">brew install channprj/tap/kmsg</code>
           <span class="copy-icon" aria-hidden="true">⧉</span>
         </button>
         <div class="requirement-list" aria-label="${escapeHtml(copy.installDescription)}">
@@ -1404,7 +1404,7 @@ const renderProductHome = (page) => {
   return `
     <section class="product-hero" aria-labelledby="hero-title">
       <div class="product-mark">
-        <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="112" height="112">
+        <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="112" height="112" fetchpriority="high" decoding="async">
       </div>
       <p class="hero-kicker">${escapeHtml(copy.kicker)}</p>
       <h1 id="hero-title">${renderHomeHeadline(copy)}</h1>
@@ -1471,8 +1471,8 @@ const renderFooter = (page, version) => {
   return `
     <footer class="site-footer">
       <div class="footer-brand">
-        <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="56" height="56">
-        <div><strong>kmsg</strong><span>${page.localeConfig.ui.footerTagline}</span></div>
+        <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="56" height="56" loading="lazy" decoding="async">
+        <div><strong translate="no">kmsg</strong><span>${page.localeConfig.ui.footerTagline}</span></div>
       </div>
       <div class="footer-links">
         <a href="${architectureLink}">${page.localeConfig.ui.architecture}</a>
@@ -1659,7 +1659,7 @@ const renderDocument = ({
     <meta name="generator" content="kmsg README site generator">
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
     <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-    <meta name="theme-color" content="#0d1117">
+    <meta name="theme-color" content="#080808">
     <link rel="canonical" href="${canonical}">
     ${alternateLinks}
     <link rel="alternate" hreflang="x-default" href="${xDefault}">
@@ -1886,7 +1886,7 @@ const main = async () => {
           description: pages[0].description,
           start_url: "/kmsg/",
           display: "standalone",
-          background_color: "#0d1117",
+          background_color: "#080808",
           theme_color: "#fee500",
           icons: [
             {
