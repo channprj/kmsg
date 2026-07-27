@@ -688,6 +688,51 @@ test("Korean homepage retains both real-world stories and install target", async
   assert.doesNotMatch(html, /<track kind="captions"/);
 });
 
+test("editorial homepage uses asymmetric hierarchy and distinct rhythms", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /\.product-hero\s*{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*repeat\(12,\s*minmax\(0,\s*1fr\)\);/s,
+  );
+  assert.match(
+    styles,
+    /\.section-heading\s*{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*minmax\(120px,\s*0\.32fr\)\s+minmax\(0,\s*1fr\);/s,
+  );
+  assert.match(
+    styles,
+    /\.section-heading h2,[\s\S]*?\.install-panel h2\s*{[^}]*text-wrap:\s*balance;/s,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.principle-card\s*{[^}]*border:\s*1px solid/s,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.principle-card\s*{[^}]*border-radius:/s,
+  );
+  assert.match(
+    styles,
+    /\.agent-skill-grid\s*{[^}]*grid-template-columns:\s*minmax\(0,\s*0\.9fr\)\s+minmax\(0,\s*1\.1fr\);/s,
+  );
+  assert.match(
+    styles,
+    /\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.18fr\)\s+minmax\(0,\s*0\.82fr\);/s,
+  );
+  assert.match(
+    styles,
+    /\.stories-section \.story-card:nth-child\(2\)\s*{[^}]*margin-top:\s*64px;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*?\.product-hero\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.section-heading\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.stories-section \.story-card:nth-child\(2\)\s*{[^}]*margin-top:\s*0;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/,
+  );
+});
+
 test("curated home styles define the responsive product system", async () => {
   const styles = await readOutput("assets/styles.css");
 
@@ -710,7 +755,7 @@ test("curated home styles define the responsive product system", async () => {
   );
   assert.match(
     styles,
-    /\.agent-skill-grid\s*{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/,
+    /\.agent-skill-grid\s*{[\s\S]*grid-template-columns:\s*minmax\(0,\s*0\.9fr\)\s+minmax\(0,\s*1\.1fr\)/,
   );
   assert.match(
     styles,
