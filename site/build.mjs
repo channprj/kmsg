@@ -159,6 +159,18 @@ const homeContent = {
       "macOS 손쉬운 사용 API로 동작하는 비공식 CLI입니다. 로컬 자동화와 MCP 클라이언트에서 같은 명령을 사용합니다.",
     installAction: "설치하기",
     docsAction: "사용법",
+    agentSkillLabel: "코딩 에이전트",
+    agentSkillTitle: "코딩 에이전트에서 바로 사용하세요.",
+    agentSkillDescription:
+      "Claude Code와 Codex가 채팅방 탐색, 읽기, dry-run 전송을 같은 안전한 절차로 수행합니다.",
+    agentSkillInstallTitle: "스킬 한 번 설치",
+    agentSkillInstallDescription:
+      "kmsg 바이너리를 설치한 뒤 두 에이전트에 함께 추가합니다.",
+    agentSkillUseTitle: "자연어로 호출",
+    agentSkillUseDescription:
+      "Claude Code는 /kmsg, Codex는 $kmsg로 시작합니다.",
+    agentSkillPrompt:
+      "/kmsg 출시 준비 채팅방의 최근 메시지 10개를 요약해줘",
     principlesLabel: "왜 kmsg인가",
     principlesTitle: "로컬 자동화에 필요한 것만 담았습니다.",
     capabilitiesLabel: "주요 기능",
@@ -227,6 +239,18 @@ const homeContent = {
       "An unofficial CLI built on the macOS Accessibility API. Use the same commands in local automation and MCP clients.",
     installAction: "Install",
     docsAction: "Usage",
+    agentSkillLabel: "Coding agents",
+    agentSkillTitle: "Use kmsg directly from your coding agent.",
+    agentSkillDescription:
+      "Claude Code and Codex follow the same safe workflow for chat discovery, reading, and dry-run sends.",
+    agentSkillInstallTitle: "Install the skill once",
+    agentSkillInstallDescription:
+      "After installing the kmsg binary, add the skill to both agents.",
+    agentSkillUseTitle: "Ask in natural language",
+    agentSkillUseDescription:
+      "Start with /kmsg in Claude Code or $kmsg in Codex.",
+    agentSkillPrompt:
+      "/kmsg Summarize the 10 latest messages in Release Prep",
     principlesLabel: "Why kmsg",
     principlesTitle: "Only what local automation needs.",
     capabilitiesLabel: "Core capabilities",
@@ -295,6 +319,18 @@ const homeContent = {
       "macOSアクセシビリティAPIで動作する非公式CLIです。ローカル自動化とMCPクライアントで同じコマンドを利用できます。",
     installAction: "インストール",
     docsAction: "使い方",
+    agentSkillLabel: "コーディングエージェント",
+    agentSkillTitle: "コーディングエージェントからすぐに利用。",
+    agentSkillDescription:
+      "Claude CodeとCodexが、チャット検索・読み取り・dry-run送信を同じ安全な手順で実行します。",
+    agentSkillInstallTitle: "スキルを一度インストール",
+    agentSkillInstallDescription:
+      "kmsg本体をインストールした後、両方のエージェントに追加します。",
+    agentSkillUseTitle: "自然な言葉で呼び出す",
+    agentSkillUseDescription:
+      "Claude Codeでは/kmsg、Codexでは$kmsgから始めます。",
+    agentSkillPrompt:
+      "/kmsg リリース準備の最新メッセージ10件を要約して",
     principlesLabel: "kmsgを選ぶ理由",
     principlesTitle: "ローカル自動化に必要な機能だけ。",
     capabilitiesLabel: "主な機能",
@@ -364,6 +400,18 @@ const homeContent = {
       "基于macOS辅助功能API的非官方CLI。在本地自动化和MCP客户端中使用同一套命令。",
     installAction: "安装",
     docsAction: "使用指南",
+    agentSkillLabel: "编程智能体",
+    agentSkillTitle: "直接在编程智能体中使用kmsg。",
+    agentSkillDescription:
+      "Claude Code与Codex使用同一套安全流程查找聊天、读取消息并在发送前进行dry-run。",
+    agentSkillInstallTitle: "一次安装技能",
+    agentSkillInstallDescription:
+      "安装kmsg命令行工具后，将技能同时添加到两个智能体。",
+    agentSkillUseTitle: "使用自然语言调用",
+    agentSkillUseDescription:
+      "在Claude Code中使用/kmsg，在Codex中使用$kmsg。",
+    agentSkillPrompt:
+      "/kmsg 总结发布准备聊天中的最近10条消息",
     principlesLabel: "为什么选择kmsg",
     principlesTitle: "只保留本地自动化所需的功能。",
     capabilitiesLabel: "核心功能",
@@ -1220,6 +1268,49 @@ const renderCapabilities = (copy) => `
     </div>
   </section>`;
 
+const agentSkillInstallCommand =
+  "npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y";
+
+const renderAgentSkill = (page, copy) => `
+  <section class="product-section agent-skill-section" id="agent-skill" data-agent-skill>
+    ${renderSectionHeading(
+      copy.agentSkillLabel,
+      copy.agentSkillTitle,
+      copy.agentSkillDescription,
+    )}
+    <div class="agent-skill-grid">
+      <article class="agent-skill-card">
+        <span class="agent-skill-step">01</span>
+        <h3>${escapeHtml(copy.agentSkillInstallTitle)}</h3>
+        <p>${escapeHtml(copy.agentSkillInstallDescription)}</p>
+        <button class="agent-skill-command copy-control" type="button" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+          <span class="prompt" aria-hidden="true">$</span>
+          <code>${agentSkillInstallCommand}</code>
+          <span class="copy-icon" aria-hidden="true">⧉</span>
+        </button>
+      </article>
+      <article class="agent-skill-card">
+        <span class="agent-skill-step">02</span>
+        <h3>${escapeHtml(copy.agentSkillUseTitle)}</h3>
+        <p>${escapeHtml(copy.agentSkillUseDescription)}</p>
+        <div class="agent-invocation-grid">
+          <article class="agent-invocation">
+            <span>Claude Code</span>
+            <code>/kmsg</code>
+          </article>
+          <article class="agent-invocation">
+            <span>Codex</span>
+            <code>$kmsg</code>
+          </article>
+        </div>
+        <div class="agent-prompt-example">
+          <span>prompt</span>
+          <code>${escapeHtml(copy.agentSkillPrompt)}</code>
+        </div>
+      </article>
+    </div>
+  </section>`;
+
 const renderHomeStories = (copy, locale) => `
   <section class="product-section stories-section" id="stories">
     ${renderSectionHeading(
@@ -1328,6 +1419,7 @@ const renderProductHome = (page) => {
     ${renderHomeWorkflow(page)}
     ${renderPrinciples(copy)}
     ${renderCapabilities(copy)}
+    ${renderAgentSkill(page, copy)}
     ${renderHomeStories(copy, page.locale)}
     ${renderHomeInstall(page, copy)}`;
 };

@@ -1347,6 +1347,130 @@ html[lang="ko"] .hero h1 em {
   color: #8d8d88;
 }
 
+.agent-skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.agent-skill-card {
+  min-width: 0;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--canvas-raised) 74%, transparent);
+}
+
+.agent-skill-step {
+  display: inline-block;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.agent-skill-card h3 {
+  margin: 28px 0 0;
+  font-family: var(--display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+}
+
+.agent-skill-card > p {
+  min-height: 50px;
+  margin: 12px 0 0;
+  color: var(--ink-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.agent-skill-command {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  min-height: 64px;
+  margin-top: 24px;
+  padding: 13px 14px;
+  border: 1px solid #272724;
+  border-radius: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  background: #0c0c0b;
+  color: #efefec;
+  text-align: left;
+}
+
+.agent-skill-command:hover {
+  border-color: #464640;
+  background: #11110f;
+}
+
+.agent-skill-command .prompt {
+  color: #6bd98e;
+}
+
+.agent-skill-command code {
+  min-width: 0;
+  color: inherit;
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.agent-invocation-grid {
+  display: grid;
+  margin-top: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.agent-invocation {
+  display: grid;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  gap: 8px;
+}
+
+.agent-invocation span,
+.agent-prompt-example > span {
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.agent-invocation code {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.agent-prompt-example {
+  display: grid;
+  min-width: 0;
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  gap: 8px;
+}
+
+.agent-prompt-example code {
+  min-width: 0;
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
 .stories-section .story-grid {
   margin: 0;
   gap: 18px;
@@ -2187,6 +2311,10 @@ html[lang="ko"] .hero h1 em {
     grid-template-columns: 1fr;
   }
 
+  .agent-skill-grid {
+    grid-template-columns: 1fr;
+  }
+
   .principle-card {
     min-height: 0;
     padding: 24px;
@@ -2194,6 +2322,14 @@ html[lang="ko"] .hero h1 em {
 
   .principle-card h3 {
     margin-top: 28px;
+  }
+
+  .agent-skill-card {
+    padding: 24px;
+  }
+
+  .agent-skill-card > p {
+    min-height: 0;
   }
 
   .capability-row,

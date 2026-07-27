@@ -53,8 +53,12 @@ window.addEventListener("scroll", updateHeader, { passive: true });
 
 const copyText = async (value) => {
   if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value);
-    return;
+    try {
+      await navigator.clipboard.writeText(value);
+      return;
+    } catch {
+      // Some browsers expose Clipboard API without granting write access.
+    }
   }
 
   const area = document.createElement("textarea");
@@ -64,8 +68,14 @@ const copyText = async (value) => {
   area.style.opacity = "0";
   document.body.append(area);
   area.select();
-  document.execCommand("copy");
-  area.remove();
+
+  let copied = false;
+  try {
+    copied = document.execCommand("copy");
+  } finally {
+    area.remove();
+  }
+  if (!copied) throw new Error("Copy failed");
 };
 
 const markCopied = (button, fallbackLabel = copiedLabel) => {

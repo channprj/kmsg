@@ -163,6 +163,7 @@ test("home routes render the curated product page instead of README layout", asy
     "workflow",
     "principles",
     "capabilities",
+    "agent-skill",
     "stories",
     "install",
   ];
@@ -209,6 +210,47 @@ test("curated home keeps product proof, stories, and install actions", async () 
     );
     assert.match(html, /brew install channprj\/tap\/kmsg/);
     assert.match(html, /github\.com\/channprj\/kmsg\/releases/);
+  }
+});
+
+test("home routes document cross-agent skill installation and use", async () => {
+  const localizedCopy = {
+    ko: {
+      title: "코딩 에이전트에서 바로 사용하세요.",
+      prompt: "/kmsg 출시 준비 채팅방의 최근 메시지 10개를 요약해줘",
+    },
+    en: {
+      title: "Use kmsg directly from your coding agent.",
+      prompt: "/kmsg Summarize the 10 latest messages in Release Prep",
+    },
+    jp: {
+      title: "コーディングエージェントからすぐに利用。",
+      prompt: "/kmsg リリース準備の最新メッセージ10件を要約して",
+    },
+    cn: {
+      title: "直接在编程智能体中使用kmsg。",
+      prompt: "/kmsg 总结发布准备聊天中的最近10条消息",
+    },
+  };
+  const installCommand =
+    "npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y";
+
+  for (const [localeId, copy] of Object.entries(localizedCopy)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.match(
+      html,
+      /<section class="product-section agent-skill-section" id="agent-skill" data-agent-skill>/,
+    );
+    assert.ok(html.includes(copy.title));
+    assert.ok(html.includes(copy.prompt));
+    assert.ok(html.includes(installCommand));
+    assert.equal(
+      (html.match(/<article class="agent-invocation">/g) || []).length,
+      2,
+    );
+    assert.match(html, /<span>Claude Code<\/span>\s*<code>\/kmsg<\/code>/);
+    assert.match(html, /<span>Codex<\/span>\s*<code>\$kmsg<\/code>/);
   }
 });
 
@@ -523,6 +565,20 @@ test("terminal replay is cancellable, motion-aware, and locale-safe", async () =
   );
 });
 
+test("copy controls fall back when the Clipboard API rejects", async () => {
+  const app = await readOutput("assets/app.js");
+
+  assert.match(
+    app,
+    /if \(navigator\.clipboard\?\.writeText\)\s*{\s*try\s*{\s*await navigator\.clipboard\.writeText\(value\);\s*return;\s*} catch \{/s,
+  );
+  assert.match(
+    app,
+    /let copied = false;[\s\S]*copied = document\.execCommand\("copy"\);[\s\S]*finally\s*{[\s\S]*area\.remove\(\)/,
+  );
+  assert.match(app, /if \(!copied\) throw new Error\("Copy failed"\)/);
+});
+
 test("home workflow uses the compact Ghostty visual contract", async () => {
   const styles = await readOutput("assets/styles.css");
 
@@ -628,6 +684,18 @@ test("curated home styles define the responsive product system", async () => {
   assert.match(
     styles,
     /\.command-panel\s*{[\s\S]*overflow-x:\s*auto/,
+  );
+  assert.match(
+    styles,
+    /\.agent-skill-grid\s*{[\s\S]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/,
+  );
+  assert.match(
+    styles,
+    /\.agent-skill-command code\s*{[\s\S]*overflow-wrap:\s*anywhere/,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.agent-skill-grid\s*{[\s\S]*grid-template-columns:\s*1fr/,
   );
   assert.match(
     styles,
