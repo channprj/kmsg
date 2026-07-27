@@ -200,7 +200,7 @@ const homeContent = {
         title: "메시지 읽기",
         description:
           "채팅을 찾고 재사용 가능한 chat_id와 최근 메시지를 가져옵니다.",
-        points: ["채팅 목록 조회", "최근 메시지", "background-safe 읽기"],
+        points: ["채팅 목록 조회", "최근 메시지"],
         command: 'kmsg read "AI 프로젝트" --limit 20 --json',
         output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
       },
@@ -209,7 +209,7 @@ const homeContent = {
         description:
           "사용 중인 KakaoTalk 창을 방해하지 않으면서 새 메시지를 확인합니다.",
         points: ["실시간 이벤트", "JSON 스트림", "복구 모드"],
-        command: "kmsg watch --json --background-safe",
+        command: 'kmsg watch "AI 프로젝트" --json',
         output: '{"event":"message","author":"지나","body":"확인해줘."}',
       },
       {
@@ -270,7 +270,7 @@ const homeContent = {
         title: "Read messages",
         description:
           "Find chats and return stable chat IDs with recent messages.",
-        points: ["Chat discovery", "Recent messages", "Background-safe reads"],
+        points: ["Chat discovery", "Recent messages"],
         command: 'kmsg read "AI Project" --limit 20 --json',
         output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
       },
@@ -279,7 +279,7 @@ const homeContent = {
         description:
           "Stream new messages without taking over the active KakaoTalk window.",
         points: ["Live events", "JSON stream", "Recovery mode"],
-        command: "kmsg watch --json --background-safe",
+        command: 'kmsg watch "AI Project" --json',
         output: '{"event":"message","author":"Jina","body":"Please check."}',
       },
       {
@@ -341,11 +341,7 @@ const homeContent = {
         title: "メッセージを読む",
         description:
           "チャットを検索し、再利用可能なchat_idと最近のメッセージを取得します。",
-        points: [
-          "チャット検索",
-          "最近のメッセージ",
-          "安全なバックグラウンド読み取り",
-        ],
+        points: ["チャット検索", "最近のメッセージ"],
         command: 'kmsg read "AIプロジェクト" --limit 20 --json',
         output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
       },
@@ -354,7 +350,7 @@ const homeContent = {
         description:
           "使用中のKakaoTalkウィンドウを妨げず、新着を継続的に確認します。",
         points: ["リアルタイムイベント", "JSONストリーム", "復旧モード"],
-        command: "kmsg watch --json --background-safe",
+        command: 'kmsg watch "AIプロジェクト" --json',
         output: '{"event":"message","author":"ジナ","body":"確認して。"}',
       },
       {
@@ -414,7 +410,7 @@ const homeContent = {
       {
         title: "读取消息",
         description: "查找聊天并返回可复用的chat_id与最近消息。",
-        points: ["聊天查找", "最近消息", "安全后台读取"],
+        points: ["聊天查找", "最近消息"],
         command: 'kmsg read "AI项目" --limit 20 --json',
         output: '{"chat_id":"chat_7f42c5e1d9ab","messages":[...]}',
       },
@@ -423,7 +419,7 @@ const homeContent = {
         description:
           "不干扰正在使用的KakaoTalk窗口，持续获取新消息。",
         points: ["实时事件", "JSON流", "恢复模式"],
-        command: "kmsg watch --json --background-safe",
+        command: 'kmsg watch "AI项目" --json',
         output: '{"event":"message","author":"Jina","body":"请确认。"}',
       },
       {

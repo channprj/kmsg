@@ -195,7 +195,6 @@ test("curated home keeps product proof, stories, and install actions", async () 
     assert.match(html, /kmsg chats --limit 2/);
     assert.match(html, /kmsg read &quot;/);
     assert.match(html, /kmsg send &quot;/);
-    assert.match(html, /kmsg watch --json/);
     assert.equal(
       (html.match(/<article class="principle-card">/g) || []).length,
       3,
@@ -210,6 +209,32 @@ test("curated home keeps product proof, stories, and install actions", async () 
     );
     assert.match(html, /brew install channprj\/tap\/kmsg/);
     assert.match(html, /github\.com\/channprj\/kmsg\/releases/);
+  }
+});
+
+test("home routes omit background-safe messaging", async () => {
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.doesNotMatch(
+      html,
+      /background-safe|安全なバックグラウンド読み取り|安全后台读取/i,
+    );
+  }
+});
+
+test("home routes render valid localized watch commands", async () => {
+  const watchCommands = {
+    ko: "kmsg watch &quot;AI 프로젝트&quot; --json",
+    en: "kmsg watch &quot;AI Project&quot; --json",
+    jp: "kmsg watch &quot;AIプロジェクト&quot; --json",
+    cn: "kmsg watch &quot;AI项目&quot; --json",
+  };
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.ok(html.includes(watchCommands[localeId]));
   }
 });
 
