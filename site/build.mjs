@@ -1141,9 +1141,7 @@ const renderReplayCommand = (stage, command) => `
   </div>`;
 
 const renderReplayOutput = (stage, output, tone = "") => `
-  <div class="terminal-line terminal-output-line${tone ? ` ${tone}` : ""}" data-replay-line data-replay-stage="${stage}">
-    ${escapeHtml(output)}
-  </div>`;
+  <div class="terminal-line terminal-output-line${tone ? ` ${tone}` : ""}" data-replay-line data-replay-stage="${stage}">${escapeHtml(output)}</div>`;
 
 const renderReplayGap = (stage) => `
   <div class="terminal-line terminal-output-gap" data-replay-line data-replay-stage="${stage}" aria-hidden="true"></div>`;

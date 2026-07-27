@@ -265,6 +265,25 @@ test("home routes omit background-safe messaging", async () => {
   }
 });
 
+test("home routes avoid decorative horizontal rules between sections", async () => {
+  const styles = await readOutput("assets/styles.css");
+  const productSectionRules = [
+    ...styles.matchAll(/(?:^|\n)\.product-section\s*\{([^}]*)\}/g),
+  ];
+
+  assert.ok(productSectionRules.length > 0);
+  assert.ok(
+    productSectionRules.every(([, declarations]) =>
+      !declarations.includes("border-top"),
+    ),
+  );
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    assert.doesNotMatch(html, /<hr(?:\s|>)/);
+  }
+});
+
 test("home routes render valid localized watch commands", async () => {
   const watchCommands = {
     ko: "kmsg watch &quot;AI 프로젝트&quot; --json",
@@ -517,6 +536,10 @@ test("home hero renders the real localized chats-read-send transcript", async ()
     assert.match(html, /✓ Chat window closed\./);
     assert.doesNotMatch(
       html,
+      /class="terminal-line terminal-output-line[^"]*"[^>]*>\s*\n/,
+    );
+    assert.doesNotMatch(
+      html,
       /data-replay-command>kmsg watch|class="tui-|MCP · kmsg_read/,
     );
   }
@@ -596,7 +619,7 @@ test("home workflow uses the compact Ghostty visual contract", async () => {
   );
   assert.match(
     styles,
-    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.18;/,
+    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.1;/,
   );
   assert.match(
     styles,
@@ -604,11 +627,11 @@ test("home workflow uses the compact Ghostty visual contract", async () => {
   );
   assert.match(
     styles,
-    /\.terminal-command-line\s*{[\s\S]*margin-top:\s*7px;[\s\S]*gap:\s*8px;/,
+    /\.terminal-command-line\s*{[\s\S]*margin-top:\s*3px;[\s\S]*gap:\s*8px;/,
   );
   assert.match(
     styles,
-    /\.terminal-output-gap\s*{[\s\S]*height:\s*3px;/,
+    /\.terminal-output-gap\s*{[\s\S]*height:\s*1px;/,
   );
   assert.match(
     styles,

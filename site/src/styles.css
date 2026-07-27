@@ -689,7 +689,7 @@ html[lang="ko"] .hero h1 em {
   font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas,
     monospace;
   font-size: 13px;
-  line-height: 1.18;
+  line-height: 1.1;
 }
 
 .terminal-transcript {
@@ -717,7 +717,7 @@ html[lang="ko"] .hero h1 em {
 
 .terminal-command-line {
   display: flex;
-  margin-top: 7px;
+  margin-top: 3px;
   align-items: flex-start;
   gap: 8px;
 }
@@ -744,7 +744,7 @@ html[lang="ko"] .hero h1 em {
 
 .terminal-output-gap {
   display: block;
-  height: 3px;
+  height: 1px;
 }
 
 .terminal-muted {
@@ -1113,7 +1113,6 @@ html[lang="ko"] .hero h1 em {
 
 .product-section {
   padding: 88px 0;
-  border-top: 1px solid var(--line);
 }
 
 .section-heading {
