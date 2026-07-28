@@ -183,6 +183,11 @@ const homeContent = {
     storiesTitle: "실제 자동화 워크플로우에서\n널리 사용되고 있습니다",
     storiesDescription:
       "kmsg를 에이전트와 로컬 자동화에 연결한 사용 사례입니다.",
+    moreStoriesAction: "더 많은 사례 보기",
+    faqLabel: "자주 묻는 질문",
+    faqTitle: "kmsg를 시작하기 전에 알아둘 것.",
+    faqDescription:
+      "설치, 지원 환경, 접근 방식과 MCP에 관한 핵심 답변입니다.",
     installLabel: "설치",
     installTitle: "Homebrew로 바로 시작하세요.",
     installDescription:
@@ -263,6 +268,10 @@ const homeContent = {
     storiesTitle: "Used in real automation workflows.",
     storiesDescription:
       "Examples of kmsg connected to agents and local automation.",
+    moreStoriesAction: "See more examples",
+    faqLabel: "Frequently asked questions",
+    faqTitle: "What to know before using kmsg.",
+    faqDescription: "Concise answers about setup, support, access, and MCP.",
     installLabel: "Install",
     installTitle: "Start with Homebrew.",
     installDescription:
@@ -343,6 +352,11 @@ const homeContent = {
     storiesTitle: "実際の自動化ワークフローで使われています。",
     storiesDescription:
       "kmsgをエージェントとローカル自動化に接続した事例です。",
+    moreStoriesAction: "その他の活用事例を見る",
+    faqLabel: "よくある質問",
+    faqTitle: "kmsgを使う前に知っておくこと。",
+    faqDescription:
+      "導入、対応環境、アクセス方法、MCPの要点です。",
     installLabel: "インストール",
     installTitle: "Homebrewですぐに開始。",
     installDescription:
@@ -424,6 +438,11 @@ const homeContent = {
     storiesTitle: "已用于真实的自动化工作流。",
     storiesDescription:
       "kmsg连接智能体与本地自动化的实际案例。",
+    moreStoriesAction: "查看更多案例",
+    faqLabel: "常见问题",
+    faqTitle: "使用kmsg前需要了解的内容。",
+    faqDescription:
+      "关于安装、支持环境、访问方式和MCP的核心解答。",
     installLabel: "安装",
     installTitle: "使用Homebrew立即开始。",
     installDescription:
@@ -1163,7 +1182,7 @@ const renderHeader = (page) => {
 
 const renderReplayCommand = (stage, command) => `
   <div class="terminal-line terminal-command-line" data-replay-line data-replay-stage="${stage}" data-replay-kind="command">
-    <span class="terminal-prompt">❯</span>
+    <span class="terminal-prompt">$</span>
     <span class="terminal-command" data-replay-command>${escapeHtml(command)}</span>
     <span class="cursor-block" aria-hidden="true"></span>
   </div>`;
@@ -1215,7 +1234,7 @@ const renderWorkflowTerminal = (page) => {
           ${renderReplayOutput(3, "✓ Chat window closed.", "terminal-success")}
           ${renderReplayGap(3)}
           <div class="terminal-line terminal-command-line terminal-return-line" data-replay-line data-replay-stage="3">
-            <span class="terminal-prompt">❯</span>
+            <span class="terminal-prompt">$</span>
             <span class="terminal-command" data-replay-command></span>
             <span class="cursor-block" aria-hidden="true"></span>
           </div>
@@ -1337,6 +1356,9 @@ const renderAgentSkill = (page, copy) => `
     </div>
   </section>`;
 
+const moreStoriesUrl =
+  "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4";
+
 const renderHomeStories = (copy, locale) => `
   <section class="product-section stories-section" id="stories">
     ${renderSectionHeading(
@@ -1358,6 +1380,32 @@ const renderHomeStories = (copy, locale) => `
             <span class="story-arrow" aria-hidden="true">↗</span>
           </div>
         </article>`,
+        )
+        .join("")}
+    </div>
+    <div class="section-action">
+      <a class="text-action" href="${moreStoriesUrl}" target="_blank" rel="noopener noreferrer">
+        ${escapeHtml(copy.moreStoriesAction)}
+        <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </section>`;
+
+const renderHomeFaq = (copy, faqs) => `
+  <section class="product-section faq-section" id="faq">
+    ${renderSectionHeading(
+      copy.faqLabel,
+      copy.faqTitle,
+      copy.faqDescription,
+    )}
+    <div class="faq-list">
+      ${faqs
+        .map(
+          ({ question, answer }) => `
+        <details class="faq-item">
+          <summary>${escapeHtml(question)}<span aria-hidden="true">+</span></summary>
+          <p>${escapeHtml(answer)}</p>
+        </details>`,
         )
         .join("")}
     </div>
@@ -1416,7 +1464,7 @@ const renderHomeHeadline = (copy) => {
     .join("\n");
 };
 
-const renderProductHome = (page) => {
+const renderProductHome = (page, faqs) => {
   const copy = homeContent[page.locale];
   const docsLink = relativeAsset(
     page.output,
@@ -1447,6 +1495,7 @@ const renderProductHome = (page) => {
     ${renderCapabilities(copy)}
     ${renderAgentSkill(page, copy)}
     ${renderHomeStories(copy, page.locale)}
+    ${renderHomeFaq(copy, faqs)}
     ${renderHomeInstall(page, copy)}`;
 };
 
@@ -1667,7 +1716,7 @@ const renderDocument = ({
   const mainContent =
     page.type === "home"
       ? `<div class="product-home" data-product-home>
-          ${renderProductHome(page)}
+          ${renderProductHome(page, faqs)}
         </div>`
       : `${renderDocsHero(page, markdown, lastModified)}
         <div class="content-layout">

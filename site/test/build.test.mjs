@@ -641,7 +641,7 @@ test("home workflow uses the compact Ghostty visual contract", async () => {
   );
   assert.match(
     styles,
-    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.1;/,
+    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.2;/,
   );
   assert.match(
     styles,
@@ -674,6 +674,82 @@ test("home workflow uses the compact Ghostty visual contract", async () => {
   assert.doesNotMatch(
     styles,
     /\.terminal-(?:footer|version)|\.workflow-meta|@keyframes terminal-scan|\.terminal-window::after|\.hero-visual:hover \.terminal-window/,
+  );
+});
+
+test("homepage replay uses shell prompts and relaxed terminal rhythm", async () => {
+  const [html, styles] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/styles.css"),
+  ]);
+  assert.doesNotMatch(html, /❯/);
+  assert.ok(
+    (html.match(/class="terminal-prompt">\$<\/span>/g) || []).length >= 4,
+  );
+  assert.match(styles, /\.terminal-body\s*{[^}]*line-height:\s*1\.2;/s);
+});
+
+test("homepage centers hero actions and normalizes story geometry", async () => {
+  const [html, styles] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/styles.css"),
+  ]);
+  assert.match(
+    styles,
+    /\.product-hero \.hero-actions\s*{[^}]*grid-column:\s*1\s*\/\s*-1;[^}]*grid-row:\s*4;[^}]*justify-content:\s*center;/s,
+  );
+  assert.match(
+    styles,
+    /\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/s,
+  );
+  assert.doesNotMatch(styles, /\.stories-section \.story-card:nth-child\(2\)/);
+  assert.match(
+    styles,
+    /\.stories-section \.story-media\s*{[^}]*overflow:\s*hidden;[^}]*aspect-ratio:\s*16\s*\/\s*9;/s,
+  );
+  assert.match(
+    html,
+    /href="https:\/\/www\.google\.com\/search\?q=kmsg\+%EC%B9%B4%EC%B9%B4%EC%98%A4" target="_blank" rel="noopener noreferrer"/,
+  );
+});
+
+test("homepage renders every FAQ represented by structured data", async () => {
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    const data = JSON.parse(
+      html.match(
+        /<script type="application\/ld\+json">([\s\S]+?)<\/script>/,
+      )[1],
+    );
+    const faq = data["@graph"].find((node) => node["@type"] === "FAQPage");
+    assert.match(
+      html,
+      /<section class="product-section faq-section" id="faq">/,
+    );
+    assert.equal(
+      (html.match(/<details class="faq-item">/g) || []).length,
+      faq.mainEntity.length,
+      localeId,
+    );
+    for (const item of faq.mainEntity) {
+      assert.ok(html.includes(item.name), `${localeId}: ${item.name}`);
+      assert.ok(
+        html.includes(item.acceptedAnswer.text),
+        `${localeId}: ${item.acceptedAnswer.text}`,
+      );
+    }
+  }
+});
+
+test("documentation code blocks use the same terminal color family", async () => {
+  const styles = await readOutput("assets/styles.css");
+  assert.match(
+    styles,
+    /\.markdown-body pre\s*{[^}]*background:\s*#282c34;/s,
+  );
+  assert.match(
+    styles,
+    /\.markdown-body pre::before\s*{[^}]*#282c34;[^}]*content:\s*"";/s,
   );
 });
 
@@ -762,7 +838,7 @@ test("Korean homepage retains both real-world stories and install target", async
   assert.doesNotMatch(html, /<track kind="captions"/);
 });
 
-test("editorial homepage uses asymmetric hierarchy and distinct rhythms", async () => {
+test("editorial homepage uses deliberate hierarchy and distinct rhythms", async () => {
   const styles = await readOutput("assets/styles.css");
 
   assert.match(
@@ -791,15 +867,7 @@ test("editorial homepage uses asymmetric hierarchy and distinct rhythms", async 
   );
   assert.match(
     styles,
-    /\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*minmax\(0,\s*1\.18fr\)\s+minmax\(0,\s*0\.82fr\);/s,
-  );
-  assert.match(
-    styles,
-    /\.stories-section \.story-card:nth-child\(2\)\s*{[^}]*margin-top:\s*64px;/s,
-  );
-  assert.match(
-    styles,
-    /@media \(max-width:\s*759px\)[\s\S]*?\.product-hero\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.section-heading\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.stories-section \.story-card:nth-child\(2\)\s*{[^}]*margin-top:\s*0;/s,
+    /@media \(max-width:\s*759px\)[\s\S]*?\.product-hero\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.section-heading\s*{[^}]*grid-template-columns:\s*1fr;[^}]*\}[\s\S]*?\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*1fr;/s,
   );
   assert.match(
     styles,

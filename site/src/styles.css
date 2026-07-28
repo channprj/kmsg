@@ -698,7 +698,7 @@ html[lang="ko"] .hero h1 em {
   font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas,
     monospace;
   font-size: 13px;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .terminal-transcript {
@@ -957,11 +957,11 @@ html[lang="ko"] .hero h1 em {
 }
 
 .product-hero .hero-actions {
-  margin-top: 28px;
-  grid-column: 9 / -1;
-  grid-row: 3;
+  margin-top: 38px;
+  grid-column: 1 / -1;
+  grid-row: 4;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 18px;
 }
 
@@ -1402,7 +1402,7 @@ html[lang="ko"] .hero h1 em {
 
 .stories-section .story-grid {
   margin: 0;
-  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -1410,12 +1410,10 @@ html[lang="ko"] .hero h1 em {
   border-radius: 14px;
 }
 
-.stories-section .story-card:nth-child(2) {
-  margin-top: 64px;
-}
-
 .stories-section .story-media {
   display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
 }
 
 .stories-section .story-media img {
@@ -1449,6 +1447,72 @@ html[lang="ko"] .hero h1 em {
 
 .stories-section .story-copy h3 a {
   text-decoration: none;
+}
+
+.section-action {
+  display: flex;
+  margin-top: 28px;
+  justify-content: center;
+}
+
+.text-action {
+  display: inline-flex;
+  min-height: 44px;
+  padding: 10px 14px;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.text-action:hover {
+  color: var(--ink);
+}
+
+.faq-list {
+  border-top: 1px solid var(--line);
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq-item summary {
+  display: flex;
+  min-height: 72px;
+  padding: 20px 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary span {
+  flex: none;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  transition: transform 180ms ease;
+}
+
+.faq-item[open] summary span {
+  transform: rotate(45deg);
+}
+
+.faq-item p {
+  max-width: 760px;
+  margin: -4px 0 24px;
+  color: var(--ink-muted);
 }
 
 .story-arrow {
@@ -1868,7 +1932,7 @@ html[lang="ko"] .hero h1 em {
   overflow: auto;
   border: 1px solid var(--line-strong);
   border-radius: 12px;
-  background: #10151c;
+  background: #282c34;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
   color: #dbe4ed;
   scrollbar-width: thin;
@@ -1882,7 +1946,7 @@ html[lang="ko"] .hero h1 em {
     radial-gradient(circle at 15px 17px, #e2635f 0 4px, transparent 4.5px),
     radial-gradient(circle at 29px 17px, #dfb44b 0 4px, transparent 4.5px),
     radial-gradient(circle at 43px 17px, #4caf6b 0 4px, transparent 4.5px),
-    #171d25;
+    #282c34;
   content: "";
 }
 
@@ -2165,8 +2229,7 @@ html[lang="ko"] .hero h1 em {
 
   .hero-kicker,
   .product-hero h1,
-  .product-hero .hero-lead,
-  .product-hero .hero-actions {
+  .product-hero .hero-lead {
     grid-column: 3 / -1;
   }
 
@@ -2175,8 +2238,9 @@ html[lang="ko"] .hero h1 em {
   }
 
   .product-hero .hero-actions {
+    grid-column: 1 / -1;
     grid-row: 4;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .hero {
@@ -2404,10 +2468,6 @@ html[lang="ko"] .hero h1 em {
 
   .stories-section .story-grid {
     grid-template-columns: 1fr;
-  }
-
-  .stories-section .story-card:nth-child(2) {
-    margin-top: 0;
   }
 
   .install-section {
