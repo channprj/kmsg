@@ -49,7 +49,7 @@ and terminal replay already operate on stable data attributes.
 - Modify: `site/src/styles.css:190-340`
 - Modify: `site/src/styles.css:2246-2610`
 
-- [ ] **Step 1: Write failing route and navigation tests**
+- [x] **Step 1: Write failing route and navigation tests**
 
 Change the test route map so `openclaw` keeps its internal source identity but
 publishes at `mcp/`, then add `skill`:
@@ -143,7 +143,7 @@ test("legacy OpenClaw routes redirect to localized canonical MCP routes", async 
 });
 ```
 
-- [ ] **Step 2: Run the site test and verify the new contract fails**
+- [x] **Step 2: Run the site test and verify the new contract fails**
 
 Run:
 
@@ -154,7 +154,7 @@ npm test --prefix site
 Expected: FAIL because `skill/index.html` and `mcp/index.html` do not exist and
 the homepage still renders a two-link navigation.
 
-- [ ] **Step 3: Create the four complete Skill Markdown sources**
+- [x] **Step 3: Create the four complete Skill Markdown sources**
 
 Each file must use this localized section structure:
 
@@ -205,7 +205,7 @@ npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y
 Translate the prose naturally in the English, Japanese, and Chinese files while
 preserving commands, `/kmsg`, `$kmsg`, and relative route intent exactly.
 
-- [ ] **Step 4: Add the route and page metadata**
+- [x] **Step 4: Add the route and page metadata**
 
 In `pageDefinitions`, change only the public slug for the existing MCP source:
 
@@ -242,7 +242,7 @@ Extend `markdownPageKey`:
 if (["skill.md", "skill"].includes(basename)) return "skill";
 ```
 
-- [ ] **Step 5: Replace the conditional header with one shared five-link header**
+- [x] **Step 5: Replace the conditional header with one shared five-link header**
 
 Add localized UI strings:
 
@@ -286,7 +286,7 @@ Use the same icon-based theme control on every page. Remove the conditional
 home-only GitHub icon and document-only `LLM.txt` header link; retain LLM links
 in the footer and `<head>`.
 
-- [ ] **Step 6: Generate canonical and legacy redirects without sitemap duplication**
+- [x] **Step 6: Generate canonical and legacy redirects without sitemap duplication**
 
 Keep canonical documents in `documents`. After writing them, generate:
 
@@ -326,7 +326,7 @@ for (const localeId of localeOrder) {
 
 Also emit `/ko/openclaw/index.html` as a legacy-of-a-legacy redirect to `/mcp/`.
 
-- [ ] **Step 7: Make all five links available at every viewport**
+- [x] **Step 7: Make all five links available at every viewport**
 
 Remove `.is-home .site-header`, `.is-home .primary-nav`, and the mobile
 `display: none` navigation rules. Add:
@@ -373,7 +373,7 @@ Remove `.is-home .site-header`, `.is-home .primary-nav`, and the mobile
 }
 ```
 
-- [ ] **Step 8: Run route tests and verify they pass**
+- [x] **Step 8: Run route tests and verify they pass**
 
 Run:
 
@@ -385,7 +385,7 @@ git diff --check
 Expected: all tests PASS, canonical output reports `Built 24 pages`, and there
 are no whitespace errors.
 
-- [ ] **Step 9: Commit and push checkpoint 2**
+- [x] **Step 9: Commit and push checkpoint 2**
 
 ```bash
 git add site/build.mjs site/src/styles.css site/test/build.test.mjs \
@@ -415,7 +415,7 @@ Expected parity: `0 0`.
 - Modify: `site/src/styles.css:1860-2020`
 - Modify: `site/src/styles.css:2246-2815`
 
-- [ ] **Step 1: Write failing homepage refinement tests**
+- [x] **Step 1: Write failing homepage refinement tests**
 
 Assert all command prompts and terminal spacing:
 
@@ -480,7 +480,7 @@ test("homepage renders every FAQ represented by structured data", async () => {
 });
 ```
 
-- [ ] **Step 2: Run tests and verify the old visual contract fails**
+- [x] **Step 2: Run tests and verify the old visual contract fails**
 
 Run:
 
@@ -491,7 +491,7 @@ npm test --prefix site
 Expected: FAIL on `❯`, line height `1.1`, asymmetric story columns, missing
 external action, and missing visible FAQ.
 
-- [ ] **Step 3: Add localized homepage action and FAQ labels**
+- [x] **Step 3: Add localized homepage action and FAQ labels**
 
 Add these fields to `homeContent`:
 
@@ -521,7 +521,7 @@ faqTitle: "使用kmsg前需要了解的内容。",
 faqDescription: "关于安装、支持环境、访问方式和MCP的核心解答。",
 ```
 
-- [ ] **Step 4: Render the external story action and visible FAQ**
+- [x] **Step 4: Render the external story action and visible FAQ**
 
 Append this action after `.story-grid`:
 
@@ -560,7 +560,7 @@ const renderHomeFaq = (copy, faqs) => `
 Pass `faqs` through `renderProductHome(page, faqs)` and render the FAQ between
 stories and install.
 
-- [ ] **Step 5: Implement terminal, hero, story, FAQ, and docs visual rules**
+- [x] **Step 5: Implement terminal, hero, story, FAQ, and docs visual rules**
 
 Change both `.terminal-prompt` occurrences in `site/build.mjs` to `$`, then set:
 
@@ -639,7 +639,7 @@ Change Markdown terminal surfaces to the same `#282c34` background family and
 traffic-light bar used by the homepage terminal without changing code
 scrollability.
 
-- [ ] **Step 6: Run tests and inspect the generated HTML contract**
+- [x] **Step 6: Run tests and inspect the generated HTML contract**
 
 Run:
 
@@ -659,7 +659,7 @@ git diff --check
 Expected: all tests PASS and the object reports at least four prompts, six Korean
 FAQs, and `more: true`.
 
-- [ ] **Step 7: Commit and push checkpoint 3**
+- [x] **Step 7: Commit and push checkpoint 3**
 
 ```bash
 git add site/build.mjs site/src/styles.css site/test/build.test.mjs
@@ -682,7 +682,7 @@ Expected parity: `0 0`.
 - Modify: `site/build.mjs:1654-1690`
 - Modify: `site/build.mjs:1730-1880`
 
-- [ ] **Step 1: Write failing metadata and crawler tests**
+- [x] **Step 1: Write failing metadata and crawler tests**
 
 Add:
 
@@ -725,7 +725,7 @@ assert.match(robots, /User-agent: ChatGPT-User\nAllow: \//);
 Assert the sitemap contains `/mcp/` and `/skill/` but not canonical
 `/openclaw/` entries.
 
-- [ ] **Step 2: Run tests and verify metadata gaps fail**
+- [x] **Step 2: Run tests and verify metadata gaps fail**
 
 Run:
 
@@ -736,7 +736,7 @@ npm test --prefix site
 Expected: FAIL because social dimensions, alternate OG locales, enhanced
 software facts, page `mainEntity`, and explicit OpenAI crawler blocks are absent.
 
-- [ ] **Step 3: Complete metadata and structured data**
+- [x] **Step 3: Complete metadata and structured data**
 
 Add an image node reused by SoftwareApplication:
 
@@ -791,7 +791,7 @@ For each non-current locale, emit:
 Use `article` as `og:type` and add `article:modified_time` on documentation
 pages; keep `website` on home.
 
-- [ ] **Step 4: Make OpenAI search crawling explicit**
+- [x] **Step 4: Make OpenAI search crawling explicit**
 
 Generate exactly:
 
@@ -812,7 +812,7 @@ Do not add a restrictive GPTBot rule: the wildcard already expresses the
 project's public crawl policy, while the two answer/search user agents are
 explicit for operational clarity.
 
-- [ ] **Step 5: Run full static-site verification**
+- [x] **Step 5: Run full static-site verification**
 
 Run:
 
@@ -824,7 +824,7 @@ git diff --check
 Expected: all tests PASS, `Built 24 pages and discovery files`, and no
 whitespace errors.
 
-- [ ] **Step 6: Commit and push checkpoint 4**
+- [x] **Step 6: Commit and push checkpoint 4**
 
 ```bash
 git add site/build.mjs site/test/build.test.mjs
@@ -847,7 +847,7 @@ Expected parity: `0 0`.
 - Modify if findings require it: `site/src/app.js`
 - Modify if findings require it: `site/test/build.test.mjs`
 
-- [ ] **Step 1: Run the complete local gates**
+- [x] **Step 1: Run the complete local gates**
 
 ```bash
 npm test --prefix site
@@ -859,7 +859,7 @@ git status --short --branch
 Expected: all site tests PASS, Swift debug build completes, no diff errors, and
 only planned verification fixes remain.
 
-- [ ] **Step 2: Review against the current Web Interface Guidelines**
+- [x] **Step 2: Review against the current Web Interface Guidelines**
 
 Fetch the latest Vercel guidelines and audit `site/build.mjs`,
 `site/src/styles.css`, and `site/src/app.js`. Verify at minimum:
@@ -876,7 +876,7 @@ Fetch the latest Vercel guidelines and audit `site/build.mjs`,
 
 Fix every relevant finding with a regression assertion.
 
-- [ ] **Step 3: Start a local production-like server**
+- [x] **Step 3: Start a local production-like server**
 
 ```bash
 python3 -m http.server 43129 --bind 127.0.0.1 --directory site/dist
@@ -884,7 +884,7 @@ python3 -m http.server 43129 --bind 127.0.0.1 --directory site/dist
 
 Use an isolated browser session named `kmsg-unified-final`.
 
-- [ ] **Step 4: Verify desktop and tablet layouts**
+- [x] **Step 4: Verify desktop and tablet layouts**
 
 At 1440×1000 and 768×1024, inspect `/`, `/usage/`, `/mcp/`, and `/skill/`.
 For each representative page assert:
@@ -925,7 +925,7 @@ On home additionally verify:
 Expected: `$`, approximately `1.2 × 13px`, equal story widths, and ratios near
 `1.777`.
 
-- [ ] **Step 5: Verify mobile navigation and all locales**
+- [x] **Step 5: Verify mobile navigation and all locales**
 
 At 390×844 and 320×800:
 
@@ -940,7 +940,7 @@ At 390×844 and 320×800:
 - verify `/usage/` persistence after locale selection; and
 - capture full-page dark and paper screenshots for visual inspection.
 
-- [ ] **Step 6: Verify external and legacy navigation**
+- [x] **Step 6: Verify external and legacy navigation**
 
 Click “more examples” with new-tab behavior and verify the tab URL is exactly:
 
@@ -952,7 +952,7 @@ Request `/openclaw/`, `/en/openclaw/`, `/jp/openclaw/`, and `/cn/openclaw/`.
 Expected: each page is `noindex,follow`, canonicalizes to its localized `/mcp/`,
 and exposes a working redirect/fallback link.
 
-- [ ] **Step 7: Validate structured output**
+- [x] **Step 7: Validate structured output**
 
 Parse every JSON-LD block locally with Node. Confirm every canonical route has
 one canonical URL, four `hreflang` alternates plus `x-default`, complete social
@@ -961,7 +961,7 @@ metadata, and no `openclaw` URL in the sitemap.
 Use Schema.org Validator or Google's Rich Results Test where the public
 deployment is required; do not claim eligibility solely from JSON parsing.
 
-- [ ] **Step 8: Commit any verification fixes as a corrective checkpoint**
+- [x] **Step 8: Commit any verification fixes as a corrective checkpoint**
 
 Only if QA reveals defects:
 
@@ -974,7 +974,7 @@ git push origin refs/heads/main:refs/heads/main
 
 Do not manufacture a commit if no fixes are needed.
 
-- [ ] **Step 9: Prove remote parity and watch deployment**
+- [x] **Step 9: Prove remote parity and watch deployment**
 
 ```bash
 git fetch origin refs/heads/main:refs/remotes/origin/main
@@ -986,7 +986,7 @@ gh run list --commit "$(git rev-parse HEAD)" --limit 10
 Expected: parity `0 0`, clean tree, successful Swift CI, and successful Pages
 build/deploy for the final SHA.
 
-- [ ] **Step 10: Repeat production browser checks**
+- [x] **Step 10: Repeat production browser checks**
 
 Against `https://channprj.github.io/kmsg/` verify:
 
@@ -1000,7 +1000,7 @@ Against `https://channprj.github.io/kmsg/` verify:
 - no console errors or horizontal overflow; and
 - dark/paper theme and locale persistence.
 
-- [ ] **Step 11: Complete the requirement-by-requirement audit**
+- [x] **Step 11: Complete the requirement-by-requirement audit**
 
 Re-read the user request and the approved design. Map every explicit requirement
 to source, test, browser, deployment, and parity evidence. Keep working if any
