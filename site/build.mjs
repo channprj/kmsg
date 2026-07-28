@@ -37,6 +37,7 @@ const locales = {
       navigation: "주요 탐색 메뉴",
       usage: "사용법",
       architecture: "구조",
+      skill: "Skill",
       skip: "본문으로 이동",
       toc: "이 페이지에서",
       source: "원본 Markdown 보기",
@@ -68,6 +69,7 @@ const locales = {
       navigation: "Primary navigation",
       usage: "Usage",
       architecture: "Architecture",
+      skill: "Skill",
       skip: "Skip to content",
       toc: "On this page",
       source: "View source Markdown",
@@ -99,6 +101,7 @@ const locales = {
       navigation: "メインナビゲーション",
       usage: "使い方",
       architecture: "構成",
+      skill: "Skill",
       skip: "本文へ移動",
       toc: "このページの内容",
       source: "Markdown原文を見る",
@@ -130,6 +133,7 @@ const locales = {
       navigation: "主导航",
       usage: "使用指南",
       architecture: "架构",
+      skill: "Skill",
       skip: "跳到正文",
       toc: "本页内容",
       source: "查看Markdown原文",
@@ -660,7 +664,7 @@ const pageDefinitions = [
   },
   {
     key: "openclaw",
-    slug: "openclaw",
+    slug: "mcp",
     type: "docs",
     sources: {
       ko: "site/content/ko/openclaw.md",
@@ -692,6 +696,45 @@ const pageDefinitions = [
         description:
           "配置原生MCP服务器、实时监控和带审批的发送流程。",
         eyebrow: "文档 · MCP & OpenClaw",
+      },
+    },
+  },
+  {
+    key: "skill",
+    slug: "skill",
+    type: "docs",
+    sources: {
+      ko: "site/content/ko/skill.md",
+      en: "site/content/en/skill.md",
+      jp: "site/content/jp/skill.md",
+      cn: "site/content/cn/skill.md",
+    },
+    translations: {
+      ko: {
+        title: "kmsg 코딩 에이전트 Skill — Claude Code와 Codex에서 사용하기",
+        description:
+          "Claude Code와 Codex에 kmsg Skill을 설치하고 KakaoTalk을 안전하게 탐색, 읽기, 전송하는 기본 절차를 안내합니다.",
+        eyebrow: "문서 · 코딩 에이전트 Skill",
+      },
+      en: {
+        title:
+          "kmsg coding agent Skill — use KakaoTalk from Claude Code and Codex",
+        description:
+          "Install the kmsg Skill for Claude Code and Codex, then follow a safe workflow to find, read, and send KakaoTalk messages.",
+        eyebrow: "Documentation · Coding agent Skill",
+      },
+      jp: {
+        title:
+          "kmsgコーディングエージェントSkill — Claude CodeとCodexで利用",
+        description:
+          "Claude CodeとCodexにkmsg Skillをインストールし、KakaoTalkを安全に探し、読み取り、送信する手順を説明します。",
+        eyebrow: "ドキュメント · コーディングエージェントSkill",
+      },
+      cn: {
+        title: "kmsg编程智能体Skill — 在Claude Code与Codex中使用",
+        description:
+          "在Claude Code和Codex中安装kmsg Skill，并按照安全流程查找、读取和发送KakaoTalk消息。",
+        eyebrow: "文档 · 编程智能体Skill",
       },
     },
   },
@@ -828,6 +871,7 @@ const markdownPageKey = (rawPath) => {
     return "architecture";
   }
   if (["openclaw.md", "openclaw"].includes(basename)) return "openclaw";
+  if (["skill.md", "skill"].includes(basename)) return "skill";
   if (["versioning.md", "versioning"].includes(basename)) return "versioning";
   return null;
 };
@@ -1050,7 +1094,6 @@ const renderToc = (headings, page) => {
 };
 
 const renderHeader = (page) => {
-  const isHome = page.type === "home";
   const { ui } = page.localeConfig;
   const rootLink = relativeAsset(
     page.output,
@@ -1068,7 +1111,10 @@ const renderHeader = (page) => {
     page.output,
     localizedPage(page.locale, "openclaw").output,
   );
-  const llmLink = relativeAsset(page.output, "llm.txt");
+  const skillLink = relativeAsset(
+    page.output,
+    localizedPage(page.locale, "skill").output,
+  );
   const languageOptions = localeOrder
     .map((localeId) => {
       const locale = locales[localeId];
@@ -1076,47 +1122,25 @@ const renderHeader = (page) => {
       return `<option value="${relativeAsset(page.output, target.output)}" data-locale="${localeId}"${localeId === page.locale ? " selected" : ""}>${locale.label} · ${locale.name}</option>`;
     })
     .join("");
-  const primaryLinks = isHome
-    ? `
-          <a href="${usageLink}">${ui.usage}</a>
-          <a href="${openClawLink}">MCP</a>`
-    : `
-          <a href="${usageLink}">${ui.usage}</a>
-          <a href="${architectureLink}">${ui.architecture}</a>
-          <a href="${openClawLink}">MCP</a>
-          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>`;
-  const homeGitHub = isHome
-    ? `
-          <a class="home-github" href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.82a9.6 9.6 0 0 1 2.5.34c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/>
-            </svg>
-            <span class="github-label">GitHub</span>
-          </a>`
-    : "";
-  const themeControl = isHome
-    ? `
-            <span class="theme-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3.25"></circle>
-                <path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.46 5.46l1.42 1.42M17.12 17.12l1.42 1.42M18.54 5.46l-1.42 1.42M6.88 17.12l-1.42 1.42"></path>
-              </svg>
-            </span>`
-    : `<span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>`;
+  const active = (pageKey) =>
+    page.pageKey === pageKey ? ' aria-current="page"' : "";
 
   return `
-    <header class="site-header" data-header${isHome ? " data-home-header" : ""}>
+    <header class="site-header" data-header>
       <div class="header-inner">
         <a class="brand" href="${rootLink}" aria-label="kmsg home" translate="no">
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="36" height="36">
           <span>kmsg</span>
           <span class="brand-status" aria-label="project status: online"></span>
         </a>
-        <nav class="primary-nav" aria-label="${ui.navigation}">
-          ${primaryLinks}
+        <nav class="primary-nav" aria-label="${ui.navigation}" tabindex="0">
+          <a href="${usageLink}"${active("usage")}>${ui.usage}</a>
+          <a href="${architectureLink}"${active("architecture")}>${ui.architecture}</a>
+          <a href="${openClawLink}"${active("openclaw")}>MCP</a>
+          <a href="${skillLink}"${active("skill")}>${ui.skill}</a>
+          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
         </nav>
         <div class="header-tools">
-          ${isHome ? "" : `<a class="llm-link" href="${llmLink}" type="text/plain">LLM.txt <span aria-hidden="true">↗</span></a>`}
           <label class="language-control">
             <span class="sr-only">${ui.language}</span>
             <select aria-label="${ui.language}" data-language-select>
@@ -1125,9 +1149,13 @@ const renderHeader = (page) => {
             <span class="language-chevron" aria-hidden="true">⌄</span>
           </label>
           <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
-            ${themeControl}
+            <span class="theme-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3.25"></circle>
+                <path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.46 5.46l1.42 1.42M17.12 17.12l1.42 1.42M18.54 5.46l-1.42 1.42M6.88 17.12l-1.42 1.42"></path>
+              </svg>
+            </span>
           </button>
-          ${homeGitHub}
         </div>
       </div>
     </header>`;
@@ -1843,7 +1871,13 @@ const main = async () => {
     buildRedirect(site.baseUrl),
     "utf8",
   );
-  for (const pageKey of ["usage", "architecture", "openclaw", "versioning"]) {
+  for (const pageKey of [
+    "usage",
+    "architecture",
+    "openclaw",
+    "skill",
+    "versioning",
+  ]) {
     const koreanPage = localizedPage("ko", pageKey);
     const legacyOutput = join(outputDir, "ko", koreanPage.output);
     await mkdir(dirname(legacyOutput), { recursive: true });
@@ -1853,6 +1887,28 @@ const main = async () => {
       "utf8",
     );
   }
+  for (const localeId of localeOrder) {
+    const locale = locales[localeId];
+    const mcpPage = localizedPage(localeId, "openclaw");
+    const legacyOutput = join(
+      outputDir,
+      locale.prefix,
+      "openclaw",
+      "index.html",
+    );
+    await mkdir(dirname(legacyOutput), { recursive: true });
+    await writeFile(
+      legacyOutput,
+      buildRedirect(pageUrl(mcpPage.path), locale.lang),
+      "utf8",
+    );
+  }
+  await mkdir(join(outputDir, "ko", "openclaw"), { recursive: true });
+  await writeFile(
+    join(outputDir, "ko", "openclaw", "index.html"),
+    buildRedirect(pageUrl(localizedPage("ko", "openclaw").path)),
+    "utf8",
+  );
 
   const llmsIndex = buildLlmsIndex(version);
 

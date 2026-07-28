@@ -18,7 +18,8 @@ const pages = {
   home: "",
   usage: "usage/",
   architecture: "architecture/",
-  openclaw: "openclaw/",
+  openclaw: "mcp/",
+  skill: "skill/",
   versioning: "versioning/",
 };
 
@@ -37,7 +38,13 @@ const expectedFiles = [
   "ko/usage/index.html",
   "ko/architecture/index.html",
   "ko/openclaw/index.html",
+  "ko/mcp/index.html",
+  "ko/skill/index.html",
   "ko/versioning/index.html",
+  "openclaw/index.html",
+  "en/openclaw/index.html",
+  "jp/openclaw/index.html",
+  "cn/openclaw/index.html",
   "assets/styles.css",
   "assets/app.js",
   "assets/favicon.svg",
@@ -63,6 +70,7 @@ test("Korean is canonical at root and on every default documentation route", asy
     usage: "site/content/ko/usage.md",
     architecture: "site/content/ko/architecture.md",
     openclaw: "site/content/ko/openclaw.md",
+    skill: "site/content/ko/skill.md",
     versioning: "site/content/ko/versioning.md",
   };
   const visibleCopy = {
@@ -70,6 +78,7 @@ test("Korean is canonical at root and on every default documentation route", asy
     usage: "kmsg 사용법",
     architecture: "kmsg 아키텍처",
     openclaw: "OpenClaw 연동 가이드",
+    skill: "kmsg 코딩 에이전트 Skill",
     versioning: "kmsg 버전 관리",
   };
 
@@ -192,7 +201,8 @@ test("curated home keeps product proof, stories, and install actions", async () 
   for (const localeId of Object.keys(locales)) {
     const html = await readOutput(localizedPath(localeId, "home"));
 
-    assert.match(html, /data-home-header/);
+    assert.match(html, /<header class="site-header" data-header>/);
+    assert.doesNotMatch(html, /data-home-header/);
     assert.match(html, /kmsg chats --limit 2/);
     assert.match(html, /kmsg read &quot;/);
     assert.match(html, /kmsg send &quot;/);
@@ -326,7 +336,13 @@ test("Korean stories heading stays compact on narrow screens", async () => {
 
 test("documentation routes retain Markdown content and table of contents", async () => {
   for (const localeId of Object.keys(locales)) {
-    for (const pageKey of ["usage", "architecture", "openclaw", "versioning"]) {
+    for (const pageKey of [
+      "usage",
+      "architecture",
+      "openclaw",
+      "skill",
+      "versioning",
+    ]) {
       const html = await readOutput(localizedPath(localeId, pageKey));
       assert.match(html, /<body class="is-docs"/);
       assert.match(html, /class="content-layout"/);
@@ -668,18 +684,70 @@ test("every content page uses the shared shell and localized navigation", async 
       html,
       /<div class="site-shell">[\s\S]*<header[\s\S]*<main[\s\S]*<footer[\s\S]*<\/div>/,
     );
-    if (/<body class="is-home"/.test(html)) {
-      assert.match(
-        html,
-        /class="footer-llm-link"[^>]+href="[^"]*llm\.txt"/,
-      );
-    } else {
-      assert.match(html, /class="llm-link"[^>]+href="[^"]*llm\.txt"/);
-    }
+    assert.match(
+      html,
+      /class="footer-llm-link"[^>]+href="[^"]*llm\.txt"/,
+    );
+    assert.doesNotMatch(html, /class="llm-link"/);
     assert.match(html, /class="language-control"/);
     assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1);
     assert.doesNotMatch(html, /href="(?:\.\/|\.\.\/)[^"]+\.md(?:#|")/);
     assert.doesNotMatch(html, /javascript:/i);
+  }
+});
+
+test("every canonical page exposes the same ordered primary navigation", async () => {
+  const localizedLabels = {
+    ko: ["사용법", "구조", "MCP", "Skill", "GitHub"],
+    en: ["Usage", "Architecture", "MCP", "Skill", "GitHub"],
+    jp: ["使い方", "構成", "MCP", "Skill", "GitHub"],
+    cn: ["使用指南", "架构", "MCP", "Skill", "GitHub"],
+  };
+
+  for (const localeId of Object.keys(locales)) {
+    for (const pageKey of Object.keys(pages)) {
+      const path = localizedPath(localeId, pageKey);
+      const html = await readOutput(path);
+      assert.match(
+        html,
+        /<nav class="primary-nav"[^>]*tabindex="0"[^>]*>/,
+        path,
+      );
+      const nav = html.match(
+        /<nav class="primary-nav"[^>]*>([\s\S]*?)<\/nav>/,
+      )?.[1];
+      assert.ok(nav, `missing primary navigation in ${path}`);
+      const labels = [...nav.matchAll(/<a[^>]*>([\s\S]*?)<\/a>/g)].map(
+        ([, value]) =>
+          value.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(),
+      );
+      assert.deepEqual(
+        labels.map((label) => label.replace(/\s*↗$/, "")),
+        localizedLabels[localeId],
+        path,
+      );
+      assert.equal(
+        (nav.match(/aria-current="page"/g) || []).length,
+        pageKey === "home" || pageKey === "versioning" ? 0 : 1,
+        path,
+      );
+    }
+  }
+});
+
+test("legacy OpenClaw routes redirect to localized canonical MCP routes", async () => {
+  for (const [localeId, locale] of Object.entries(locales)) {
+    const legacy = `${locale.prefix}openclaw/index.html`;
+    const html = await readOutput(legacy);
+    const canonical = publicUrl(localeId, "openclaw");
+    assert.match(html, new RegExp(`url=${canonical.replaceAll("/", "\\/")}`));
+    assert.match(
+      html,
+      new RegExp(
+        `rel="canonical" href="${canonical.replaceAll("/", "\\/")}"`,
+      ),
+    );
+    assert.match(html, /name="robots" content="noindex,follow"/);
   }
 });
 
@@ -798,9 +866,14 @@ test("curated home styles define the responsive product system", async () => {
   const styles = await readOutput("assets/styles.css");
 
   assert.match(styles, /--page:\s*min\(1120px,\s*calc\(100% - 48px\)\)/);
+  assert.doesNotMatch(styles, /\.is-home \.site-header\s*\{/);
+  assert.doesNotMatch(
+    styles,
+    /\.primary-nav\s*\{[^}]*display:\s*none;/s,
+  );
   assert.match(
     styles,
-    /\.is-home \.site-header\s*{[\s\S]*border-radius:\s*999px/,
+    /@media \(max-width:\s*1060px\)[\s\S]*?\.primary-nav\s*\{[^}]*overflow-x:\s*auto;/s,
   );
   assert.match(
     styles,
