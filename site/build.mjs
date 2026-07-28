@@ -1428,11 +1428,11 @@ const renderHomeInstall = (page, copy) => {
           <code translate="no">brew install channprj/tap/kmsg</code>
           <span class="copy-icon" aria-hidden="true">⧉</span>
         </button>
-        <div class="requirement-list" aria-label="${escapeHtml(copy.installDescription)}">
-          <span>macOS 13+</span>
-          <span>KakaoTalk for macOS</span>
-          <span>Accessibility</span>
-        </div>
+        <ul class="requirement-list" aria-label="${escapeHtml(copy.installDescription)}">
+          <li>macOS 13+</li>
+          <li>KakaoTalk for macOS</li>
+          <li>Accessibility</li>
+        </ul>
         <div class="install-links">
           <a href="${usageLink}">${escapeHtml(copy.docsAction)} <span aria-hidden="true">→</span></a>
           <a href="${site.releasesUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.releaseAction)} <span aria-hidden="true">↗</span></a>

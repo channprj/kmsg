@@ -973,6 +973,45 @@ test("curated home styles define the responsive product system", async () => {
   );
 });
 
+test("home and docs share mobile-safe header control geometry", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.language-control\s*\{[^}]*height:\s*44px;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.theme-toggle\s*\{[^}]*width:\s*44px;[^}]*height:\s*44px;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.primary-nav a\s*\{[^}]*min-height:\s*44px;/s,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.is-home \.(?:site-header|header-inner|brand|primary-nav|header-tools|language-control|theme-toggle|home-github)/,
+  );
+});
+
+test("homepage secondary text and requirements remain accessible", async () => {
+  const [html, styles] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/styles.css"),
+  ]);
+
+  assert.match(styles, /--ink-faint:\s*#858580;/);
+  assert.match(
+    styles,
+    /\.command-panel-bar\s*\{[^}]*color:\s*#858580;/s,
+  );
+  assert.match(
+    html,
+    /<ul class="requirement-list" aria-label="[^"]+">\s*<li>macOS 13\+<\/li>/,
+  );
+  assert.doesNotMatch(html, /<div class="requirement-list" aria-label=/);
+});
+
 test("wide Markdown tables remain keyboard-scrollable in every locale", async () => {
   const styles = await readOutput("assets/styles.css");
   for (const localeId of Object.keys(locales)) {

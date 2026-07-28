@@ -2,7 +2,7 @@
   color-scheme: dark;
   --ink: #f4f4f2;
   --ink-muted: #a4a4a0;
-  --ink-faint: #73736f;
+  --ink-faint: #858580;
   --canvas: #080808;
   --canvas-raised: #111110;
   --panel: rgba(15, 15, 14, 0.92);
@@ -1232,7 +1232,7 @@ html[lang="ko"] .hero h1 em {
   border-bottom: 1px solid #232321;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  color: #74746f;
+  color: #858580;
   font-family: var(--mono);
   font-size: 8px;
   letter-spacing: 0.08em;
@@ -1588,6 +1588,8 @@ html[lang="ko"] .hero h1 em {
 .requirement-list {
   display: flex;
   margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
   flex-wrap: wrap;
   grid-column: 2;
   grid-row: 3;
@@ -1595,7 +1597,7 @@ html[lang="ko"] .hero h1 em {
   gap: 8px;
 }
 
-.requirement-list span {
+.requirement-list li {
   padding: 5px 9px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -2526,8 +2528,23 @@ html[lang="ko"] .hero h1 em {
     grid-template-columns: 1fr auto;
   }
 
+  .language-control {
+    height: 44px;
+  }
+
+  .theme-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
   .primary-nav {
     gap: 20px;
+  }
+
+  .primary-nav a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
   }
 
   .brand > span:nth-of-type(1) {
@@ -2689,24 +2706,6 @@ html[lang="ko"] .hero h1 em {
 }
 
 @media (max-width: 430px) {
-  .llm-link {
-    display: none;
-  }
-
-  .is-home .brand > span:nth-of-type(1) {
-    font-size: 14px;
-  }
-
-  .is-home .language-control select {
-    width: 100px;
-  }
-
-  .is-home .theme-toggle,
-  .is-home .home-github {
-    width: 32px;
-    height: 32px;
-  }
-
   .product-hero .hero-actions {
     display: flex;
   }
@@ -2738,14 +2737,6 @@ html[lang="ko"] .hero h1 em {
 }
 
 @media (max-width: 350px) {
-  .is-home .brand > span {
-    display: none;
-  }
-
-  .is-home .brand {
-    gap: 0;
-  }
-
   .terminal-body {
     font-size: 11px;
   }
