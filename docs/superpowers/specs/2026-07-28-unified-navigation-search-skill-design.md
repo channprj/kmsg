@@ -13,18 +13,18 @@ persistence, terminal replay, and static GitHub Pages deployment.
 The user-visible outcomes are:
 
 - use `$` for every homepage replay prompt and increase terminal line height to
-  `1.2`;
+`1.2`;
 - move the install and usage actions to a centered row at the bottom of the
-  hero;
+hero;
 - give real-world story cards equal geometry and a consistent `16:9` thumbnail
-  frame;
+frame;
 - add a localized “more examples” action that opens the requested Google search
-  in a new tab;
+in a new tab;
 - expose the same five navigation destinations on every page;
 - add a dedicated Skill guide in Korean, English, Japanese, and Simplified
-  Chinese; and
+Chinese; and
 - strengthen SEO and answer-engine readiness using accurate, visible, and
-  crawlable content rather than search-only copy.
+crawlable content rather than search-only copy.
 
 ## Design Principles
 
@@ -73,13 +73,20 @@ Every generated page renders these destinations in this order:
 Labels are localized for all four site languages except the product terms MCP,
 Skill, and GitHub. Internal destinations preserve the current locale:
 
-| Navigation item | Destination |
-| --- | --- |
-| Usage | localized `/usage/` |
-| Architecture | localized `/architecture/` |
-| MCP | localized `/openclaw/` |
-| Skill | localized `/skill/` |
-| GitHub ↗ | repository URL in a new tab |
+
+| Navigation item | Destination                 |
+| --------------- | --------------------------- |
+| Usage           | localized `/usage/`         |
+| Architecture    | localized `/architecture/`  |
+| MCP             | localized `/mcp/`           |
+| Skill           | localized `/skill/`         |
+| GitHub ↗        | repository URL in a new tab |
+
+
+The MCP document keeps its existing Markdown sources but uses `/mcp/` as its
+canonical public route in every locale. Legacy localized `/openclaw/` routes
+redirect to the corresponding `/mcp/` route and remain excluded from the
+sitemap so search and answer engines receive one canonical URL.
 
 The current internal page receives `aria-current="page"` and a persistent yellow
 active marker. The GitHub link retains `target="_blank"` and
@@ -115,9 +122,9 @@ Remove the home-only header variants:
 - both templates use the same sticky full-width header;
 - both use the same language control and icon-based theme control;
 - LLM discovery remains in document metadata and the footer rather than taking a
-  home-inconsistent header slot;
+home-inconsistent header slot;
 - GitHub becomes the fifth textual navigation item instead of a separate home
-  icon; and
+icon; and
 - header dimensions, border, blur, and scrolled state are shared.
 
 At desktop widths, the header remains a three-column brand / navigation / tools
@@ -177,7 +184,7 @@ article width. Consistency work is intentionally targeted:
 - use the same accent rules, focus states, control geometry, and footer rhythm;
 - mark the active primary destination;
 - preserve horizontal scrolling for tables and mobile table-of-contents chips;
-  and
+and
 - ensure the new Skill guide follows the same article template.
 
 No Markdown content is moved into bespoke per-page components. The static
@@ -188,18 +195,18 @@ generator remains the single rendering path.
 ### Crawl and discovery
 
 - Keep canonical URLs, `hreflang`, `x-default`, robots directives, and sitemap
-  entries on every localized page.
+entries on every localized page.
 - Add the four Skill routes to sitemap, LLM indexes, locale navigation, and
-  internal links.
+internal links.
 - Explicitly allow `OAI-SearchBot` and `ChatGPT-User` in `robots.txt` while
-  retaining the general `User-agent: *` rule and sitemap location.
+retaining the general `User-agent: *` rule and sitemap location.
 - Keep important product and FAQ answers as server-rendered text.
 
 ### Metadata
 
 - Preserve unique localized titles and descriptions for every page.
 - Add complete social image metadata: MIME type, pixel dimensions, and image
-  alt text for Open Graph and Twitter.
+alt text for Open Graph and Twitter.
 - Emit alternate Open Graph locales.
 - Keep `max-image-preview`, `max-snippet`, and `max-video-preview` enabled.
 - Avoid obsolete `keywords` metadata.
@@ -212,7 +219,7 @@ SoftwareApplication, SoftwareSourceCode, and WebPage or TechArticle.
 Enhance only with verifiable properties:
 
 - `image`, `featureList`, `softwareRequirements`, and localized `inLanguage`
-  where they match visible product information;
+where they match visible product information;
 - `mainEntity` on the homepage pointing at the software entity;
 - accurate `dateModified` on document pages;
 - breadcrumbs that match the visible information architecture; and
@@ -232,40 +239,45 @@ canonical links. They are not described as a ranking mechanism.
 
 - All header navigation remains reachable without a pointer.
 - Horizontal mobile navigation uses an explicit accessible label and visible
-  focus state.
+focus state.
 - External actions contain a textual label, not only an icon.
 - FAQ disclosures use native `details` and `summary`.
 - Story images retain meaningful localized alternative text and explicit
-  dimensions.
+dimensions.
 - Theme, language, copy, and replay controls retain static accessible names and
-  localized feedback.
+localized feedback.
 - `prefers-reduced-motion` continues to disable nonessential animation.
 
 ## Data Flow
 
 1. Page definitions declare locale sources, titles, descriptions, and route
-   identity.
+
+  identity.
 2. Markdown is parsed and sanitized as it is today.
 3. Home README FAQ content is extracted once and passed to both the visible FAQ
-   renderer and JSON-LD generator.
+
+  renderer and JSON-LD generator.
 4. The shared header resolves each navigation destination relative to the
-   current localized output.
+
+  current localized output.
 5. The generator writes all canonical pages, redirects, sitemap, robots,
-   manifest, and LLM discovery files.
+
+  manifest, and LLM discovery files.
 6. The existing client script handles theme, locale persistence, copy controls,
-   table/TOC behavior, and replay without owning any indexable content.
+
+  table/TOC behavior, and replay without owning any indexable content.
 
 ## Failure Handling
 
 - The build fails when any locale lacks a Skill source or translation metadata.
 - Tests reject a page if the shared five-link navigation is incomplete or
-  ordered differently.
+ordered differently.
 - Tests reject FAQ JSON-LD when the matching visible FAQ section is absent.
 - Tests verify the exact external search URL and new-tab security attributes.
 - Generated route and sitemap coverage must account for all six page types
-  across four locales.
+across four locales.
 - Missing source image dimensions or social metadata fail the site contract
-  tests.
+tests.
 
 ## Verification
 
@@ -303,7 +315,7 @@ repository also has a `main` tag. After the final checkpoint:
 - wait for Swift CI and GitHub Pages to succeed;
 - request all canonical locale and Skill routes from production;
 - repeat representative 1440px and 390px browser checks against the deployed
-  site; and
+site; and
 - confirm the final worktree is clean with upstream parity `0 0`.
 
 ## Acceptance Criteria
@@ -314,12 +326,12 @@ The work is complete only when:
 - hero actions are centered in their own bottom row;
 - both story cards have equal width, equal media ratio, and no staggered offset;
 - the localized “more examples” action opens the exact requested URL in a new
-  tab;
+tab;
 - all generated pages expose the same five navigation items in the same order;
 - four localized Skill pages render and switch locale correctly;
 - home FAQ text is visible and matches FAQ structured data;
 - metadata, structured data, robots, sitemap, and LLM outputs pass the expanded
-  automated contract;
+automated contract;
 - desktop, tablet, and mobile browser verification passes in both themes;
 - CI and Pages succeed for the final commit; and
 - `main` is clean and exactly matches the remote branch.
