@@ -1571,6 +1571,49 @@ const buildStructuredData = ({
   const productId = `${site.baseUrl}#software`;
   const authorId = `${site.baseUrl}#author`;
   const websiteId = `${site.baseUrl}#website`;
+  const imageObject = {
+    "@type": "ImageObject",
+    url: pageUrl(site.imagePath),
+    width: 1000,
+    height: 1000,
+  };
+  const pageNode = {
+    "@type": page.type === "docs" ? "TechArticle" : "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name: page.title,
+    headline: page.title,
+    description: page.description,
+    inLanguage: page.lang,
+    dateModified: lastModified,
+    isPartOf: { "@id": websiteId },
+    about: { "@id": productId },
+    author: { "@id": authorId },
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "kmsg",
+          item: site.baseUrl,
+        },
+        ...(page.path
+          ? [
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: page.eyebrow.replace(/^.+ · /, ""),
+                item: canonical,
+              },
+            ]
+          : []),
+      ],
+    },
+  };
+  if (page.type === "home") {
+    pageNode.mainEntity = { "@id": productId };
+  }
   const graph = [
     {
       "@type": "Person",
@@ -1610,6 +1653,17 @@ const buildStructuredData = ({
       author: { "@id": authorId },
       license: site.licenseUrl,
       sameAs: [site.repositoryUrl],
+      image: imageObject,
+      featureList: [
+        "List KakaoTalk chats",
+        "Read recent messages",
+        "Watch new messages",
+        "Send text and images",
+        "Native stdio MCP server",
+      ],
+      softwareRequirements:
+        "macOS 13 or later; KakaoTalk for macOS; Accessibility permission",
+      inLanguage: localeOrder.map((localeId) => locales[localeId].lang),
     },
     {
       "@type": "SoftwareSourceCode",
@@ -1623,40 +1677,7 @@ const buildStructuredData = ({
       author: { "@id": authorId },
       isPartOf: { "@id": productId },
     },
-    {
-      "@type": page.type === "docs" ? "TechArticle" : "WebPage",
-      "@id": `${canonical}#webpage`,
-      url: canonical,
-      name: page.title,
-      headline: page.title,
-      description: page.description,
-      inLanguage: page.lang,
-      dateModified: lastModified,
-      isPartOf: { "@id": websiteId },
-      about: { "@id": productId },
-      author: { "@id": authorId },
-      breadcrumb: {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "kmsg",
-            item: site.baseUrl,
-          },
-          ...(page.path
-            ? [
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: page.eyebrow.replace(/^.+ · /, ""),
-                  item: canonical,
-                },
-              ]
-            : []),
-        ],
-      },
-    },
+    pageNode,
   ];
 
   if (faqs.length > 0) {
@@ -1698,6 +1719,13 @@ const renderDocument = ({
       const target = localizedPage(localeId, page.pageKey);
       return `<link rel="alternate" hreflang="${locale.hrefLang}" href="${pageUrl(target.path)}">`;
     })
+    .join("\n    ");
+  const alternateOgLocales = localeOrder
+    .filter((localeId) => localeId !== page.locale)
+    .map(
+      (localeId) =>
+        `<meta property="og:locale:alternate" content="${locales[localeId].ogLocale}">`,
+    )
     .join("\n    ");
   const xDefault = pageUrl(localizedPage("ko", page.pageKey).path);
   const localeTargets = Object.fromEntries(
@@ -1749,18 +1777,24 @@ const renderDocument = ({
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${rootAsset("assets/styles.css")}">
 
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="${page.type === "docs" ? "article" : "website"}">
     <meta property="og:site_name" content="kmsg">
     <meta property="og:title" content="${escapeHtml(page.title)}">
     <meta property="og:description" content="${escapeHtml(page.description)}">
     <meta property="og:url" content="${canonical}">
     <meta property="og:image" content="${pageUrl(site.imagePath)}">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="1000">
+    <meta property="og:image:height" content="1000">
     <meta property="og:image:alt" content="kmsg KakaoTalk CLI logo">
     <meta property="og:locale" content="${page.localeConfig.ogLocale}">
+    ${alternateOgLocales}
+    ${page.type === "docs" ? `<meta property="article:modified_time" content="${lastModified}">` : ""}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${escapeHtml(page.title)}">
     <meta name="twitter:description" content="${escapeHtml(page.description)}">
     <meta name="twitter:image" content="${pageUrl(site.imagePath)}">
+    <meta name="twitter:image:alt" content="kmsg KakaoTalk CLI logo">
 
     <script type="application/ld+json">${structuredData}</script>
     <script>
@@ -1971,7 +2005,7 @@ const main = async () => {
     writeFile(join(outputDir, ".nojekyll"), "", "utf8"),
     writeFile(
       join(outputDir, "robots.txt"),
-      `User-agent: *\nAllow: /\n\nSitemap: ${pageUrl("sitemap.xml")}\n`,
+      `User-agent: *\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nSitemap: ${pageUrl("sitemap.xml")}\n`,
       "utf8",
     ),
     writeFile(join(outputDir, "sitemap.xml"), buildSitemap(documents), "utf8"),

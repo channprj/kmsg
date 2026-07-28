@@ -1006,6 +1006,61 @@ test("structured data describes all supported languages and Korean FAQ", async (
   assert.equal(software.offers.price, "0");
 });
 
+test("social metadata is complete and localized", async () => {
+  for (const path of contentFiles) {
+    const html = await readOutput(path);
+    assert.match(
+      html,
+      /<meta property="og:image:type" content="image\/jpeg">/,
+    );
+    assert.match(
+      html,
+      /<meta property="og:image:width" content="1000">/,
+    );
+    assert.match(
+      html,
+      /<meta property="og:image:height" content="1000">/,
+    );
+    assert.match(html, /<meta name="twitter:image:alt" content="[^"]+">/);
+    assert.equal(
+      (html.match(/property="og:locale:alternate"/g) || []).length,
+      3,
+      path,
+    );
+    if (/<body class="is-docs"/.test(html)) {
+      assert.match(html, /<meta property="og:type" content="article">/);
+      assert.match(
+        html,
+        /<meta property="article:modified_time" content="[^"]+">/,
+      );
+    } else {
+      assert.match(html, /<meta property="og:type" content="website">/);
+      assert.doesNotMatch(html, /property="article:modified_time"/);
+    }
+  }
+});
+
+test("structured data matches visible product facts", async () => {
+  const html = await readOutput("index.html");
+  const data = JSON.parse(
+    html.match(
+      /<script type="application\/ld\+json">([\s\S]+?)<\/script>/,
+    )[1],
+  );
+  const software = data["@graph"].find(
+    (node) => node["@type"] === "SoftwareApplication",
+  );
+  const page = data["@graph"].find((node) => node["@type"] === "WebPage");
+  assert.equal(software.image.width, 1000);
+  assert.equal(software.image.height, 1000);
+  assert.ok(software.featureList.includes("Native stdio MCP server"));
+  assert.match(software.softwareRequirements, /Accessibility permission/);
+  assert.deepEqual(software.inLanguage, ["ko", "en", "ja", "zh-CN"]);
+  assert.deepEqual(page.mainEntity, {
+    "@id": `${publicUrl("ko", "home")}#software`,
+  });
+});
+
 test("LLM indexes and sitemap expose all canonical localized routes", async () => {
   const [singular, plural, full, sitemap] = await Promise.all([
     readOutput("llm.txt"),
@@ -1035,6 +1090,18 @@ test("LLM indexes and sitemap expose all canonical localized routes", async () =
     }
   }
   assert.doesNotMatch(sitemap, /<loc>https:\/\/channprj\.github\.io\/kmsg\/ko\//);
+  assert.match(
+    sitemap,
+    /<loc>https:\/\/channprj\.github\.io\/kmsg\/mcp\/<\/loc>/,
+  );
+  assert.match(
+    sitemap,
+    /<loc>https:\/\/channprj\.github\.io\/kmsg\/skill\/<\/loc>/,
+  );
+  assert.doesNotMatch(
+    sitemap,
+    /<loc>https:\/\/channprj\.github\.io\/kmsg\/(?:en\/|jp\/|cn\/)?openclaw\//,
+  );
 });
 
 test("robots and app manifest point to canonical resources", async () => {
@@ -1047,6 +1114,8 @@ test("robots and app manifest point to canonical resources", async () => {
     robots,
     /Sitemap: https:\/\/channprj\.github\.io\/kmsg\/sitemap\.xml/,
   );
+  assert.match(robots, /User-agent: OAI-SearchBot\nAllow: \//);
+  assert.match(robots, /User-agent: ChatGPT-User\nAllow: \//);
   const parsed = JSON.parse(manifest);
   assert.equal(parsed.start_url, "/kmsg/");
   assert.equal(parsed.short_name, "kmsg");
