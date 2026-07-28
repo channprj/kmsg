@@ -1005,6 +1005,7 @@ test("homepage secondary text and requirements remain accessible", async () => {
     styles,
     /\.command-panel-bar\s*\{[^}]*color:\s*#858580;/s,
   );
+  assert.match(styles, /\.code-copy\s*\{[^}]*color:\s*#96a1ac;/s);
   assert.match(
     html,
     /<ul class="requirement-list" aria-label="[^"]+">\s*<li>macOS 13\+<\/li>/,
