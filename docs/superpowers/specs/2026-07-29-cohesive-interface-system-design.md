@@ -107,15 +107,15 @@ Every generated:
 - canonical and alternate URL;
 - structured-data URL;
 - sitemap entry; and
-- visible source or share action
+- public website cross-link
 
 uses `/mcp/`, never `/openclaw/`.
 
 The old `/openclaw/` paths remain only as `noindex,follow` compatibility
 redirects to the matching localized `/mcp/` path. They are not linked from the
-rendered interface or included in discovery files. Source Markdown filenames
-and references to the OpenClaw product may keep the word “OpenClaw”; the URL
-contract concerns the public route.
+rendered interface or included in discovery files. Repository source links,
+source Markdown filenames, and references to the OpenClaw product may keep the
+word “OpenClaw”; the URL contract concerns the public website route.
 
 ## Story Search Contract
 
