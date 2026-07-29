@@ -41,7 +41,7 @@ const locales = {
       skip: "본문으로 이동",
       toc: "이 페이지에서",
       source: "원본 Markdown 보기",
-      sourceAction: "source ↗",
+      sourceAction: "source",
       lightTheme: "밝은 테마로 전환",
       darkTheme: "어두운 테마로 전환",
       language: "언어 선택",
@@ -50,7 +50,7 @@ const locales = {
       copyFailed: "복사 실패",
       table: "스크롤 가능한 표",
       updated: "업데이트",
-      edit: "GitHub에서 편집 ↗",
+      edit: "GitHub에서 편집",
       pipeline: "현지화 문서",
       footerTagline: "macOS용 KakaoTalk CLI",
       footerDisclaimer: "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
@@ -73,7 +73,7 @@ const locales = {
       skip: "Skip to content",
       toc: "On this page",
       source: "View source Markdown",
-      sourceAction: "source ↗",
+      sourceAction: "source",
       lightTheme: "Switch to light theme",
       darkTheme: "Switch to dark theme",
       language: "Select language",
@@ -82,7 +82,7 @@ const locales = {
       copyFailed: "Copy failed",
       table: "Scrollable table",
       updated: "Updated",
-      edit: "Edit on GitHub ↗",
+      edit: "Edit on GitHub",
       pipeline: "Canonical docs",
       footerTagline: "KakaoTalk CLI for macOS",
       footerDisclaimer: "Independent open source. Not affiliated with Kakao Corp.",
@@ -105,7 +105,7 @@ const locales = {
       skip: "本文へ移動",
       toc: "このページの内容",
       source: "Markdown原文を見る",
-      sourceAction: "source ↗",
+      sourceAction: "source",
       lightTheme: "ライトテーマに切り替え",
       darkTheme: "ダークテーマに切り替え",
       language: "言語を選択",
@@ -114,7 +114,7 @@ const locales = {
       copyFailed: "コピーできませんでした",
       table: "横にスクロールできる表",
       updated: "更新",
-      edit: "GitHubで編集 ↗",
+      edit: "GitHubで編集",
       pipeline: "日本語ドキュメント",
       footerTagline: "macOS向けKakaoTalk CLI",
       footerDisclaimer: "Kakao Corp.とは無関係の独立したオープンソースです。",
@@ -137,7 +137,7 @@ const locales = {
       skip: "跳到正文",
       toc: "本页内容",
       source: "查看Markdown原文",
-      sourceAction: "source ↗",
+      sourceAction: "source",
       lightTheme: "切换到浅色主题",
       darkTheme: "切换到深色主题",
       language: "选择语言",
@@ -146,7 +146,7 @@ const locales = {
       copyFailed: "复制失败",
       table: "可横向滚动的表格",
       updated: "更新于",
-      edit: "在GitHub编辑 ↗",
+      edit: "在GitHub编辑",
       pipeline: "简体中文文档",
       footerTagline: "面向macOS的KakaoTalk CLI",
       footerDisclaimer: "独立开源项目，与Kakao Corp.无隶属关系。",
@@ -841,10 +841,21 @@ const escapeHtml = (value) =>
     .replaceAll("'", "&#039;");
 
 const iconPaths = {
+  "arrow-right":
+    '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>',
   "external-link":
     '<path d="M14 5h5v5"></path><path d="M10 14 19 5"></path><path d="M19 13v6H5V5h6"></path>',
+  copy:
+    '<rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
+  check: '<path d="m5 12 4 4L19 6"></path>',
+  "chevron-down": '<path d="m6 9 6 6 6-6"></path>',
+  plus: '<path d="M12 5v14M5 12h14"></path>',
+  minus: '<path d="M5 12h14"></path>',
   search:
     '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path>',
+  sun:
+    '<circle cx="12" cy="12" r="3.25"></circle><path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.46 5.46l1.42 1.42M17.12 17.12l1.42 1.42M18.54 5.46l-1.42 1.42M6.88 17.12l-1.42 1.42"></path>',
+  moon: '<path d="M20 15.4A8.5 8.5 0 0 1 8.6 4a8.5 8.5 0 1 0 11.4 11.4Z"></path>',
 };
 
 const renderIcon = (name, size = 20) => {
@@ -852,6 +863,12 @@ const renderIcon = (name, size = 20) => {
   if (!paths) throw new Error(`Unknown icon: ${name}`);
   return `<svg class="ui-icon ui-icon-${size}" data-icon="${name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths}</svg>`;
 };
+
+const renderCopyIcons = () => `
+  <span class="copy-icons" aria-hidden="true">
+    ${renderIcon("copy", 18)}
+    ${renderIcon("check", 18)}
+  </span>`;
 
 const stripTags = (value) =>
   sanitizeHtml(value, { allowedTags: [], allowedAttributes: {} })
@@ -1053,6 +1070,11 @@ const enhanceRenderedMarkdown = (html, page) => {
     .replace(/<\/table>/g, "</table></div>");
 
   enhanced = enhanced.replace(
+    /<pre><code/g,
+    `<pre><button class="code-copy copy-control" type="button" aria-label="${escapeHtml(page.localeConfig.ui.copy)}" aria-live="polite" data-code-copy data-copied-label="${escapeHtml(page.localeConfig.ui.copied)}" data-copy-failed-label="${escapeHtml(page.localeConfig.ui.copyFailed)}">${renderCopyIcons()}<span data-copy-label>${escapeHtml(page.localeConfig.ui.copy)}</span></button><code`,
+  );
+
+  enhanced = enhanced.replace(
     /<a href="(https?:\/\/[^"]+)">/g,
     '<a href="$1" target="_blank" rel="noopener noreferrer">',
   );
@@ -1119,8 +1141,8 @@ const renderToc = (headings, page) => {
       <p class="toc-label">${label}</p>
       <ol>${items}</ol>
       <a class="toc-source" href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">
-        ${ui.source}
-        <span aria-hidden="true">↗</span>
+        ${escapeHtml(ui.source)}
+        ${renderIcon("external-link", 16)}
       </a>
     </aside>`;
 };
@@ -1139,7 +1161,7 @@ const renderHeader = (page) => {
     page.output,
     localizedPage(page.locale, "architecture").output,
   );
-  const openClawLink = relativeAsset(
+  const mcpLink = relativeAsset(
     page.output,
     localizedPage(page.locale, "openclaw").output,
   );
@@ -1161,16 +1183,16 @@ const renderHeader = (page) => {
     <header class="site-header" data-header>
       <div class="header-inner">
         <a class="brand" href="${rootLink}" aria-label="kmsg home" translate="no">
-          <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="36" height="36">
+          <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="32" height="32">
           <span>kmsg</span>
           <span class="brand-status" aria-label="project status: online"></span>
         </a>
         <nav class="primary-nav" aria-label="${ui.navigation}" tabindex="0">
           <a href="${usageLink}"${active("usage")}>${ui.usage}</a>
           <a href="${architectureLink}"${active("architecture")}>${ui.architecture}</a>
-          <a href="${openClawLink}"${active("openclaw")}>MCP</a>
+          <a href="${mcpLink}"${active("openclaw")}>MCP</a>
           <a href="${skillLink}"${active("skill")}>${ui.skill}</a>
-          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub ${renderIcon("external-link", 16)}</a>
         </nav>
         <div class="header-tools">
           <label class="language-control">
@@ -1178,14 +1200,12 @@ const renderHeader = (page) => {
             <select aria-label="${ui.language}" data-language-select>
               ${languageOptions}
             </select>
-            <span class="language-chevron" aria-hidden="true">⌄</span>
+            <span class="language-chevron" aria-hidden="true">${renderIcon("chevron-down", 18)}</span>
           </label>
           <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
             <span class="theme-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3.25"></circle>
-                <path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.46 5.46l1.42 1.42M17.12 17.12l1.42 1.42M18.54 5.46l-1.42 1.42M6.88 17.12l-1.42 1.42"></path>
-              </svg>
+              ${renderIcon("sun", 18)}
+              ${renderIcon("moon", 18)}
             </span>
           </button>
         </div>
@@ -1344,7 +1364,7 @@ const renderAgentSkill = (page, copy) => `
         <button class="agent-skill-command copy-control" type="button" aria-label="${page.localeConfig.ui.copy}" aria-live="polite" translate="no" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code translate="no">${agentSkillInstallCommand}</code>
-          <span class="copy-icon" aria-hidden="true">⧉</span>
+          ${renderCopyIcons()}
         </button>
       </article>
       <article class="agent-skill-card">
@@ -1395,7 +1415,7 @@ const renderHomeStories = (copy, locale) => `
           <div class="story-copy">
             <span class="story-publisher">${escapeHtml(story.publisher)}</span>
             <h3><a href="${story.href}" target="_blank" rel="noopener noreferrer">${escapeHtml(story.title[locale])}</a></h3>
-            <span class="story-arrow" aria-hidden="true">↗</span>
+            <span class="story-arrow" aria-hidden="true">${renderIcon("external-link")}</span>
           </div>
         </article>`,
         )
@@ -1432,7 +1452,7 @@ const renderHomeFaq = (copy, faqs) => `
         .map(
           ({ question, answer }) => `
         <details class="faq-item">
-          <summary>${escapeHtml(question)}<span aria-hidden="true">+</span></summary>
+          <summary>${escapeHtml(question)}<span class="faq-icons" aria-hidden="true">${renderIcon("plus")}${renderIcon("minus")}</span></summary>
           <p>${escapeHtml(answer)}</p>
         </details>`,
         )
@@ -1455,7 +1475,7 @@ const renderHomeInstall = (page, copy) => {
         <button class="install-command copy-control" type="button" aria-label="${page.localeConfig.ui.copy}" aria-live="polite" translate="no" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code translate="no">brew install channprj/tap/kmsg</code>
-          <span class="copy-icon" aria-hidden="true">⧉</span>
+          ${renderCopyIcons()}
         </button>
         <ul class="requirement-list" aria-label="${escapeHtml(copy.installDescription)}">
           <li>macOS 13+</li>
@@ -1463,8 +1483,8 @@ const renderHomeInstall = (page, copy) => {
           <li>Accessibility</li>
         </ul>
         <div class="install-links">
-          <a href="${usageLink}">${escapeHtml(copy.docsAction)} <span aria-hidden="true">→</span></a>
-          <a href="${site.releasesUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.releaseAction)} <span aria-hidden="true">↗</span></a>
+          <a href="${usageLink}">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
+          <a href="${site.releasesUrl}" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.releaseAction)} ${renderIcon("external-link", 18)}</a>
         </div>
         <small>${escapeHtml(copy.disclaimer)}</small>
       </div>
@@ -1516,7 +1536,7 @@ const renderProductHome = (page, faqs) => {
       <p class="hero-lead">${escapeHtml(copy.description)}</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
-        <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} <span aria-hidden="true">→</span></a>
+        <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
       </div>
     </section>
     ${renderHomeWorkflow(page)}
@@ -1533,7 +1553,7 @@ const renderMarkdownArticle = (page, rendered) => `
     <div class="source-stamp">
       <span class="source-dot"></span>
       ${escapeHtml(page.sourceLabel ?? page.source)}
-      <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${page.localeConfig.ui.sourceAction}</a>
+      <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${escapeHtml(page.localeConfig.ui.sourceAction)} ${renderIcon("external-link", 16)}</a>
     </div>
     ${rendered.html}
   </article>`;
@@ -1554,7 +1574,7 @@ const renderDocsHero = (page, markdown, lastModified) => {
       <div class="docs-meta">
         <span>${page.localeConfig.ui.pipeline}</span>
         <span>${page.localeConfig.ui.updated} ${escapeHtml(dateLabel)}</span>
-        <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${page.localeConfig.ui.edit}</a>
+        <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${escapeHtml(page.localeConfig.ui.edit)} ${renderIcon("external-link", 16)}</a>
       </div>
     </section>`;
 };

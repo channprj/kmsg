@@ -3,7 +3,6 @@ const header = document.querySelector("[data-header]");
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const languageSelect = document.querySelector("[data-language-select]");
-const copyLabel = document.body.dataset.copyLabel || "Copy";
 const copiedLabel = document.body.dataset.copiedLabel || "Copied";
 const copyFailedLabel =
   document.body.dataset.copyFailedLabel || "Copy failed";
@@ -82,20 +81,19 @@ const copyText = async (value) => {
 
 const markCopied = (button, fallbackLabel = copiedLabel) => {
   const originalLabel = button.getAttribute("aria-label");
-  const textNode = button.querySelector(".copy-icon");
-  const originalText = textNode?.textContent;
+  const visibleLabel = button.querySelector("[data-copy-label]");
+  const originalText = visibleLabel?.textContent;
+  const nextLabel = button.dataset.copiedLabel || fallbackLabel;
+
   button.classList.add("is-copied");
-  button.setAttribute(
-    "aria-label",
-    button.dataset.copiedLabel || fallbackLabel,
-  );
-  if (textNode) textNode.textContent = "✓";
+  button.setAttribute("aria-label", nextLabel);
+  if (visibleLabel) visibleLabel.textContent = nextLabel;
 
   window.setTimeout(() => {
     button.classList.remove("is-copied");
     if (originalLabel) button.setAttribute("aria-label", originalLabel);
     else button.removeAttribute("aria-label");
-    if (textNode) textNode.textContent = originalText;
+    if (visibleLabel && originalText) visibleLabel.textContent = originalText;
   }, 1600);
 };
 
@@ -113,28 +111,21 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
   });
 });
 
-document.querySelectorAll(".markdown-body pre").forEach((pre) => {
-  const code = pre.querySelector("code");
+document.querySelectorAll("[data-code-copy]").forEach((button) => {
+  const code = button.closest("pre")?.querySelector("code");
   if (!code) return;
 
-  const button = document.createElement("button");
-  button.className = "code-copy";
-  button.type = "button";
-  button.textContent = copyLabel;
-  button.setAttribute("aria-label", copyLabel);
-  button.setAttribute("aria-live", "polite");
   button.addEventListener("click", async () => {
     try {
       await copyText(code.textContent || "");
-      button.textContent = copiedLabel;
-      window.setTimeout(() => {
-        button.textContent = copyLabel;
-      }, 1400);
+      markCopied(button);
     } catch {
-      button.textContent = copyFailedLabel;
+      button.setAttribute(
+        "aria-label",
+        button.dataset.copyFailedLabel || copyFailedLabel,
+      );
     }
   });
-  pre.append(button);
 });
 
 const tocLinks = new Map(

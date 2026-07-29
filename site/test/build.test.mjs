@@ -443,6 +443,81 @@ test("IBM Plex and locale fonts keep prose readable and code distinct", async ()
   );
 });
 
+test("shared SVG icons replace character glyphs in interface controls", async () => {
+  const [home, usage, app] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("usage/index.html"),
+    readOutput("assets/app.js"),
+  ]);
+  const rendered = `${home}\n${usage}`;
+  const requiredIcons = [
+    "arrow-right",
+    "external-link",
+    "copy",
+    "check",
+    "chevron-down",
+    "plus",
+    "minus",
+    "search",
+    "sun",
+    "moon",
+  ];
+
+  for (const icon of requiredIcons) {
+    assert.match(rendered, new RegExp(`data-icon="${icon}"`), icon);
+  }
+  assert.doesNotMatch(
+    rendered,
+    /<span[^>]*aria-hidden="true">(?:↗|→|⌄|⧉|\+)<\/span>/,
+  );
+  assert.match(
+    rendered,
+    /<svg class="ui-icon ui-icon-(?:16|18|20)"[^>]*viewBox="0 0 24 24"[^>]*stroke-width="1.75"[^>]*aria-hidden="true"/,
+  );
+  assert.doesNotMatch(app, /textContent = "✓"/);
+  assert.match(app, /classList\.add\("is-copied"\)/);
+});
+
+test("semantic typography keeps interface text readable", async () => {
+  const styles = await readOutput("assets/styles.css");
+  const tokens = {
+    "--text-xs": "12px",
+    "--text-sm": "14px",
+    "--text-md": "16px",
+    "--text-lg": "18px",
+    "--text-xl": "24px",
+    "--heading-sm": "clamp(30px, 3vw, 40px)",
+    "--heading-md": "clamp(44px, 5vw, 60px)",
+    "--heading-lg": "clamp(52px, 5.8vw, 72px)",
+  };
+
+  for (const [token, value] of Object.entries(tokens)) {
+    assert.ok(styles.includes(`${token}: ${value};`), token);
+  }
+  for (const selector of [
+    ".primary-nav a",
+    ".section-label",
+    ".capability-index",
+    ".agent-skill-step",
+    ".story-publisher",
+    ".docs-meta",
+    ".toc-label",
+    ".source-stamp",
+    ".code-copy",
+    ".markdown-body th",
+    ".footer-brand span",
+  ]) {
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const block = styles.match(new RegExp(`${escaped}[^\\{]*\\{([^}]*)\\}`))?.[1];
+    assert.ok(block, selector);
+    assert.doesNotMatch(block, /font-size:\s*(?:[0-9]|1[01])px;/);
+  }
+  assert.match(
+    styles,
+    /@media \(max-width:\s*350px\)[\s\S]*\.terminal-body\s*\{[^}]*font-size:\s*11px;/,
+  );
+});
+
 test("home workflow omits non-terminal chrome and visible release labels", async () => {
   const forbiddenCopy = {
     ko: ["실제 CLI 흐름", "AX 연결됨", "텍스트 · 표준 출력"],
@@ -910,15 +985,16 @@ test("editorial homepage uses deliberate hierarchy and distinct rhythms", async 
 });
 
 test("home interface metadata follows the installed web design guidelines", async () => {
-  const [html, styles, app] = await Promise.all([
+  const [html, usage, styles, app] = await Promise.all([
     readOutput("index.html"),
+    readOutput("usage/index.html"),
     readOutput("assets/styles.css"),
     readOutput("assets/app.js"),
   ]);
 
   assert.match(
     html,
-    /<a class="brand"[^>]*translate="no"[^>]*>[\s\S]*?<img[^>]*width="36"[^>]*height="36"/,
+    /<a class="brand"[^>]*translate="no"[^>]*>[\s\S]*?<img[^>]*width="32"[^>]*height="32"/,
   );
   assert.match(
     html,
@@ -957,7 +1033,10 @@ test("home interface metadata follows the installed web design guidelines", asyn
     styles,
     /\.skip-link\s*{[^}]*transform:\s*translateY\(calc\(-100% - 20px\)\);/s,
   );
-  assert.match(app, /button\.setAttribute\("aria-live", "polite"\)/);
+  assert.match(
+    usage,
+    /<button class="code-copy copy-control"[^>]*aria-live="polite"[^>]*data-code-copy/,
+  );
   assert.match(
     app,
     /themeColor\?\.setAttribute\("content", theme === "paper" \? "#eeeeec" : "#080808"\)/,
