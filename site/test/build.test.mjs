@@ -1174,6 +1174,19 @@ test("home and docs share mobile-safe header control geometry", async () => {
   );
 });
 
+test("documentation source metadata stays inside 320px viewports", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.source-stamp\s*\{[^}]*max-width:\s*100%;[^}]*flex-wrap:\s*wrap;[^}]*overflow-wrap:\s*anywhere;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*760px\)[\s\S]*?\.toc-source\s*\{[^}]*display:\s*none !important;/s,
+  );
+});
+
 test("homepage secondary text and requirements remain accessible", async () => {
   const [html, styles] = await Promise.all([
     readOutput("index.html"),

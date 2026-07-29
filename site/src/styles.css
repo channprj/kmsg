@@ -2727,6 +2727,12 @@ html[lang="ko"] .hero h1 em {
     padding: 64px 0 80px;
   }
 
+  .source-stamp {
+    max-width: 100%;
+    flex-wrap: wrap;
+    overflow-wrap: anywhere;
+  }
+
   .toc {
     position: static;
     display: flex;
@@ -2738,9 +2744,12 @@ html[lang="ko"] .hero h1 em {
     gap: 12px;
   }
 
-  .toc-label,
-  .toc-source {
+  .toc-label {
     display: none;
+  }
+
+  .toc-source {
+    display: none !important;
   }
 
   .toc ol {
