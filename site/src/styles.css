@@ -1450,26 +1450,74 @@ html[lang="ko"] .hero h1 em {
 }
 
 .section-action {
+  margin-top: 24px;
+}
+
+.ui-icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+}
+
+.ui-icon-16 {
+  width: 16px;
+  height: 16px;
+}
+
+.ui-icon-18 {
+  width: 18px;
+  height: 18px;
+}
+
+.ui-icon-20 {
+  width: 20px;
+  height: 20px;
+}
+
+.story-search-action {
   display: flex;
-  margin-top: 28px;
-  justify-content: center;
-}
-
-.text-action {
-  display: inline-flex;
-  min-height: 44px;
-  padding: 10px 14px;
+  min-height: 72px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 16px;
+  background: color-mix(in srgb, var(--canvas-raised) 72%, transparent);
   color: var(--ink-muted);
-  font-size: 13px;
-  font-weight: 500;
   text-decoration: none;
-  transition: color 180ms ease;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
 }
 
-.text-action:hover {
+.story-search-action:hover {
+  border-color: var(--line-strong);
+  background: var(--canvas-raised);
   color: var(--ink);
+}
+
+.story-search-title,
+.story-search-terms {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.story-search-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.story-search-term {
+  padding: 4px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 12px;
 }
 
 .faq-list {
@@ -2470,6 +2518,11 @@ html[lang="ko"] .hero h1 em {
 
   .stories-section .story-grid {
     grid-template-columns: 1fr;
+  }
+
+  .story-search-action {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .install-section {

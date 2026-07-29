@@ -840,6 +840,19 @@ const escapeHtml = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
+const iconPaths = {
+  "external-link":
+    '<path d="M14 5h5v5"></path><path d="M10 14 19 5"></path><path d="M19 13v6H5V5h6"></path>',
+  search:
+    '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path>',
+};
+
+const renderIcon = (name, size = 20) => {
+  const paths = iconPaths[name];
+  if (!paths) throw new Error(`Unknown icon: ${name}`);
+  return `<svg class="ui-icon ui-icon-${size}" data-icon="${name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths}</svg>`;
+};
+
 const stripTags = (value) =>
   sanitizeHtml(value, { allowedTags: [], allowedAttributes: {} })
     .replace(/\s+/g, " ")
@@ -1356,8 +1369,13 @@ const renderAgentSkill = (page, copy) => `
     </div>
   </section>`;
 
+const storySearchTerms = [
+  "kmsg 카카오톡",
+  "kmsg 카톡",
+  "kmsg 카카오",
+];
 const moreStoriesUrl =
-  "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4";
+  "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22";
 
 const renderHomeStories = (copy, locale) => `
   <section class="product-section stories-section" id="stories">
@@ -1384,9 +1402,20 @@ const renderHomeStories = (copy, locale) => `
         .join("")}
     </div>
     <div class="section-action">
-      <a class="text-action" href="${moreStoriesUrl}" target="_blank" rel="noopener noreferrer">
-        ${escapeHtml(copy.moreStoriesAction)}
-        <span aria-hidden="true">↗</span>
+      <a class="story-search-action" href="${moreStoriesUrl}" target="_blank" rel="noopener noreferrer">
+        <span class="story-search-title">
+          ${renderIcon("search")}
+          <span>${escapeHtml(copy.moreStoriesAction)}</span>
+          ${renderIcon("external-link")}
+        </span>
+        <span class="story-search-terms" translate="no">
+          ${storySearchTerms
+            .map(
+              (term) =>
+                `<span class="story-search-term">${escapeHtml(term)}</span>`,
+            )
+            .join("")}
+        </span>
       </a>
     </div>
   </section>`;

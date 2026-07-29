@@ -690,10 +690,7 @@ test("homepage replay uses shell prompts and relaxed terminal rhythm", async () 
 });
 
 test("homepage centers hero actions and normalizes story geometry", async () => {
-  const [html, styles] = await Promise.all([
-    readOutput("index.html"),
-    readOutput("assets/styles.css"),
-  ]);
+  const styles = await readOutput("assets/styles.css");
   assert.match(
     styles,
     /\.product-hero \.hero-actions\s*{[^}]*grid-column:\s*1\s*\/\s*-1;[^}]*grid-row:\s*4;[^}]*justify-content:\s*center;/s,
@@ -707,10 +704,35 @@ test("homepage centers hero actions and normalizes story geometry", async () => 
     styles,
     /\.stories-section \.story-media\s*{[^}]*overflow:\s*hidden;[^}]*aspect-ratio:\s*16\s*\/\s*9;/s,
   );
-  assert.match(
-    html,
-    /href="https:\/\/www\.google\.com\/search\?q=kmsg\+%EC%B9%B4%EC%B9%B4%EC%98%A4" target="_blank" rel="noopener noreferrer"/,
-  );
+});
+
+test("story discovery searches every requested Korean phrase", async () => {
+  const expectedUrl =
+    "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22";
+  const expectedTerms = [
+    "kmsg 카카오톡",
+    "kmsg 카톡",
+    "kmsg 카카오",
+  ];
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    const panel = html.match(
+      /<a class="story-search-action"[\s\S]*?<\/a>/,
+    )?.[0];
+
+    assert.ok(panel, `${localeId}: missing story search panel`);
+    assert.ok(panel.includes(`href="${expectedUrl}"`), localeId);
+    assert.match(panel, /target="_blank" rel="noopener noreferrer"/);
+    assert.match(panel, /data-icon="search"/);
+    assert.match(panel, /data-icon="external-link"/);
+    for (const term of expectedTerms) {
+      assert.ok(
+        panel.includes(`<span class="story-search-term">${term}</span>`),
+        `${localeId}: ${term}`,
+      );
+    }
+  }
 });
 
 test("homepage renders every FAQ represented by structured data", async () => {
@@ -824,6 +846,18 @@ test("legacy OpenClaw routes redirect to localized canonical MCP routes", async 
       ),
     );
     assert.match(html, /name="robots" content="noindex,follow"/);
+  }
+
+  for (const path of contentFiles) {
+    const html = await readOutput(path);
+    const publicSiteLinks = [...html.matchAll(/href="([^"]+)"/g)]
+      .map(([, href]) => href)
+      .filter((href) => !href.startsWith("https://github.com/"));
+    assert.equal(
+      publicSiteLinks.some((href) => /(?:^|\/)openclaw\/(?:$|[#?])/.test(href)),
+      false,
+      path,
+    );
   }
 });
 
