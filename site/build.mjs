@@ -1361,7 +1361,7 @@ const renderAgentSkill = (page, copy) => `
         <span class="agent-skill-step">01</span>
         <h3>${escapeHtml(copy.agentSkillInstallTitle)}</h3>
         <p>${escapeHtml(copy.agentSkillInstallDescription)}</p>
-        <button class="agent-skill-command copy-control" type="button" aria-label="${page.localeConfig.ui.copy}" aria-live="polite" translate="no" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+        <button class="agent-skill-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: ${agentSkillInstallCommand}`)}" aria-live="polite" translate="no" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code translate="no">${agentSkillInstallCommand}</code>
           ${renderCopyIcons()}
@@ -1472,7 +1472,7 @@ const renderHomeInstall = (page, copy) => {
         <p class="section-label">${escapeHtml(copy.installLabel)}</p>
         <h2>${escapeHtml(copy.installTitle)}</h2>
         <p class="install-description">${escapeHtml(copy.installDescription)}</p>
-        <button class="install-command copy-control" type="button" aria-label="${page.localeConfig.ui.copy}" aria-live="polite" translate="no" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+        <button class="install-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: brew install channprj/tap/kmsg`)}" aria-live="polite" translate="no" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code translate="no">brew install channprj/tap/kmsg</code>
           ${renderCopyIcons()}

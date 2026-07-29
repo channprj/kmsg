@@ -1095,6 +1095,21 @@ test("home interface metadata follows the installed web design guidelines", asyn
   );
 });
 
+test("home command copy buttons include their visible command in the accessible name", async () => {
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.match(
+      html,
+      /<button class="agent-skill-command copy-control"[^>]*aria-label="[^"]*npx skills add channprj\/kmsg --skill kmsg --agent claude-code codex -g -y"/,
+    );
+    assert.match(
+      html,
+      /<button class="install-command copy-control"[^>]*aria-label="[^"]*brew install channprj\/tap\/kmsg"/,
+    );
+  }
+});
+
 test("curated home styles define the responsive product system", async () => {
   const styles = await readOutput("assets/styles.css");
 

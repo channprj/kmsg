@@ -79,6 +79,11 @@ const copyText = async (value) => {
   if (!copied) throw new Error("Copy failed");
 };
 
+const copyAccessibleLabel = (button, label) => {
+  const visibleCommand = button.dataset.copy?.trim();
+  return visibleCommand ? `${label}: ${visibleCommand}` : label;
+};
+
 const markCopied = (button, fallbackLabel = copiedLabel) => {
   const originalLabel = button.getAttribute("aria-label");
   const visibleLabel = button.querySelector("[data-copy-label]");
@@ -86,7 +91,7 @@ const markCopied = (button, fallbackLabel = copiedLabel) => {
   const nextLabel = button.dataset.copiedLabel || fallbackLabel;
 
   button.classList.add("is-copied");
-  button.setAttribute("aria-label", nextLabel);
+  button.setAttribute("aria-label", copyAccessibleLabel(button, nextLabel));
   if (visibleLabel) visibleLabel.textContent = nextLabel;
 
   window.setTimeout(() => {
@@ -105,7 +110,10 @@ document.querySelectorAll("[data-copy]").forEach((button) => {
     } catch {
       button.setAttribute(
         "aria-label",
-        button.dataset.copyFailedLabel || copyFailedLabel,
+        copyAccessibleLabel(
+          button,
+          button.dataset.copyFailedLabel || copyFailedLabel,
+        ),
       );
     }
   });
@@ -122,7 +130,10 @@ document.querySelectorAll("[data-code-copy]").forEach((button) => {
     } catch {
       button.setAttribute(
         "aria-label",
-        button.dataset.copyFailedLabel || copyFailedLabel,
+        copyAccessibleLabel(
+          button,
+          button.dataset.copyFailedLabel || copyFailedLabel,
+        ),
       );
     }
   });
