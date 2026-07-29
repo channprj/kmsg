@@ -330,7 +330,7 @@ test("Korean stories heading stays compact on narrow screens", async () => {
 
   assert.match(
     styles,
-    /html\[lang="ko"\] \.stories-section \.section-heading h2\s*\{[^}]*font-size:\s*clamp\(26px,\s*8\.4vw,\s*34px\);[^}]*\}/s,
+    /html\[lang="ko"\] \.stories-section \.section-heading h2\s*\{[^}]*font-size:\s*clamp\(30px,\s*8\.4vw,\s*34px\);[^}]*\}/s,
   );
 });
 
@@ -515,6 +515,22 @@ test("semantic typography keeps interface text readable", async () => {
   assert.match(
     styles,
     /@media \(max-width:\s*350px\)[\s\S]*\.terminal-body\s*\{[^}]*font-size:\s*11px;/,
+  );
+  assert.match(
+    styles,
+    /\.product-hero \.hero-lead\s*\{[^}]*font-size:\s*var\(--text-lg\);/s,
+  );
+  assert.match(
+    styles,
+    /\.principle-card h3\s*\{[^}]*font-size:\s*var\(--text-xl\);/s,
+  );
+  assert.match(
+    styles,
+    /\.capability-copy h3\s*\{[^}]*font-size:\s*var\(--heading-sm\);/s,
+  );
+  assert.match(
+    styles,
+    /\.stories-section \.story-copy h3\s*\{[^}]*font-size:\s*var\(--text-xl\);/s,
   );
 });
 
@@ -704,7 +720,7 @@ test("home workflow uses the compact Ghostty visual contract", async () => {
 
   assert.match(
     styles,
-    /\.terminal-window\s*{[\s\S]*border-radius:\s*12px;[\s\S]*background:\s*#282c34;[\s\S]*color:\s*#ffffff;/,
+    /\.terminal-window\s*{[\s\S]*border-radius:\s*var\(--radius-md\);[\s\S]*background:\s*#282c34;[\s\S]*color:\s*#ffffff;/,
   );
   assert.match(
     styles,
@@ -962,13 +978,13 @@ test("editorial homepage uses deliberate hierarchy and distinct rhythms", async 
     styles,
     /\.section-heading h2,[\s\S]*?\.install-panel h2\s*{[^}]*text-wrap:\s*balance;/s,
   );
-  assert.doesNotMatch(
+  assert.match(
     styles,
-    /\.principle-card\s*{[^}]*border:\s*1px solid/s,
+    /\.principle-card\s*{[^}]*border:\s*1px solid var\(--line\);/s,
   );
-  assert.doesNotMatch(
+  assert.match(
     styles,
-    /\.principle-card\s*{[^}]*border-radius:/s,
+    /\.principle-card\s*{[^}]*border-radius:\s*var\(--radius-md\);/s,
   );
   assert.match(
     styles,
@@ -981,6 +997,42 @@ test("editorial homepage uses deliberate hierarchy and distinct rhythms", async 
   assert.match(
     styles,
     /@media \(prefers-reduced-motion:\s*reduce\)[\s\S]*animation-duration:\s*0\.01ms !important/,
+  );
+});
+
+test("home and docs share the cohesive geometry system", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  for (const declaration of [
+    "--radius-sm: 8px;",
+    "--radius-md: 12px;",
+    "--radius-lg: 16px;",
+  ]) {
+    assert.ok(styles.includes(declaration), declaration);
+  }
+  assert.match(
+    styles,
+    /\.header-inner\s*\{[^}]*min-height:\s*64px;/s,
+  );
+  assert.match(
+    styles,
+    /\.product-section\s*\{[^}]*padding:\s*80px 0;/s,
+  );
+  assert.match(
+    styles,
+    /\.docs-hero h1\s*\{[^}]*font-size:\s*var\(--heading-md\);/s,
+  );
+  assert.match(
+    styles,
+    /\.content-layout\s*\{[^}]*padding:\s*80px 0;/s,
+  );
+  assert.match(
+    styles,
+    /\.principle-card\s*\{[^}]*border:\s*1px solid var\(--line\);[^}]*border-radius:\s*var\(--radius-md\);/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.product-section\s*\{[^}]*padding:\s*64px 0;/s,
   );
 });
 

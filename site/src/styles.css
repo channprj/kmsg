@@ -23,7 +23,9 @@
   --shell-width: 1280px;
   --content-width: 1120px;
   --page: min(1120px, calc(100% - 48px));
-  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --text-xs: 12px;
   --text-sm: 14px;
   --text-md: 16px;
@@ -147,7 +149,7 @@ h3 {
   left: 12px;
   padding: 10px 14px;
   transform: translateY(calc(-100% - 20px));
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   background: var(--accent);
   color: var(--accent-ink);
   font-family: var(--mono);
@@ -215,7 +217,7 @@ h3 {
 .header-inner {
   display: grid;
   width: var(--page);
-  min-height: 66px;
+  min-height: 64px;
   margin: 0 auto;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -231,8 +233,10 @@ h3 {
 }
 
 .brand img {
+  width: 32px;
+  height: 32px;
   border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line));
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   box-shadow: 0 0 20px rgba(254, 229, 0, 0.08);
 }
 
@@ -316,7 +320,7 @@ h3 {
 .llm-link {
   padding: 6px 9px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--canvas-raised);
 }
 
@@ -328,9 +332,9 @@ h3 {
 .language-control {
   position: relative;
   display: inline-flex;
-  height: 31px;
+  height: 36px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   align-items: center;
   background: var(--canvas-raised);
   color: var(--ink-muted);
@@ -381,11 +385,11 @@ h3 {
 
 .theme-toggle {
   display: inline-grid;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   background: var(--canvas-raised);
   color: inherit;
   cursor: pointer;
@@ -550,7 +554,7 @@ html[lang="ko"] .hero h1 em {
   min-height: 48px;
   padding: 0 19px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   align-items: center;
   justify-content: center;
   gap: 24px;
@@ -591,7 +595,7 @@ html[lang="ko"] .hero h1 em {
   margin-top: 22px;
   padding: 13px 15px;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   align-items: center;
   gap: 11px;
   background: color-mix(in srgb, var(--canvas-raised) 80%, transparent);
@@ -694,7 +698,7 @@ html[lang="ko"] .hero h1 em {
   overflow: hidden;
   min-height: 0;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: #282c34;
   box-shadow:
     0 28px 70px rgba(0, 0, 0, 0.38),
@@ -925,7 +929,7 @@ html[lang="ko"] .hero h1 em {
   margin: 2px 0 0;
   padding: 9px;
   border: 1px solid var(--line-strong);
-  border-radius: 26px;
+  border-radius: var(--radius-lg);
   grid-column: 1 / span 2;
   grid-row: 1 / span 3;
   place-items: center;
@@ -940,7 +944,7 @@ html[lang="ko"] .hero h1 em {
 .product-mark img {
   width: 100%;
   height: 100%;
-  border-radius: 19px;
+  border-radius: var(--radius-md);
   object-fit: cover;
 }
 
@@ -960,7 +964,7 @@ html[lang="ko"] .hero h1 em {
   grid-column: 4 / -1;
   grid-row: 2;
   font-family: var(--display);
-  font-size: clamp(50px, 5.8vw, 76px);
+  font-size: var(--heading-lg);
   font-weight: 650;
   letter-spacing: -0.058em;
   line-height: 1.04;
@@ -982,7 +986,7 @@ html[lang="ko"] .hero h1 em {
   grid-column: 4 / span 5;
   grid-row: 3;
   color: var(--ink-muted);
-  font-size: 17px;
+  font-size: var(--text-lg);
   line-height: 1.65;
 }
 
@@ -998,7 +1002,7 @@ html[lang="ko"] .hero h1 em {
 .product-hero .button {
   min-width: 126px;
   min-height: 48px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   font-family: var(--body);
   font-size: 14px;
   font-weight: 600;
@@ -1036,7 +1040,7 @@ html[lang="ko"] .hero h1 em {
   margin: 0 auto;
   padding: 0;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: transparent;
   box-shadow: none;
 }
@@ -1046,7 +1050,7 @@ html[lang="ko"] .hero h1 em {
 }
 
 .product-section {
-  padding: 72px 0;
+  padding: 80px 0;
 }
 
 .section-heading {
@@ -1089,7 +1093,7 @@ html[lang="ko"] .hero h1 em {
 .section-heading h2,
 .install-panel h2 {
   font-family: var(--display);
-  font-size: clamp(34px, 4vw, 48px);
+  font-size: var(--heading-sm);
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1.14;
@@ -1116,25 +1120,15 @@ html[lang="ko"] .hero h1 em {
 .principle-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
+  gap: 16px;
 }
 
 .principle-card {
   min-height: 0;
-  padding: 24px clamp(26px, 3vw, 38px) 8px;
-  background: transparent;
-}
-
-.principle-card:first-child {
-  padding-left: 0;
-}
-
-.principle-card:last-child {
-  padding-right: 0;
-}
-
-.principle-card + .principle-card {
-  border-left: 1px solid var(--line);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--canvas-raised) 74%, transparent);
 }
 
 .principle-token {
@@ -1155,7 +1149,7 @@ html[lang="ko"] .hero h1 em {
 
 .principle-card h3 {
   margin: 28px 0 0;
-  font-size: 22px;
+  font-size: var(--text-xl);
   font-weight: 600;
   line-height: 1.3;
 }
@@ -1208,7 +1202,7 @@ html[lang="ko"] .hero h1 em {
 
 .capability-copy h3 {
   margin: 16px 0 0;
-  font-size: clamp(30px, 3.4vw, 42px);
+  font-size: var(--heading-sm);
   font-weight: 600;
   line-height: 1.15;
 }
@@ -1250,7 +1244,7 @@ html[lang="ko"] .hero h1 em {
   min-width: 0;
   overflow-x: auto;
   border: 1px solid #272724;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: #0c0c0b;
   box-shadow: 0 18px 46px rgba(0, 0, 0, 0.2);
   color: #efefec;
@@ -1312,14 +1306,14 @@ html[lang="ko"] .hero h1 em {
 .agent-skill-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 18px;
+  gap: 16px;
 }
 
 .agent-skill-card {
   min-width: 0;
-  padding: 30px;
+  padding: 24px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--canvas-raised) 74%, transparent);
 }
 
@@ -1335,7 +1329,7 @@ html[lang="ko"] .hero h1 em {
 .agent-skill-card h3 {
   margin: 28px 0 0;
   font-family: var(--display);
-  font-size: 24px;
+  font-size: var(--text-xl);
   font-weight: 600;
   letter-spacing: -0.035em;
 }
@@ -1356,7 +1350,7 @@ html[lang="ko"] .hero h1 em {
   margin-top: 24px;
   padding: 13px 14px;
   border: 1px solid #272724;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
@@ -1395,7 +1389,7 @@ html[lang="ko"] .hero h1 em {
   min-width: 0;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   gap: 8px;
 }
 
@@ -1420,7 +1414,7 @@ html[lang="ko"] .hero h1 em {
   margin-top: 8px;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   gap: 8px;
 }
 
@@ -1436,11 +1430,11 @@ html[lang="ko"] .hero h1 em {
 .stories-section .story-grid {
   margin: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 16px;
 }
 
 .stories-section .story-card {
-  border-radius: 14px;
+  border-radius: var(--radius-md);
 }
 
 .stories-section .story-media {
@@ -1473,7 +1467,7 @@ html[lang="ko"] .hero h1 em {
 
 .stories-section .story-copy h3 {
   margin: 12px 0 0;
-  font-size: 20px;
+  font-size: var(--text-xl);
   font-weight: 600;
   line-height: 1.4;
 }
@@ -1513,7 +1507,7 @@ html[lang="ko"] .hero h1 em {
   min-height: 72px;
   padding: 16px 18px;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-md);
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -1571,7 +1565,7 @@ html[lang="ko"] .hero h1 em {
   gap: 24px;
   color: var(--ink);
   cursor: pointer;
-  font-size: 18px;
+  font-size: var(--text-lg);
   font-weight: 600;
   list-style: none;
 }
@@ -1607,9 +1601,9 @@ html[lang="ko"] .hero h1 em {
   display: grid;
   max-width: 1040px;
   margin: 0 auto;
-  padding: 56px clamp(32px, 5vw, 64px);
+  padding: 48px clamp(32px, 5vw, 64px);
   border: 1px solid var(--line);
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
   grid-template-rows: auto auto auto auto;
   align-items: start;
@@ -1644,7 +1638,7 @@ html[lang="ko"] .hero h1 em {
   min-height: 58px;
   margin: 0;
   padding: 14px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   grid-column: 2;
   grid-row: 1 / span 2;
   align-self: end;
@@ -1724,20 +1718,20 @@ html[lang="ko"] .hero h1 em {
 .docs-hero {
   width: var(--page);
   margin: 0 auto;
-  padding: 96px 0 76px;
+  padding: 80px 0 64px;
   border-bottom: 1px solid var(--line);
 }
 
 .docs-hero h1 {
   max-width: 880px;
-  font-size: clamp(46px, 6.4vw, 76px);
+  font-size: var(--heading-md);
 }
 
 .docs-hero > p:not(.eyebrow) {
   max-width: 760px;
   margin: 26px 0 0;
   color: var(--ink-muted);
-  font-size: 18px;
+  font-size: var(--text-lg);
 }
 
 .docs-meta {
@@ -1756,7 +1750,7 @@ html[lang="ko"] .hero h1 em {
   display: inline-flex;
   padding: 7px 10px;
   border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   align-items: center;
   gap: 6px;
   text-decoration: none;
@@ -1771,10 +1765,10 @@ html[lang="ko"] .hero h1 em {
   display: grid;
   width: var(--page);
   margin: 0 auto;
-  padding: 104px 0 140px;
-  grid-template-columns: 190px minmax(0, 820px);
+  padding: 80px 0;
+  grid-template-columns: 200px minmax(0, 820px);
   justify-content: space-between;
-  gap: 82px;
+  gap: 64px;
 }
 
 .toc {
@@ -1850,7 +1844,7 @@ html[lang="ko"] .hero h1 em {
   margin-bottom: 46px;
   padding: 8px 11px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   align-items: center;
   gap: 8px;
   color: var(--ink-faint);
@@ -1890,10 +1884,10 @@ html[lang="ko"] .hero h1 em {
 }
 
 .markdown-body h2 {
-  margin: 96px 0 28px;
+  margin: 80px 0 24px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
-  font-size: clamp(31px, 3.8vw, 44px);
+  font-size: var(--heading-sm);
   font-weight: 600;
   letter-spacing: -0.045em;
 }
@@ -1909,15 +1903,15 @@ html[lang="ko"] .hero h1 em {
 }
 
 .markdown-body h3 {
-  margin: 52px 0 18px;
-  font-size: 25px;
+  margin: 48px 0 16px;
+  font-size: var(--text-xl);
   font-weight: 600;
   letter-spacing: -0.03em;
 }
 
 .markdown-body h4 {
-  margin: 34px 0 14px;
-  font-size: 19px;
+  margin: 32px 0 12px;
+  font-size: var(--text-lg);
 }
 
 .heading-anchor {
@@ -1942,7 +1936,7 @@ html[lang="ko"] .hero h1 em {
 .markdown-body > p:first-of-type {
   color: var(--ink);
   font-size: var(--text-lg);
-  line-height: 1.8;
+  line-height: 1.75;
 }
 
 .markdown-body strong {
@@ -1986,7 +1980,7 @@ html[lang="ko"] .hero h1 em {
   padding: 24px 26px 24px 30px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background:
     linear-gradient(115deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
     var(--canvas-raised);
@@ -2009,7 +2003,7 @@ html[lang="ko"] .hero h1 em {
 .markdown-body :not(pre) > code {
   padding: 0.18em 0.42em;
   border: 1px solid var(--line);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--canvas-raised) 86%, transparent);
   color: var(--ink);
   font-family: var(--mono);
@@ -2021,7 +2015,7 @@ html[lang="ko"] .hero h1 em {
   margin: 28px 0;
   overflow: auto;
   border: 1px solid var(--line-strong);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: #282c34;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
   color: #dbe4ed;
@@ -2056,7 +2050,7 @@ html[lang="ko"] .hero h1 em {
   display: inline-flex;
   padding: 5px 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.035);
   color: #96a1ac;
   font-family: var(--mono);
@@ -2081,7 +2075,7 @@ html[lang="ko"] .hero h1 em {
   width: 100%;
   margin: 28px 0;
   overflow-x: auto;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   scrollbar-width: thin;
 }
 
@@ -2118,7 +2112,7 @@ html[lang="ko"] .hero h1 em {
   height: auto;
   margin: 28px auto;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow);
 }
 
@@ -2132,7 +2126,7 @@ html[lang="ko"] .hero h1 em {
 .story-card {
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--canvas-raised);
   transition:
     border-color 180ms ease,
@@ -2191,14 +2185,14 @@ html[lang="ko"] .hero h1 em {
   margin: 34px 0;
   padding: 8px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: var(--canvas-raised);
   box-shadow: var(--shadow);
 }
 
 .media-frame video {
   width: 100%;
-  border-radius: 7px;
+  border-radius: var(--radius-sm);
   background: #000;
 }
 
@@ -2221,7 +2215,7 @@ html[lang="ko"] .hero h1 em {
 }
 
 .footer-brand img {
-  border-radius: 14px;
+  border-radius: var(--radius-md);
 }
 
 .footer-brand div {
@@ -2230,7 +2224,7 @@ html[lang="ko"] .hero h1 em {
 
 .footer-brand strong {
   font-family: var(--display);
-  font-size: 22px;
+  font-size: var(--text-xl);
   letter-spacing: -0.04em;
 }
 
@@ -2414,27 +2408,27 @@ html[lang="ko"] .hero h1 em {
     width: 96px;
     height: 96px;
     margin: 0 auto;
-    border-radius: 24px;
+    border-radius: var(--radius-lg);
     grid-column: 1;
     grid-row: auto;
   }
 
   .product-mark img {
-    border-radius: 16px;
+    border-radius: var(--radius-md);
   }
 
   .hero-kicker {
     margin-top: 20px;
     grid-column: 1;
     grid-row: auto;
-    font-size: 15px;
+    font-size: var(--text-md);
   }
 
   .product-hero h1 {
     margin: 18px auto 0;
     grid-column: 1;
     grid-row: auto;
-    font-size: clamp(38px, 11.6vw, 56px);
+    font-size: clamp(40px, 11.6vw, 56px);
     letter-spacing: -0.052em;
   }
 
@@ -2446,7 +2440,7 @@ html[lang="ko"] .hero h1 em {
     margin-top: 18px;
     grid-column: 1;
     grid-row: auto;
-    font-size: 15px;
+    font-size: var(--text-md);
   }
 
   .product-hero .hero-actions {
@@ -2461,7 +2455,7 @@ html[lang="ko"] .hero h1 em {
   }
 
   .workflow-frame {
-    border-radius: 12px;
+    border-radius: var(--radius-md);
   }
 
   .is-home .terminal-body {
@@ -2469,7 +2463,7 @@ html[lang="ko"] .hero h1 em {
   }
 
   .product-section {
-    padding: 60px 0;
+    padding: 64px 0;
   }
 
   .section-heading {
@@ -2492,11 +2486,11 @@ html[lang="ko"] .hero h1 em {
   .section-heading h2,
   .install-panel h2 {
     margin-top: 14px;
-    font-size: clamp(31px, 9.8vw, 42px);
+    font-size: clamp(30px, 9vw, 36px);
   }
 
   html[lang="ko"] .stories-section .section-heading h2 {
-    font-size: clamp(26px, 8.4vw, 34px);
+    font-size: clamp(30px, 8.4vw, 34px);
   }
 
   .section-heading > p:last-child:not(.section-label) {
@@ -2514,12 +2508,7 @@ html[lang="ko"] .hero h1 em {
 
   .principle-card {
     min-height: 0;
-    padding: 22px 0;
-  }
-
-  .principle-card + .principle-card {
-    border-top: 1px solid var(--line);
-    border-left: 0;
+    padding: 24px;
   }
 
   .principle-card h3 {
@@ -2574,8 +2563,8 @@ html[lang="ko"] .hero h1 em {
 
   .install-panel {
     display: block;
-    padding: 48px 22px;
-    border-radius: 18px;
+    padding: 40px 24px;
+    border-radius: var(--radius-lg);
     text-align: left;
   }
 
@@ -2722,20 +2711,20 @@ html[lang="ko"] .hero h1 em {
   }
 
   .docs-hero {
-    padding: 74px 0 58px;
+    padding: 64px 0 48px;
   }
 
   .docs-hero h1 {
-    font-size: clamp(42px, 13vw, 64px);
+    font-size: clamp(40px, 12vw, 52px);
   }
 
   .docs-hero > p:not(.eyebrow) {
-    font-size: 16px;
+    font-size: var(--text-md);
   }
 
   .content-layout {
     display: block;
-    padding: 72px 0 100px;
+    padding: 64px 0 80px;
   }
 
   .toc {
