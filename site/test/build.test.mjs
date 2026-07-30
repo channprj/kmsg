@@ -49,6 +49,7 @@ const expectedFiles = [
   "assets/app.js",
   "assets/favicon.svg",
   "assets/kmsg-logo.jpg",
+  "assets/kmsg-workspace.webp",
   "assets/demo1.mp4",
   "assets/demo-captions.vtt",
   "robots.txt",
@@ -104,9 +105,9 @@ test("Korean is canonical at root and on every default documentation route", asy
 test("all four locales render localized home and documentation content", async () => {
   const homeCopy = {
     ko: "하게 사용하세요\\.",
-    en: "Read, watch, and send KakaoTalk messages from your terminal.",
-    jp: "KakaoTalkをターミナルから読み取り、監視、送信。",
-    cn: "在终端中读取、监控和发送KakaoTalk消息。",
+    en: "KakaoTalk, from your terminal.",
+    jp: "KakaoTalkをターミナルから。",
+    cn: "在终端中使用KakaoTalk。",
   };
   const usageCopy = {
     ko: "안전한 읽기",
@@ -149,12 +150,12 @@ test("Korean home renders the requested two-line AI Native headline", async () =
   );
 });
 
-test("AI Native headline uses yellow text on a transparent background", async () => {
+test("AI Native headline remains legible in both site themes", async () => {
   const styles = await readOutput("assets/styles.css");
 
   assert.match(
     styles,
-    /\.hero-highlight\s*\{[^}]*background:\s*transparent;[^}]*color:\s*var\(--accent\);[^}]*\}/s,
+    /\.product-hero \.hero-highlight\s*\{[^}]*background:\s*transparent;[^}]*color:\s*var\(--accent-text\);[^}]*\}/s,
   );
 });
 
@@ -194,6 +195,37 @@ test("home routes render the curated product page instead of README layout", asy
         /AI Native|AI-native way|AIネイティブ|AI原生方式/,
       );
     }
+  }
+});
+
+test("rebuilt home ships original media and anti-default interaction choices", async () => {
+  const [html, styles, app] = await Promise.all([
+    readOutput(localizedPath("ko", "home")),
+    readOutput("assets/styles.css"),
+    readOutput("assets/app.js"),
+  ]);
+
+  assert.match(
+    html,
+    /<link rel="preload" as="image" href="\.\/assets\/kmsg-workspace\.webp"[^>]*>/,
+  );
+  assert.match(
+    html,
+    /<img src="\.\/assets\/kmsg-workspace\.webp"[^>]+width="1536" height="1024"/,
+  );
+  assert.match(
+    html,
+    /<div class="workflow-frame" role="img" aria-label="[^"]+">/,
+  );
+  assert.equal((html.match(/class="section-label"/g) || []).length, 1);
+  assert.doesNotMatch(html, /brand-status|capability-index/);
+  assert.doesNotMatch(styles, /fonts\.googleapis\.com/);
+  assert.doesNotMatch(app, /addEventListener\("scroll"/);
+  assert.match(styles, /Product surface rebuild:/);
+
+  for (const path of contentFiles) {
+    const page = await readOutput(path);
+    assert.doesNotMatch(page, /[—–]/);
   }
 });
 
@@ -421,20 +453,17 @@ test("legacy ko routes redirect to canonical Korean routes", async () => {
   }
 });
 
-test("IBM Plex and locale fonts keep prose readable and code distinct", async () => {
+test("system fonts keep prose local, readable, and code distinct", async () => {
   const [root, styles] = await Promise.all([
     readOutput("index.html"),
     readOutput("assets/styles.css"),
   ]);
-  assert.match(root, /family=IBM\+Plex\+Sans/);
-  assert.match(root, /family=IBM\+Plex\+Sans\+KR/);
-  assert.match(root, /family=IBM\+Plex\+Mono/);
-  assert.match(root, /family=JetBrains\+Mono:wght@400;500;600/);
-  assert.match(styles, /--body:\s*"IBM Plex Sans"/);
-  assert.match(styles, /--mono:\s*"IBM Plex Mono"/);
+  assert.doesNotMatch(root, /fonts\.googleapis\.com|fonts\.gstatic\.com/);
+  assert.match(styles, /--body:\s*-apple-system,\s*BlinkMacSystemFont/);
+  assert.match(styles, /--mono:\s*"SFMono-Regular"/);
   assert.match(
     styles,
-    /html\[lang="ko"\]\s*{[\s\S]*--body:\s*"IBM Plex Sans KR"/,
+    /html\[lang="ko"\]\s*{[\s\S]*--body:\s*-apple-system/,
   );
   assert.match(styles, /body\s*{[\s\S]*word-break:\s*keep-all/);
   assert.match(
@@ -472,7 +501,7 @@ test("shared SVG icons replace character glyphs in interface controls", async ()
   );
   assert.match(
     rendered,
-    /<svg class="ui-icon ui-icon-(?:16|18|20)"[^>]*viewBox="0 0 24 24"[^>]*stroke-width="1.75"[^>]*aria-hidden="true"/,
+    /<svg class="ui-icon ui-icon-(?:16|18|20)"[^>]*aria-hidden="true"[^>]*viewBox="0 0 256 256"[^>]*fill="currentColor"/,
   );
   assert.doesNotMatch(app, /textContent = "✓"/);
   assert.match(app, /classList\.add\("is-copied"\)/);
@@ -780,20 +809,23 @@ test("homepage replay uses shell prompts and relaxed terminal rhythm", async () 
   assert.match(styles, /\.terminal-body\s*{[^}]*line-height:\s*1\.2;/s);
 });
 
-test("homepage centers hero actions and normalizes story geometry", async () => {
+test("homepage left-aligns hero actions and varies story geometry", async () => {
   const styles = await readOutput("assets/styles.css");
   assert.match(
     styles,
-    /\.product-hero \.hero-actions\s*{[^}]*grid-column:\s*1\s*\/\s*-1;[^}]*grid-row:\s*4;[^}]*justify-content:\s*center;/s,
+    /\.product-hero \.hero-actions\s*{[^}]*justify-content:\s*flex-start;/s,
   );
   assert.match(
     styles,
-    /\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/s,
+    /\.stories-section \.story-grid\s*{[^}]*grid-template-columns:\s*1\.08fr 0\.92fr;/s,
   );
-  assert.doesNotMatch(styles, /\.stories-section \.story-card:nth-child\(2\)/);
   assert.match(
     styles,
-    /\.stories-section \.story-media\s*{[^}]*overflow:\s*hidden;[^}]*aspect-ratio:\s*16\s*\/\s*9;/s,
+    /\.stories-section \.story-media\s*{[^}]*overflow:\s*hidden;[^}]*aspect-ratio:\s*16\s*\/\s*10;/s,
+  );
+  assert.match(
+    styles,
+    /\.stories-section \.story-card:nth-child\(2\) \.story-media\s*{[^}]*aspect-ratio:\s*16\s*\/\s*12;/s,
   );
 });
 
@@ -1050,7 +1082,7 @@ test("home interface metadata follows the installed web design guidelines", asyn
   );
   assert.match(
     html,
-    /<div class="product-mark">[\s\S]*?<img[^>]*width="112"[^>]*height="112"[^>]*fetchpriority="high"[^>]*decoding="async"/,
+    /<div class="product-mark">[\s\S]*?<img[^>]*width="64"[^>]*height="64"[^>]*fetchpriority="high"[^>]*decoding="async"/,
   );
   assert.match(
     html,
@@ -1068,7 +1100,7 @@ test("home interface metadata follows the installed web design guidelines", asyn
     html,
     /<footer[\s\S]*?<img[^>]*width="56"[^>]*height="56"[^>]*loading="lazy"[^>]*decoding="async"/,
   );
-  assert.match(html, /<meta name="theme-color" content="#080808">/);
+  assert.match(html, /<meta name="theme-color" content="#0c0d0b">/);
   assert.match(
     styles,
     /button,\s*a,\s*select\s*{[^}]*touch-action:\s*manipulation;/s,
@@ -1091,7 +1123,7 @@ test("home interface metadata follows the installed web design guidelines", asyn
   );
   assert.match(
     app,
-    /themeColor\?\.setAttribute\("content", theme === "paper" \? "#eeeeec" : "#080808"\)/,
+    /themeColor\?\.setAttribute\("content", theme === "paper" \? "#f2f2ed" : "#0c0d0b"\)/,
   );
 });
 
@@ -1193,10 +1225,10 @@ test("homepage secondary text and requirements remain accessible", async () => {
     readOutput("assets/styles.css"),
   ]);
 
-  assert.match(styles, /--ink-faint:\s*#858580;/);
+  assert.match(styles, /--ink-faint:\s*#8c8b84;/);
   assert.match(
     styles,
-    /\.command-panel-bar\s*\{[^}]*color:\s*#858580;/s,
+    /\.command-panel figcaption\s*\{[^}]*color:\s*#9a9b92;/s,
   );
   assert.match(styles, /\.code-copy\s*\{[^}]*color:\s*#96a1ac;/s);
   assert.match(

@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, posix, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,6 +20,7 @@ const site = {
   productName: "kmsg",
   licenseUrl: "https://github.com/channprj/kmsg/blob/main/LICENSE",
   imagePath: "assets/kmsg-logo.jpg",
+  heroImagePath: "assets/kmsg-workspace.webp",
 };
 
 const localeOrder = ["ko", "en", "jp", "cn"];
@@ -161,6 +163,11 @@ const homeContent = {
     headlineHighlight: "AI Native",
     description:
       "macOS 손쉬운 사용 API로 동작하는 비공식 CLI입니다. 로컬 자동화와 MCP 클라이언트에서 같은 명령을 사용합니다.",
+    heroImageAlt:
+      "어두운 책상 위 노트북과 노란 아크릴 오브젝트",
+    workflowTitle: "세 명령으로 대화를 이어갑니다.",
+    workflowDescription:
+      "채팅방을 찾고, 맥락을 읽고, 터미널에서 바로 답장합니다.",
     installAction: "설치하기",
     docsAction: "사용법",
     agentSkillLabel: "코딩 에이전트",
@@ -243,9 +250,14 @@ const homeContent = {
   },
   en: {
     kicker: "KakaoTalk CLI · MCP server for macOS",
-    headline: "Read, watch, and send KakaoTalk messages from your terminal.",
+    headline: "KakaoTalk, from your terminal.",
     description:
       "An unofficial CLI built on the macOS Accessibility API. Use the same commands in local automation and MCP clients.",
+    heroImageAlt:
+      "Laptop and yellow acrylic object on a dark desk",
+    workflowTitle: "One thread, three commands.",
+    workflowDescription:
+      "Find the room, read its context, and reply without leaving the terminal.",
     installAction: "Install",
     docsAction: "Usage",
     agentSkillLabel: "Coding agents",
@@ -327,9 +339,14 @@ const homeContent = {
   },
   jp: {
     kicker: "macOS向けKakaoTalk CLI · MCPサーバー",
-    headline: "KakaoTalkをターミナルから読み取り、監視、送信。",
+    headline: "KakaoTalkをターミナルから。",
     description:
       "macOSアクセシビリティAPIで動作する非公式CLIです。ローカル自動化とMCPクライアントで同じコマンドを利用できます。",
+    heroImageAlt:
+      "暗いデスクに置かれたノートパソコンと黄色いアクリル",
+    workflowTitle: "3つのコマンドで会話を続ける。",
+    workflowDescription:
+      "チャットを探し、文脈を読み、ターミナルからそのまま返信します。",
     installAction: "インストール",
     docsAction: "使い方",
     agentSkillLabel: "コーディングエージェント",
@@ -413,9 +430,14 @@ const homeContent = {
   },
   cn: {
     kicker: "面向macOS的KakaoTalk CLI · MCP服务器",
-    headline: "在终端中读取、监控和发送KakaoTalk消息。",
+    headline: "在终端中使用KakaoTalk。",
     description:
       "基于macOS辅助功能API的非官方CLI。在本地自动化和MCP客户端中使用同一套命令。",
+    heroImageAlt:
+      "深色桌面上的笔记本电脑和黄色亚克力方块",
+    workflowTitle: "三条命令，完成一次对话。",
+    workflowDescription:
+      "查找聊天、读取上下文，然后直接在终端中回复。",
     installAction: "安装",
     docsAction: "使用指南",
     agentSkillLabel: "编程智能体",
@@ -840,28 +862,42 @@ const escapeHtml = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 
-const iconPaths = {
-  "arrow-right":
-    '<path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path>',
-  "external-link":
-    '<path d="M14 5h5v5"></path><path d="M10 14 19 5"></path><path d="M19 13v6H5V5h6"></path>',
-  copy:
-    '<rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>',
-  check: '<path d="m5 12 4 4L19 6"></path>',
-  "chevron-down": '<path d="m6 9 6 6 6-6"></path>',
-  plus: '<path d="M12 5v14M5 12h14"></path>',
-  minus: '<path d="M5 12h14"></path>',
-  search:
-    '<circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path>',
-  sun:
-    '<circle cx="12" cy="12" r="3.25"></circle><path d="M12 2.75v2M12 19.25v2M2.75 12h2M19.25 12h2M5.46 5.46l1.42 1.42M17.12 17.12l1.42 1.42M18.54 5.46l-1.42 1.42M6.88 17.12l-1.42 1.42"></path>',
-  moon: '<path d="M20 15.4A8.5 8.5 0 0 1 8.6 4a8.5 8.5 0 1 0 11.4 11.4Z"></path>',
+const iconFiles = {
+  "arrow-right": "arrow-right.svg",
+  "external-link": "arrow-square-out.svg",
+  copy: "copy.svg",
+  check: "check.svg",
+  "chevron-down": "caret-down.svg",
+  plus: "plus.svg",
+  minus: "minus.svg",
+  search: "magnifying-glass.svg",
+  sun: "sun.svg",
+  moon: "moon.svg",
 };
 
+const iconSourceDir = join(
+  siteDir,
+  "node_modules",
+  "@phosphor-icons",
+  "core",
+  "assets",
+  "regular",
+);
+
+const iconSources = Object.fromEntries(
+  Object.entries(iconFiles).map(([name, filename]) => [
+    name,
+    readFileSync(join(iconSourceDir, filename), "utf8").trim(),
+  ]),
+);
+
 const renderIcon = (name, size = 20) => {
-  const paths = iconPaths[name];
-  if (!paths) throw new Error(`Unknown icon: ${name}`);
-  return `<svg class="ui-icon ui-icon-${size}" data-icon="${name}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${paths}</svg>`;
+  const source = iconSources[name];
+  if (!source) throw new Error(`Unknown icon: ${name}`);
+  return source.replace(
+    "<svg ",
+    `<svg class="ui-icon ui-icon-${size}" data-icon="${name}" aria-hidden="true" focusable="false" `,
+  );
 };
 
 const renderCopyIcons = () => `
@@ -1185,7 +1221,6 @@ const renderHeader = (page) => {
         <a class="brand" href="${rootLink}" aria-label="kmsg home" translate="no">
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="32" height="32">
           <span>kmsg</span>
-          <span class="brand-status" aria-label="project status: online"></span>
         </a>
         <nav class="primary-nav" aria-label="${ui.navigation}" tabindex="0">
           <a href="${usageLink}"${active("usage")}>${ui.usage}</a>
@@ -1284,23 +1319,24 @@ const renderTextWithLineBreaks = (text) =>
 
 const renderSectionHeading = (label, title, description = "") => `
   <header class="section-heading">
-    <p class="section-label">${escapeHtml(label)}</p>
+    <span class="sr-only">${escapeHtml(label)}</span>
     <h2>${renderTextWithLineBreaks(title)}</h2>
     ${description ? `<p>${escapeHtml(description)}</p>` : ""}
   </header>`;
 
 const renderCommandPanel = (command, output) => `
-  <div class="command-panel" tabindex="0" role="region" aria-label="${escapeHtml(command)}" translate="no">
-    <div class="command-panel-bar" aria-hidden="true">
-      <span class="traffic-lights"><i></i><i></i><i></i></span>
-      <span>kmsg · output</span>
-    </div>
+  <figure class="command-panel" tabindex="0" role="region" aria-label="${escapeHtml(command)}" translate="no">
+    <figcaption aria-hidden="true">shell</figcaption>
     <pre><code translate="no"><span class="command-prompt">$</span> ${escapeHtml(command)}
 <span class="command-output">${escapeHtml(output)}</span></code></pre>
-  </div>`;
+  </figure>`;
 
-const renderHomeWorkflow = (page) => `
+const renderHomeWorkflow = (page, copy) => `
   <section class="product-workflow" id="workflow" data-replay-scope>
+    <div class="workflow-intro">
+      <h2>${escapeHtml(copy.workflowTitle)}</h2>
+      <p>${escapeHtml(copy.workflowDescription)}</p>
+    </div>
     <div class="workflow-frame" role="img" aria-label="${escapeHtml(page.previewLabel)}">
       ${renderWorkflowTerminal(page)}
     </div>
@@ -1329,10 +1365,9 @@ const renderCapabilities = (copy) => `
     <div class="capability-list">
       ${copy.capabilities
         .map(
-          (item, index) => `
-        <article class="capability-row${index % 2 ? " is-reversed" : ""}">
+          (item) => `
+        <article class="capability-row">
           <div class="capability-copy">
-            <span class="capability-index">0${index + 1}</span>
             <h3>${escapeHtml(item.title)}</h3>
             <p>${escapeHtml(item.description)}</p>
             <ul>
@@ -1528,18 +1563,23 @@ const renderProductHome = (page, faqs) => {
 
   return `
     <section class="product-hero" aria-labelledby="hero-title">
-      <div class="product-mark">
-        <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="112" height="112" fetchpriority="high" decoding="async">
+      <div class="hero-copy">
+        <div class="product-mark">
+          <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="64" height="64" fetchpriority="high" decoding="async">
+        </div>
+        <p class="hero-kicker">${escapeHtml(copy.kicker)}</p>
+        <h1 id="hero-title">${renderHomeHeadline(copy)}</h1>
+        <p class="hero-lead">${escapeHtml(copy.description)}</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
+          <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
+        </div>
       </div>
-      <p class="hero-kicker">${escapeHtml(copy.kicker)}</p>
-      <h1 id="hero-title">${renderHomeHeadline(copy)}</h1>
-      <p class="hero-lead">${escapeHtml(copy.description)}</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
-        <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
-      </div>
+      <figure class="hero-media">
+        <img src="${relativeAsset(page.output, site.heroImagePath)}" alt="${escapeHtml(copy.heroImageAlt)}" width="1536" height="1024" fetchpriority="high" decoding="async">
+      </figure>
     </section>
-    ${renderHomeWorkflow(page)}
+    ${renderHomeWorkflow(page, copy)}
     ${renderPrinciples(copy)}
     ${renderCapabilities(copy)}
     ${renderAgentSkill(page, copy)}
@@ -1551,7 +1591,6 @@ const renderProductHome = (page, faqs) => {
 const renderMarkdownArticle = (page, rendered) => `
   <article class="markdown-body" data-markdown-content>
     <div class="source-stamp">
-      <span class="source-dot"></span>
       ${escapeHtml(page.sourceLabel ?? page.source)}
       <a href="${site.repositoryUrl}/blob/main/${page.source}" target="_blank" rel="noopener noreferrer">${escapeHtml(page.localeConfig.ui.sourceAction)} ${renderIcon("external-link", 16)}</a>
     </div>
@@ -1800,8 +1839,12 @@ const renderDocument = ({
           ${renderToc(rendered.headings, page)}
           ${renderMarkdownArticle(page, rendered)}
         </div>`;
+  const heroPreload =
+    page.type === "home"
+      ? `<link rel="preload" as="image" href="${rootAsset(site.heroImagePath)}" type="image/webp" fetchpriority="high">`
+      : "";
 
-  return `<!doctype html>
+  const html = `<!doctype html>
 <html lang="${page.lang}" data-locale="${page.locale}" data-page-key="${page.pageKey}" data-theme="dark">
   <head>
     <meta charset="utf-8">
@@ -1813,7 +1856,7 @@ const renderDocument = ({
     <meta name="generator" content="kmsg README site generator">
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
     <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-    <meta name="theme-color" content="#080808">
+    <meta name="theme-color" content="#0c0d0b">
     <link rel="canonical" href="${canonical}">
     ${alternateLinks}
     <link rel="alternate" hreflang="x-default" href="${xDefault}">
@@ -1821,9 +1864,7 @@ const renderDocument = ({
     <link rel="alternate" type="text/plain" href="${pageUrl("llm.txt")}" title="LLM-readable site index">
     <link rel="manifest" href="${rootAsset("site.webmanifest")}">
     <link rel="icon" href="${rootAsset("assets/favicon.svg")}" type="image/svg+xml">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+    ${heroPreload}
     <link rel="stylesheet" href="${rootAsset("assets/styles.css")}">
 
     <meta property="og:type" content="${page.type === "docs" ? "article" : "website"}">
@@ -1849,7 +1890,11 @@ const renderDocument = ({
     <script>
       try {
         const savedTheme = localStorage.getItem("kmsg-theme");
-        if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+        document.documentElement.dataset.theme =
+          savedTheme ||
+          (matchMedia("(prefers-color-scheme: light)").matches
+            ? "paper"
+            : "dark");
         const currentLocale = ${JSON.stringify(page.locale)};
         const savedLocale = localStorage.getItem("kmsg-locale");
         const localeTargets = ${JSON.stringify(localeTargets).replaceAll("<", "\\u003c")};
@@ -1868,7 +1913,6 @@ const renderDocument = ({
   </head>
   <body class="${page.type === "home" ? "is-home" : "is-docs"}" data-source="${escapeHtml(page.source)}" data-locale="${page.locale}" data-copy-label="${page.localeConfig.ui.copy}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
     <a class="skip-link" href="#content">${page.localeConfig.ui.skip}</a>
-    <div class="site-grid" aria-hidden="true"></div>
     <div class="site-shell">
       ${renderHeader(page)}
       <main id="content">
@@ -1879,6 +1923,8 @@ const renderDocument = ({
     <script src="${rootAsset("assets/app.js")}" defer></script>
   </body>
 </html>`;
+
+  return html.replaceAll("—", "-").replaceAll("–", "-");
 };
 
 const buildLlmsIndex = (version) => {
@@ -2049,6 +2095,7 @@ const main = async () => {
     copyFile(join(siteDir, "src/app.js"), join(outputDir, "assets/app.js")),
     copyFile(join(siteDir, "src/favicon.svg"), join(outputDir, "assets/favicon.svg")),
     copyFile(join(siteDir, "src/demo-captions.vtt"), join(outputDir, "assets/demo-captions.vtt")),
+    copyFile(join(siteDir, "src/kmsg-workspace.webp"), join(outputDir, site.heroImagePath)),
     copyFile(join(repoDir, site.imagePath), join(outputDir, site.imagePath)),
     copyFile(join(repoDir, "assets/demo1.mp4"), join(outputDir, "assets/demo1.mp4")),
     writeFile(join(outputDir, ".nojekyll"), "", "utf8"),
@@ -2074,7 +2121,7 @@ const main = async () => {
           description: pages[0].description,
           start_url: "/kmsg/",
           display: "standalone",
-          background_color: "#080808",
+          background_color: "#0c0d0b",
           theme_color: "#fee500",
           icons: [
             {

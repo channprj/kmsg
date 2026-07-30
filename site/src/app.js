@@ -1,5 +1,4 @@
 const root = document.documentElement;
-const header = document.querySelector("[data-header]");
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const languageSelect = document.querySelector("[data-language-select]");
@@ -9,7 +8,7 @@ const copyFailedLabel =
 
 const setTheme = (theme) => {
   root.dataset.theme = theme;
-  themeColor?.setAttribute("content", theme === "paper" ? "#eeeeec" : "#080808");
+  themeColor?.setAttribute("content", theme === "paper" ? "#f2f2ed" : "#0c0d0b");
   const label =
     theme === "dark"
       ? themeToggle?.dataset.lightLabel
@@ -44,13 +43,6 @@ languageSelect?.addEventListener("change", () => {
   }
   window.location.assign(selected.value);
 });
-
-const updateHeader = () => {
-  header?.classList.toggle("is-scrolled", window.scrollY > 12);
-};
-
-updateHeader();
-window.addEventListener("scroll", updateHeader, { passive: true });
 
 const copyText = async (value) => {
   if (navigator.clipboard?.writeText) {
