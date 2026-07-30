@@ -196,6 +196,28 @@ The name form supports partial matching. For repeated automation, use a
 `--background-safe` is suitable for automation that must not disturb foreground
 work, but it fails unless the matching chat window is already exposed.
 
+#### If `--background-safe` is missing
+
+The CLI flag is available in kmsg `v1.260618.0` and later, and belongs only to
+the `kmsg read` command. Check the binary that your shell actually resolves:
+
+```bash
+kmsg --version
+kmsg read --help
+```
+
+If the help output does not list the flag, update the Homebrew installation and
+check again:
+
+```bash
+brew update
+brew upgrade kmsg
+kmsg read --help
+```
+
+MCP clients use the JSON argument `background_safe: true` instead of the CLI
+spelling `--background-safe`.
+
 Messages whose author cannot be resolved are represented as `"(me)"`.
 
 ### `watch`

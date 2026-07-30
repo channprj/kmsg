@@ -109,6 +109,25 @@ kmsg read "채팅방 이름" --json --background-safe
 
 이 모드는 KakaoTalk을 실행하거나 활성화하지 않고, 로그인·검색·창 열기·크기 조절·닫기도 수행하지 않습니다. 일치하는 채팅 창이 이미 열려 있지 않으면 실패합니다.
 
+#### `--background-safe`가 보이지 않을 때
+
+이 CLI 플래그는 kmsg `v1.260618.0`부터 제공되며 `kmsg read` 명령에서만 사용할 수 있습니다. 현재 셸이 실행하는 바이너리를 먼저 확인하세요.
+
+```bash
+kmsg --version
+kmsg read --help
+```
+
+도움말에 플래그가 없다면 Homebrew 설치본을 업데이트한 뒤 다시 확인합니다.
+
+```bash
+brew update
+brew upgrade kmsg
+kmsg read --help
+```
+
+MCP 클라이언트에서는 CLI 표기인 `--background-safe` 대신 JSON 인자 `background_safe: true`를 사용합니다.
+
 ### 텍스트 전송
 
 ```bash

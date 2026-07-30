@@ -313,6 +313,28 @@ test("home routes omit background-safe messaging", async () => {
   }
 });
 
+test("usage routes explain the supported background-safe contract", async () => {
+  const readCommandSource = await readFile(
+    join(siteDir, "..", "Sources", "kmsg", "Commands", "ReadCommand.swift"),
+    "utf8",
+  );
+
+  assert.match(
+    readCommandSource,
+    /@Flag\([\s\S]*?var backgroundSafe: Bool = false/,
+  );
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "usage"));
+
+    assert.match(html, /v1\.260618\.0/);
+    assert.match(html, /kmsg --version/);
+    assert.match(html, /kmsg read --help/);
+    assert.match(html, /brew upgrade kmsg/);
+    assert.match(html, /background_safe: true/);
+  }
+});
+
 test("home routes avoid decorative horizontal rules between sections", async () => {
   const styles = await readOutput("assets/styles.css");
   const productSectionRules = [

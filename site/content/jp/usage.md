@@ -94,6 +94,25 @@ kmsg read "チャット名" --json --background-safe
 
 このモードはKakaoTalkの起動・アクティブ化・ログイン・検索・ウィンドウ操作を行いません。対象のチャットウィンドウがすでに表示されていなければ失敗します。
 
+### `--background-safe`が表示されない場合
+
+このCLIフラグはkmsg `v1.260618.0`以降で提供され、`kmsg read`コマンドでのみ使用できます。現在のシェルが実行するバイナリを確認してください。
+
+```bash
+kmsg --version
+kmsg read --help
+```
+
+ヘルプにフラグが表示されない場合は、Homebrew版を更新して再確認します。
+
+```bash
+brew update
+brew upgrade kmsg
+kmsg read --help
+```
+
+MCPクライアントでは、CLI表記の`--background-safe`ではなくJSON引数`background_safe: true`を使用します。
+
 ## 送信
 
 ```bash
