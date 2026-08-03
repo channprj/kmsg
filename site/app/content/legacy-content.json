@@ -1,0 +1,2754 @@
+{
+  "site": {
+    "baseUrl": "https://channprj.github.io/kmsg/",
+    "repositoryUrl": "https://github.com/channprj/kmsg",
+    "releasesUrl": "https://github.com/channprj/kmsg/releases",
+    "authorUrl": "https://github.com/channprj",
+    "authorName": "channprj",
+    "productName": "kmsg",
+    "licenseUrl": "https://github.com/channprj/kmsg/blob/main/LICENSE",
+    "imagePath": "assets/kmsg-logo.jpg",
+    "heroImagePath": "assets/kmsg-workspace.webp"
+  },
+  "localeOrder": [
+    "ko",
+    "en",
+    "jp",
+    "cn"
+  ],
+  "locales": {
+    "ko": {
+      "id": "ko",
+      "lang": "ko",
+      "hrefLang": "ko",
+      "prefix": "",
+      "label": "KO",
+      "name": "한국어",
+      "dateLocale": "ko-KR",
+      "ogLocale": "ko_KR",
+      "ui": {
+        "navigation": "주요 탐색 메뉴",
+        "usage": "사용법",
+        "architecture": "구조",
+        "skill": "Skill",
+        "skip": "본문으로 이동",
+        "toc": "이 페이지에서",
+        "source": "원본 Markdown 보기",
+        "sourceAction": "source",
+        "lightTheme": "밝은 테마로 전환",
+        "darkTheme": "어두운 테마로 전환",
+        "menuOpen": "메뉴 열기",
+        "menuClose": "메뉴 닫기",
+        "language": "언어 선택",
+        "copy": "복사",
+        "copied": "복사됨",
+        "copyFailed": "복사 실패",
+        "table": "스크롤 가능한 표",
+        "updated": "업데이트",
+        "edit": "GitHub에서 편집",
+        "pipeline": "현지화 문서",
+        "footerTagline": "macOS용 KakaoTalk CLI",
+        "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+        "privacy": "개인정보",
+        "terms": "이용 조건"
+      }
+    },
+    "en": {
+      "id": "en",
+      "lang": "en",
+      "hrefLang": "en",
+      "prefix": "en",
+      "label": "EN",
+      "name": "English",
+      "dateLocale": "en-US",
+      "ogLocale": "en_US",
+      "ui": {
+        "navigation": "Primary navigation",
+        "usage": "Usage",
+        "architecture": "Architecture",
+        "skill": "Skill",
+        "skip": "Skip to content",
+        "toc": "On this page",
+        "source": "View source Markdown",
+        "sourceAction": "source",
+        "lightTheme": "Switch to light theme",
+        "darkTheme": "Switch to dark theme",
+        "menuOpen": "Open menu",
+        "menuClose": "Close menu",
+        "language": "Select language",
+        "copy": "Copy",
+        "copied": "Copied",
+        "copyFailed": "Copy failed",
+        "table": "Scrollable table",
+        "updated": "Updated",
+        "edit": "Edit on GitHub",
+        "pipeline": "Canonical docs",
+        "footerTagline": "KakaoTalk CLI for macOS",
+        "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+        "privacy": "Privacy",
+        "terms": "Terms"
+      }
+    },
+    "jp": {
+      "id": "jp",
+      "lang": "ja",
+      "hrefLang": "ja",
+      "prefix": "jp",
+      "label": "JP",
+      "name": "日本語",
+      "dateLocale": "ja-JP",
+      "ogLocale": "ja_JP",
+      "ui": {
+        "navigation": "メインナビゲーション",
+        "usage": "使い方",
+        "architecture": "構成",
+        "skill": "Skill",
+        "skip": "本文へ移動",
+        "toc": "このページの内容",
+        "source": "Markdown原文を見る",
+        "sourceAction": "source",
+        "lightTheme": "ライトテーマに切り替え",
+        "darkTheme": "ダークテーマに切り替え",
+        "menuOpen": "メニューを開く",
+        "menuClose": "メニューを閉じる",
+        "language": "言語を選択",
+        "copy": "コピー",
+        "copied": "コピーしました",
+        "copyFailed": "コピーできませんでした",
+        "table": "横にスクロールできる表",
+        "updated": "更新",
+        "edit": "GitHubで編集",
+        "pipeline": "日本語ドキュメント",
+        "footerTagline": "macOS向けKakaoTalk CLI",
+        "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+        "privacy": "プライバシー",
+        "terms": "利用条件"
+      }
+    },
+    "cn": {
+      "id": "cn",
+      "lang": "zh-CN",
+      "hrefLang": "zh-CN",
+      "prefix": "cn",
+      "label": "CN",
+      "name": "简体中文",
+      "dateLocale": "zh-CN",
+      "ogLocale": "zh_CN",
+      "ui": {
+        "navigation": "主导航",
+        "usage": "使用指南",
+        "architecture": "架构",
+        "skill": "Skill",
+        "skip": "跳到正文",
+        "toc": "本页内容",
+        "source": "查看Markdown原文",
+        "sourceAction": "source",
+        "lightTheme": "切换到浅色主题",
+        "darkTheme": "切换到深色主题",
+        "menuOpen": "打开菜单",
+        "menuClose": "关闭菜单",
+        "language": "选择语言",
+        "copy": "复制",
+        "copied": "已复制",
+        "copyFailed": "复制失败",
+        "table": "可横向滚动的表格",
+        "updated": "更新于",
+        "edit": "在GitHub编辑",
+        "pipeline": "简体中文文档",
+        "footerTagline": "面向macOS的KakaoTalk CLI",
+        "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+        "privacy": "隐私",
+        "terms": "使用条款"
+      }
+    }
+  },
+  "homeContent": {
+    "ko": {
+      "kicker": "macOS용 KakaoTalk CLI · MCP 서버",
+      "headline": "카카오톡을\nAI Native 하게 사용하세요.",
+      "headlineHighlight": "AI Native",
+      "description": "macOS 손쉬운 사용 API로 동작하는 비공식 CLI입니다. 로컬 자동화와 MCP 클라이언트에서 같은 명령을 사용합니다.",
+      "heroImageAlt": "어두운 책상 위 노트북과 노란 아크릴 오브젝트",
+      "workflowTitle": "세 명령으로 대화를 이어갑니다.",
+      "workflowDescription": "채팅방을 찾고, 맥락을 읽고, 터미널에서 바로 답장합니다.",
+      "workflowStepsLabel": "메시지 워크플로우",
+      "workflowSteps": [
+        {
+          "label": "01",
+          "title": "채팅방 찾기",
+          "description": "채팅 목록에서 대상과 재사용 가능한 chat_id를 찾습니다."
+        },
+        {
+          "label": "02",
+          "title": "맥락 읽기",
+          "description": "최근 메시지를 읽고 답장에 필요한 맥락을 확인합니다."
+        },
+        {
+          "label": "03",
+          "title": "확인하고 전송",
+          "description": "대상을 확인한 뒤 실제 KakaoTalk 창으로 답장합니다."
+        }
+      ],
+      "installAction": "설치하기",
+      "docsAction": "사용법",
+      "heroProof": [
+        "MIT 오픈소스",
+        "내 Mac에서만 로컬 실행",
+        "전송 전 dry-run 확인"
+      ],
+      "agentSkillLabel": "코딩 에이전트",
+      "agentSkillTitle": "에이전트가 달라도, kmsg는 그대로.",
+      "agentSkillDescription": "OpenClaw, Hermes Agent, Claude Code, Codex에서 같은 CLI와 MCP 워크플로우를 사용합니다.",
+      "agentCompatibilityLabel": "지원 에이전트",
+      "agentSkillInstallTitle": "MCP로 에이전트 연결",
+      "agentSkillInstallDescription": "OpenClaw, Hermes Agent와 모든 MCP 클라이언트에 kmsg 서버를 등록합니다.",
+      "agentSkillUseTitle": "Claude Code와 Codex에서는 Skill로",
+      "agentSkillUseDescription": "공통 Skill을 설치하고 /kmsg 또는 $kmsg로 호출합니다.",
+      "agentSkillPrompt": "/kmsg 출시 준비 채팅방의 최근 메시지 10개를 요약해줘",
+      "principlesLabel": "왜 kmsg인가",
+      "principlesTitle": "로컬 자동화에 필요한 것만 담았습니다.",
+      "capabilitiesLabel": "주요 기능",
+      "capabilitiesTitle": "읽기부터 전송까지, 하나의 명령 체계로.",
+      "tagline": "모든 대화를 명령 한 줄로.\nkmsg는 별도 서버 없이 Mac에서 직접 실행됩니다.",
+      "storiesLabel": "실사용 후기",
+      "storiesTitle": "실제 자동화 워크플로우에서\n널리 사용되고 있습니다",
+      "storiesDescription": "kmsg를 에이전트와 로컬 자동화에 연결한 사용 사례입니다.",
+      "moreStoriesAction": "더 많은 사례 보기",
+      "faqLabel": "자주 묻는 질문",
+      "faqTitle": "kmsg를 시작하기 전에 알아둘 것.",
+      "faqDescription": "설치, 지원 환경, 접근 방식과 MCP에 관한 핵심 답변입니다.",
+      "installLabel": "설치",
+      "installTitle": "Homebrew로 바로 시작하세요.",
+      "installDescription": "macOS 13 이상, macOS용 KakaoTalk, 손쉬운 사용 권한이 필요합니다.",
+      "installSteps": [
+        "Homebrew로 kmsg 설치",
+        "시스템 설정에서 손쉬운 사용 권한 허용",
+        "dry-run으로 첫 전송 확인"
+      ],
+      "releaseAction": "최신 릴리즈",
+      "disclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+      "principles": [
+        {
+          "token": "AX",
+          "title": "macOS에서 로컬로",
+          "description": "화면에 표시되는 KakaoTalk을 손쉬운 사용 API로 제어합니다."
+        },
+        {
+          "token": "MCP",
+          "title": "CLI와 네이티브 MCP",
+          "description": "터미널, 스크립트, MCP 클라이언트에서 같은 기능을 사용합니다."
+        },
+        {
+          "token": "{}",
+          "title": "구조화된 출력",
+          "description": "JSON과 텍스트는 stdout으로, AX 진단은 stderr로 분리합니다."
+        }
+      ],
+      "capabilities": [
+        {
+          "title": "메시지 읽기",
+          "description": "채팅을 찾고 재사용 가능한 chat_id와 최근 메시지를 가져옵니다.",
+          "points": [
+            "채팅 목록 조회",
+            "최근 메시지"
+          ],
+          "command": "kmsg read \"AI 프로젝트\" --limit 20 --json",
+          "output": "{\"chat_id\":\"chat_7f42c5e1d9ab\",\"messages\":[...]}"
+        },
+        {
+          "title": "새 메시지 감시",
+          "description": "사용 중인 KakaoTalk 창을 방해하지 않으면서 새 메시지를 확인합니다.",
+          "points": [
+            "실시간 이벤트",
+            "JSON 스트림",
+            "복구 모드"
+          ],
+          "command": "kmsg watch \"AI 프로젝트\" --json",
+          "output": "{\"event\":\"message\",\"author\":\"지나\",\"body\":\"확인해줘.\"}"
+        },
+        {
+          "title": "안전하게 전송",
+          "description": "실제 UI로 텍스트와 이미지를 보내며 dry-run으로 먼저 검증합니다.",
+          "points": [
+            "텍스트 전송",
+            "이미지 전송",
+            "dry-run 확인"
+          ],
+          "command": "kmsg send \"AI 프로젝트\" \"확인했어요.\" --dry-run",
+          "output": "Would send to \"AI 프로젝트\": 확인했어요."
+        }
+      ]
+    },
+    "en": {
+      "kicker": "KakaoTalk CLI · MCP server for macOS",
+      "headline": "KakaoTalk,\nfrom your terminal.",
+      "description": "An unofficial CLI built on the macOS Accessibility API. Use the same commands in local automation and MCP clients.",
+      "heroImageAlt": "Laptop and yellow acrylic object on a dark desk",
+      "workflowTitle": "One thread, three commands.",
+      "workflowDescription": "Find the room, read its context, and reply without leaving the terminal.",
+      "workflowStepsLabel": "Message workflow",
+      "workflowSteps": [
+        {
+          "label": "01",
+          "title": "Find the chat",
+          "description": "Locate the target and its reusable chat_id from the chat list."
+        },
+        {
+          "label": "02",
+          "title": "Read the context",
+          "description": "Read recent messages and confirm the context needed for a reply."
+        },
+        {
+          "label": "03",
+          "title": "Confirm and send",
+          "description": "Confirm the target, then reply through the visible KakaoTalk window."
+        }
+      ],
+      "installAction": "Install",
+      "docsAction": "Usage",
+      "heroProof": [
+        "MIT open source",
+        "Runs locally on your Mac",
+        "Dry-run before every send"
+      ],
+      "agentSkillLabel": "Coding agents",
+      "agentSkillTitle": "One kmsg workflow, across your agents.",
+      "agentSkillDescription": "Use the same CLI and MCP workflow in OpenClaw, Hermes Agent, Claude Code, and Codex.",
+      "agentCompatibilityLabel": "Supported agents",
+      "agentSkillInstallTitle": "Connect agents through MCP",
+      "agentSkillInstallDescription": "Register the kmsg server in OpenClaw, Hermes Agent, or any MCP client.",
+      "agentSkillUseTitle": "Use a Skill in Claude Code and Codex",
+      "agentSkillUseDescription": "Install the shared Skill, then start with /kmsg or $kmsg.",
+      "agentSkillPrompt": "/kmsg Summarize the 10 latest messages in Release Prep",
+      "principlesLabel": "Why kmsg",
+      "principlesTitle": "Only what local automation needs.",
+      "capabilitiesLabel": "Core capabilities",
+      "capabilitiesTitle": "One command model, from reading to sending.",
+      "tagline": "Every chat, one command away.\nkmsg runs directly on your Mac, with no separate server.",
+      "storiesLabel": "In use",
+      "storiesTitle": "Used in real automation workflows.",
+      "storiesDescription": "Examples of kmsg connected to agents and local automation.",
+      "moreStoriesAction": "See more examples",
+      "faqLabel": "Frequently asked questions",
+      "faqTitle": "What to know before using kmsg.",
+      "faqDescription": "Concise answers about setup, support, access, and MCP.",
+      "installLabel": "Install",
+      "installTitle": "Start with Homebrew.",
+      "installDescription": "Requires macOS 13+, KakaoTalk for macOS, and Accessibility permission.",
+      "installSteps": [
+        "Install kmsg with Homebrew",
+        "Grant Accessibility permission in System Settings",
+        "Confirm your first send with dry-run"
+      ],
+      "releaseAction": "Latest release",
+      "disclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+      "principles": [
+        {
+          "token": "AX",
+          "title": "Local on macOS",
+          "description": "Controls the visible KakaoTalk app through the Accessibility API."
+        },
+        {
+          "token": "MCP",
+          "title": "CLI and native MCP",
+          "description": "Use the same capabilities from terminals, scripts, and MCP clients."
+        },
+        {
+          "token": "{}",
+          "title": "Structured output",
+          "description": "JSON and text go to stdout while AX diagnostics stay on stderr."
+        }
+      ],
+      "capabilities": [
+        {
+          "title": "Read messages",
+          "description": "Find chats and return stable chat IDs with recent messages.",
+          "points": [
+            "Chat discovery",
+            "Recent messages"
+          ],
+          "command": "kmsg read \"AI Project\" --limit 20 --json",
+          "output": "{\"chat_id\":\"chat_7f42c5e1d9ab\",\"messages\":[...]}"
+        },
+        {
+          "title": "Watch new messages",
+          "description": "Stream new messages without taking over the active KakaoTalk window.",
+          "points": [
+            "Live events",
+            "JSON stream",
+            "Recovery mode"
+          ],
+          "command": "kmsg watch \"AI Project\" --json",
+          "output": "{\"event\":\"message\",\"author\":\"Jina\",\"body\":\"Please check.\"}"
+        },
+        {
+          "title": "Send safely",
+          "description": "Send text and images through the visible UI, with dry-run first.",
+          "points": [
+            "Text",
+            "Images",
+            "Dry-run confirmation"
+          ],
+          "command": "kmsg send \"AI Project\" \"Checked.\" --dry-run",
+          "output": "Would send to \"AI Project\": Checked."
+        }
+      ]
+    },
+    "jp": {
+      "kicker": "macOS向けKakaoTalk CLI · MCPサーバー",
+      "headline": "KakaoTalkをターミナルから。",
+      "description": "macOSアクセシビリティAPIで動作する非公式CLIです。ローカル自動化とMCPクライアントで同じコマンドを利用できます。",
+      "heroImageAlt": "暗いデスクに置かれたノートパソコンと黄色いアクリル",
+      "workflowTitle": "3つのコマンドで会話を続ける。",
+      "workflowDescription": "チャットを探し、文脈を読み、ターミナルからそのまま返信します。",
+      "workflowStepsLabel": "メッセージの流れ",
+      "workflowSteps": [
+        {
+          "label": "01",
+          "title": "チャットを探す",
+          "description": "一覧から対象と再利用できるchat_idを探します。"
+        },
+        {
+          "label": "02",
+          "title": "文脈を読む",
+          "description": "最近のメッセージを読み、返信に必要な文脈を確認します。"
+        },
+        {
+          "label": "03",
+          "title": "確認して送信",
+          "description": "対象を確認し、表示中のKakaoTalkウィンドウから返信します。"
+        }
+      ],
+      "installAction": "インストール",
+      "docsAction": "使い方",
+      "heroProof": [
+        "MITオープンソース",
+        "Macの中だけでローカル実行",
+        "送信前にdry-runで確認"
+      ],
+      "agentSkillLabel": "コーディングエージェント",
+      "agentSkillTitle": "エージェントが変わっても、kmsgはそのまま。",
+      "agentSkillDescription": "OpenClaw、Hermes Agent、Claude Code、Codexで同じCLIとMCPワークフローを利用できます。",
+      "agentCompatibilityLabel": "対応エージェント",
+      "agentSkillInstallTitle": "MCPでエージェントに接続",
+      "agentSkillInstallDescription": "OpenClaw、Hermes Agent、その他のMCPクライアントにkmsgサーバーを登録します。",
+      "agentSkillUseTitle": "Claude CodeとCodexではSkillで",
+      "agentSkillUseDescription": "共通Skillをインストールし、/kmsgまたは$kmsgで呼び出します。",
+      "agentSkillPrompt": "/kmsg リリース準備の最新メッセージ10件を要約して",
+      "principlesLabel": "kmsgを選ぶ理由",
+      "principlesTitle": "ローカル自動化に必要な機能だけ。",
+      "capabilitiesLabel": "主な機能",
+      "capabilitiesTitle": "読み取りから送信まで、一つのコマンド体系で。",
+      "tagline": "すべての会話を、コマンド一つで。\nkmsgは外部サーバーを使わず、Mac上で直接動作します。",
+      "storiesLabel": "活用事例",
+      "storiesTitle": "実際の自動化ワークフローで使われています。",
+      "storiesDescription": "kmsgをエージェントとローカル自動化に接続した事例です。",
+      "moreStoriesAction": "その他の活用事例を見る",
+      "faqLabel": "よくある質問",
+      "faqTitle": "kmsgを使う前に知っておくこと。",
+      "faqDescription": "導入、対応環境、アクセス方法、MCPの要点です。",
+      "installLabel": "インストール",
+      "installTitle": "Homebrewですぐに開始。",
+      "installDescription": "macOS 13以降、macOS版KakaoTalk、アクセシビリティ権限が必要です。",
+      "installSteps": [
+        "Homebrewでkmsgをインストール",
+        "システム設定でアクセシビリティ権限を許可",
+        "dry-runで最初の送信を確認"
+      ],
+      "releaseAction": "最新リリース",
+      "disclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+      "principles": [
+        {
+          "token": "AX",
+          "title": "macOS上でローカル動作",
+          "description": "表示中のKakaoTalkをアクセシビリティAPIで操作します。"
+        },
+        {
+          "token": "MCP",
+          "title": "CLIとネイティブMCP",
+          "description": "ターミナル、スクリプト、MCPクライアントで同じ機能を使えます。"
+        },
+        {
+          "token": "{}",
+          "title": "構造化出力",
+          "description": "JSONとテキストはstdoutへ、AX診断はstderrへ分離します。"
+        }
+      ],
+      "capabilities": [
+        {
+          "title": "メッセージを読む",
+          "description": "チャットを検索し、再利用可能なchat_idと最近のメッセージを取得します。",
+          "points": [
+            "チャット検索",
+            "最近のメッセージ"
+          ],
+          "command": "kmsg read \"AIプロジェクト\" --limit 20 --json",
+          "output": "{\"chat_id\":\"chat_7f42c5e1d9ab\",\"messages\":[...]}"
+        },
+        {
+          "title": "新着を監視",
+          "description": "使用中のKakaoTalkウィンドウを妨げず、新着を継続的に確認します。",
+          "points": [
+            "リアルタイムイベント",
+            "JSONストリーム",
+            "復旧モード"
+          ],
+          "command": "kmsg watch \"AIプロジェクト\" --json",
+          "output": "{\"event\":\"message\",\"author\":\"ジナ\",\"body\":\"確認して。\"}"
+        },
+        {
+          "title": "安全に送信",
+          "description": "表示中のUIからテキストと画像を送り、dry-runで事前確認できます。",
+          "points": [
+            "テキスト",
+            "画像",
+            "dry-run確認"
+          ],
+          "command": "kmsg send \"AIプロジェクト\" \"確認しました。\" --dry-run",
+          "output": "Would send to \"AIプロジェクト\": 確認しました。"
+        }
+      ]
+    },
+    "cn": {
+      "kicker": "面向macOS的KakaoTalk CLI · MCP服务器",
+      "headline": "在终端中使用KakaoTalk。",
+      "description": "基于macOS辅助功能API的非官方CLI。在本地自动化和MCP客户端中使用同一套命令。",
+      "heroImageAlt": "深色桌面上的笔记本电脑和黄色亚克力方块",
+      "workflowTitle": "三条命令，完成一次对话。",
+      "workflowDescription": "查找聊天、读取上下文，然后直接在终端中回复。",
+      "workflowStepsLabel": "消息工作流",
+      "workflowSteps": [
+        {
+          "label": "01",
+          "title": "查找聊天",
+          "description": "从聊天列表中找到目标及可复用的chat_id。"
+        },
+        {
+          "label": "02",
+          "title": "读取上下文",
+          "description": "读取最近消息，确认回复所需的上下文。"
+        },
+        {
+          "label": "03",
+          "title": "确认并发送",
+          "description": "确认目标后，通过可见的KakaoTalk窗口回复。"
+        }
+      ],
+      "installAction": "安装",
+      "docsAction": "使用指南",
+      "heroProof": [
+        "MIT开源",
+        "仅在你的Mac上本地运行",
+        "发送前先dry-run确认"
+      ],
+      "agentSkillLabel": "编程智能体",
+      "agentSkillTitle": "更换智能体，也无需更换kmsg工作流。",
+      "agentSkillDescription": "在OpenClaw、Hermes Agent、Claude Code和Codex中使用同一套CLI与MCP工作流。",
+      "agentCompatibilityLabel": "支持的智能体",
+      "agentSkillInstallTitle": "通过MCP连接智能体",
+      "agentSkillInstallDescription": "在OpenClaw、Hermes Agent或任何MCP客户端中注册kmsg服务器。",
+      "agentSkillUseTitle": "在Claude Code和Codex中使用Skill",
+      "agentSkillUseDescription": "安装通用Skill，然后使用/kmsg或$kmsg调用。",
+      "agentSkillPrompt": "/kmsg 总结发布准备聊天中的最近10条消息",
+      "principlesLabel": "为什么选择kmsg",
+      "principlesTitle": "只保留本地自动化所需的功能。",
+      "capabilitiesLabel": "核心功能",
+      "capabilitiesTitle": "从读取到发送，使用同一套命令体系。",
+      "tagline": "每一段对话，只差一条命令。\nkmsg无需独立服务器，直接在你的Mac上运行。",
+      "storiesLabel": "实际案例",
+      "storiesTitle": "已用于真实的自动化工作流。",
+      "storiesDescription": "kmsg连接智能体与本地自动化的实际案例。",
+      "moreStoriesAction": "查看更多案例",
+      "faqLabel": "常见问题",
+      "faqTitle": "使用kmsg前需要了解的内容。",
+      "faqDescription": "关于安装、支持环境、访问方式和MCP的核心解答。",
+      "installLabel": "安装",
+      "installTitle": "使用Homebrew立即开始。",
+      "installDescription": "需要macOS 13或更高版本、macOS版KakaoTalk和辅助功能权限。",
+      "installSteps": [
+        "使用Homebrew安装kmsg",
+        "在系统设置中授予辅助功能权限",
+        "用dry-run确认首次发送"
+      ],
+      "releaseAction": "最新版本",
+      "disclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+      "principles": [
+        {
+          "token": "AX",
+          "title": "在macOS本地运行",
+          "description": "通过辅助功能API控制屏幕上可见的KakaoTalk应用。"
+        },
+        {
+          "token": "MCP",
+          "title": "CLI与原生MCP",
+          "description": "在终端、脚本和MCP客户端中使用相同功能。"
+        },
+        {
+          "token": "{}",
+          "title": "结构化输出",
+          "description": "JSON和文本写入stdout，AX诊断信息保留在stderr。"
+        }
+      ],
+      "capabilities": [
+        {
+          "title": "读取消息",
+          "description": "查找聊天并返回可复用的chat_id与最近消息。",
+          "points": [
+            "聊天查找",
+            "最近消息"
+          ],
+          "command": "kmsg read \"AI项目\" --limit 20 --json",
+          "output": "{\"chat_id\":\"chat_7f42c5e1d9ab\",\"messages\":[...]}"
+        },
+        {
+          "title": "监控新消息",
+          "description": "不干扰正在使用的KakaoTalk窗口，持续获取新消息。",
+          "points": [
+            "实时事件",
+            "JSON流",
+            "恢复模式"
+          ],
+          "command": "kmsg watch \"AI项目\" --json",
+          "output": "{\"event\":\"message\",\"author\":\"Jina\",\"body\":\"请确认。\"}"
+        },
+        {
+          "title": "安全发送",
+          "description": "通过可见界面发送文本和图片，并先用dry-run确认。",
+          "points": [
+            "文本",
+            "图片",
+            "dry-run确认"
+          ],
+          "command": "kmsg send \"AI项目\" \"已确认。\" --dry-run",
+          "output": "Would send to \"AI项目\": 已确认。"
+        }
+      ]
+    }
+  },
+  "legalContent": {
+    "ko": {
+      "privacy": {
+        "title": "개인정보 처리 안내 - kmsg",
+        "description": "kmsg 정적 웹사이트의 데이터 처리와 외부 서비스 이용 범위를 안내합니다.",
+        "eyebrow": "법적 안내",
+        "heading": "개인정보 처리 안내",
+        "intro": "kmsg 웹사이트는 계정, 입력 폼, 분석 도구 없이 정적으로 제공됩니다.",
+        "sections": [
+          {
+            "title": "웹사이트가 수집하는 정보",
+            "body": "이 웹사이트는 방문자의 계정, 메시지, 연락처 또는 입력 내용을 서버에 수집하지 않습니다."
+          },
+          {
+            "title": "외부 서비스",
+            "body": "GitHub와 YouTube 링크를 열면 해당 서비스의 개인정보 처리방침과 이용 조건이 적용됩니다."
+          },
+          {
+            "title": "KakaoTalk 메시지",
+            "body": "kmsg CLI가 사용자의 Mac에서 처리하는 KakaoTalk 내용은 이 웹사이트로 전송되지 않습니다."
+          }
+        ]
+      },
+      "terms": {
+        "title": "이용 조건 - kmsg",
+        "description": "kmsg 웹사이트와 오픈소스 소프트웨어의 이용 조건을 안내합니다.",
+        "eyebrow": "법적 안내",
+        "heading": "이용 조건",
+        "intro": "kmsg는 MIT License로 제공되는 독립 오픈소스 프로젝트입니다.",
+        "sections": [
+          {
+            "title": "오픈소스 라이선스",
+            "body": "소프트웨어 사용, 복제, 수정, 배포 조건은 저장소의 MIT License를 따릅니다."
+          },
+          {
+            "title": "비공식 프로젝트",
+            "body": "kmsg는 Kakao Corp.와 제휴하거나 승인받은 공식 도구가 아닙니다."
+          },
+          {
+            "title": "사용자 책임",
+            "body": "사용자는 자동화 대상, 손쉬운 사용 권한, 메시지 전송 결과를 직접 확인하고 관련 정책과 법률을 준수해야 합니다."
+          }
+        ]
+      }
+    },
+    "en": {
+      "privacy": {
+        "title": "Privacy - kmsg",
+        "description": "How the static kmsg website handles data and links to external services.",
+        "eyebrow": "Legal",
+        "heading": "Privacy",
+        "intro": "The kmsg website is static and has no account, input form, or analytics service.",
+        "sections": [
+          {
+            "title": "Information collected by this website",
+            "body": "This website does not collect visitor accounts, messages, contacts, or submitted content on a server."
+          },
+          {
+            "title": "External services",
+            "body": "GitHub and YouTube apply their own privacy policies and terms when you open their links."
+          },
+          {
+            "title": "KakaoTalk messages",
+            "body": "KakaoTalk content processed by the kmsg CLI on your Mac is not sent to this website."
+          }
+        ]
+      },
+      "terms": {
+        "title": "Terms - kmsg",
+        "description": "Terms for the kmsg website and open source software.",
+        "eyebrow": "Legal",
+        "heading": "Terms",
+        "intro": "kmsg is an independent open source project provided under the MIT License.",
+        "sections": [
+          {
+            "title": "Open source license",
+            "body": "The repository MIT License governs use, copying, modification, and distribution of the software."
+          },
+          {
+            "title": "Unofficial project",
+            "body": "kmsg is not affiliated with, endorsed by, or an official tool of Kakao Corp."
+          },
+          {
+            "title": "Your responsibility",
+            "body": "You must verify automation targets, Accessibility permissions, and message results, and follow applicable policies and laws."
+          }
+        ]
+      }
+    },
+    "jp": {
+      "privacy": {
+        "title": "プライバシー - kmsg",
+        "description": "kmsgの静的ウェブサイトにおけるデータ処理と外部サービスの範囲を説明します。",
+        "eyebrow": "法的情報",
+        "heading": "プライバシー",
+        "intro": "kmsgのウェブサイトは、アカウント、入力フォーム、解析サービスを持たない静的サイトです。",
+        "sections": [
+          {
+            "title": "このサイトが収集する情報",
+            "body": "このサイトは訪問者のアカウント、メッセージ、連絡先、入力内容をサーバーに収集しません。"
+          },
+          {
+            "title": "外部サービス",
+            "body": "GitHubやYouTubeのリンクを開くと、各サービスのプライバシーポリシーと利用条件が適用されます。"
+          },
+          {
+            "title": "KakaoTalkメッセージ",
+            "body": "Mac上のkmsg CLIが処理するKakaoTalkの内容は、このウェブサイトへ送信されません。"
+          }
+        ]
+      },
+      "terms": {
+        "title": "利用条件 - kmsg",
+        "description": "kmsgのウェブサイトとオープンソースソフトウェアの利用条件を説明します。",
+        "eyebrow": "法的情報",
+        "heading": "利用条件",
+        "intro": "kmsgはMIT Licenseで提供される独立したオープンソースプロジェクトです。",
+        "sections": [
+          {
+            "title": "オープンソースライセンス",
+            "body": "ソフトウェアの利用、複製、変更、配布にはリポジトリのMIT Licenseが適用されます。"
+          },
+          {
+            "title": "非公式プロジェクト",
+            "body": "kmsgはKakao Corp.と提携、承認された公式ツールではありません。"
+          },
+          {
+            "title": "利用者の責任",
+            "body": "自動化対象、アクセシビリティ権限、送信結果を確認し、関連する方針と法律を遵守してください。"
+          }
+        ]
+      }
+    },
+    "cn": {
+      "privacy": {
+        "title": "隐私说明 - kmsg",
+        "description": "说明kmsg静态网站的数据处理方式与外部服务范围。",
+        "eyebrow": "法律信息",
+        "heading": "隐私说明",
+        "intro": "kmsg网站为静态网站，不提供账户、输入表单或分析服务。",
+        "sections": [
+          {
+            "title": "本网站收集的信息",
+            "body": "本网站不会在服务器上收集访客账户、消息、联系人或提交内容。"
+          },
+          {
+            "title": "外部服务",
+            "body": "打开GitHub或YouTube链接后，将适用相应服务的隐私政策与使用条款。"
+          },
+          {
+            "title": "KakaoTalk消息",
+            "body": "kmsg CLI在您的Mac上处理的KakaoTalk内容不会发送到本网站。"
+          }
+        ]
+      },
+      "terms": {
+        "title": "使用条款 - kmsg",
+        "description": "说明kmsg网站与开源软件的使用条款。",
+        "eyebrow": "法律信息",
+        "heading": "使用条款",
+        "intro": "kmsg是依据MIT License提供的独立开源项目。",
+        "sections": [
+          {
+            "title": "开源许可证",
+            "body": "软件的使用、复制、修改与分发遵循仓库中的MIT License。"
+          },
+          {
+            "title": "非官方项目",
+            "body": "kmsg并非Kakao Corp.的关联、认可或官方工具。"
+          },
+          {
+            "title": "用户责任",
+            "body": "用户应自行确认自动化目标、辅助功能权限与消息发送结果，并遵守适用政策和法律。"
+          }
+        ]
+      }
+    }
+  },
+  "homeStories": [
+    {
+      "publisher": "Builder Josh",
+      "title": {
+        "ko": "헤르메스 에이전트 5개로 뉴스 큐레이션부터 주식 매매까지 자동화한 방법",
+        "en": "How five Hermes agents automate news curation and stock trading",
+        "jp": "5つのHermesエージェントでニュース収集から株式取引まで自動化",
+        "cn": "用5个Hermes智能体自动完成新闻整理与股票交易"
+      },
+      "href": "https://www.youtube.com/watch?v=_Pd1G33_R48&t=1020s",
+      "image": "https://i.ytimg.com/vi/_Pd1G33_R48/maxresdefault.jpg"
+    },
+    {
+      "publisher": "Sam Hottman",
+      "title": {
+        "ko": "나만의 Hermes 시스템 구축 방법",
+        "en": "How to build your own Hermes system",
+        "jp": "自分専用のHermesシステムを構築する方法",
+        "cn": "如何构建自己的Hermes系统"
+      },
+      "href": "https://www.youtube.com/watch?v=xz5fA7OyvQ0",
+      "image": "https://i.ytimg.com/vi/xz5fA7OyvQ0/maxresdefault.jpg"
+    }
+  ],
+  "pageDefinitions": [
+    {
+      "key": "home",
+      "slug": "",
+      "type": "home",
+      "sources": {
+        "ko": "README.md",
+        "en": "README.en.md",
+        "jp": "site/content/jp/home.md",
+        "cn": "site/content/cn/home.md"
+      },
+      "translations": {
+        "ko": {
+          "title": "kmsg - macOS용 카카오톡 CLI 및 MCP 서버",
+          "description": "터미널과 AI 코딩 에이전트에서 KakaoTalk 채팅을 찾고 읽고 안전하게 보내는 macOS용 오픈소스 CLI와 MCP 서버입니다.",
+          "eyebrow": "카카오톡 자동화 · macOS 13 이상",
+          "sourceLabel": "README.md에서 자동 생성",
+          "faqHeading": "자주 묻는 질문",
+          "previewLabel": "kmsg로 채팅 목록을 확인하고 메시지를 읽은 뒤 답장을 보내는 터미널 미리보기",
+          "chatName": "AI 프로젝트",
+          "secondaryChat": "출시 준비",
+          "firstSender": "지나",
+          "firstMessage": "새 메시지를 확인해줘.",
+          "secondMessage": "지금 확인할게요.",
+          "replyMessage": "확인했어요.",
+          "firstTime": "오후 1:41",
+          "secondTime": "오후 1:42"
+        },
+        "en": {
+          "title": "kmsg — KakaoTalk CLI & MCP server for macOS",
+          "description": "Open source macOS CLI and MCP server for finding, reading, and safely sending KakaoTalk chats from terminals and AI coding agents.",
+          "eyebrow": "KakaoTalk automation · macOS 13+",
+          "sourceLabel": "Generated from README.en.md",
+          "faqHeading": "Frequently asked questions",
+          "previewLabel": "Terminal replay showing kmsg listing chats, reading messages, and sending a reply",
+          "chatName": "AI Project",
+          "secondaryChat": "Release Prep",
+          "firstSender": "Jina",
+          "firstMessage": "Please check the latest messages.",
+          "secondMessage": "I will check them now.",
+          "replyMessage": "I've checked them.",
+          "firstTime": "1:41 PM",
+          "secondTime": "1:42 PM"
+        },
+        "jp": {
+          "title": "kmsg — macOS向けKakaoTalk CLI / MCPサーバー",
+          "description": "ターミナルやAIコーディングエージェントからKakaoTalkのチャットを検索、閲覧、安全に送信できるmacOS向けオープンソースCLI・MCPサーバーです。",
+          "eyebrow": "KakaoTalk自動化 · macOS 13以降",
+          "sourceLabel": "日本語ドキュメント",
+          "faqHeading": "よくある質問",
+          "previewLabel": "kmsgでチャット一覧を確認し、メッセージを読んで返信するターミナル",
+          "chatName": "AIプロジェクト",
+          "secondaryChat": "リリース準備",
+          "firstSender": "ジナ",
+          "firstMessage": "新着メッセージを確認して。",
+          "secondMessage": "今確認します。",
+          "replyMessage": "確認しました。",
+          "firstTime": "午後1:41",
+          "secondTime": "午後1:42"
+        },
+        "cn": {
+          "title": "kmsg — 面向macOS的KakaoTalk CLI与MCP服务器",
+          "description": "面向macOS的开源CLI和MCP服务器，可在终端与AI编程智能体中查找、读取并安全发送KakaoTalk聊天消息。",
+          "eyebrow": "KakaoTalk自动化 · macOS 13+",
+          "sourceLabel": "简体中文文档",
+          "faqHeading": "常见问题",
+          "previewLabel": "使用kmsg查看聊天列表、读取消息并发送回复的终端演示",
+          "chatName": "AI项目",
+          "secondaryChat": "发布准备",
+          "firstSender": "Jina",
+          "firstMessage": "请确认最新消息。",
+          "secondMessage": "我现在确认。",
+          "replyMessage": "已经确认。",
+          "firstTime": "下午1:41",
+          "secondTime": "下午1:42"
+        }
+      }
+    },
+    {
+      "key": "usage",
+      "slug": "usage",
+      "type": "docs",
+      "sources": {
+        "ko": "site/content/ko/usage.md",
+        "en": "USAGE.md",
+        "jp": "site/content/jp/usage.md",
+        "cn": "site/content/cn/usage.md"
+      },
+      "translations": {
+        "ko": {
+          "title": "kmsg 사용법 — macOS에서 KakaoTalk 자동화하기",
+          "description": "kmsg 설치, 전체 명령, JSON 출력, 안전한 읽기, KakaoTalk 자동화 문제 해결 방법을 안내합니다.",
+          "eyebrow": "문서 · 사용법"
+        },
+        "en": {
+          "title": "kmsg Usage — install and automate KakaoTalk on macOS",
+          "description": "Install kmsg, learn every command, configure JSON output, and troubleshoot KakaoTalk Accessibility automation on macOS.",
+          "eyebrow": "Documentation · Usage"
+        },
+        "jp": {
+          "title": "kmsgの使い方 — macOSでKakaoTalkを自動化",
+          "description": "インストール、主要コマンド、安全な読み取り、JSON、MCP、トラブルシューティングを説明します。",
+          "eyebrow": "ドキュメント · 使い方"
+        },
+        "cn": {
+          "title": "kmsg使用指南 — 在macOS上自动化KakaoTalk",
+          "description": "介绍安装、主要命令、安全读取、JSON、MCP和故障排除。",
+          "eyebrow": "文档 · 使用指南"
+        }
+      }
+    },
+    {
+      "key": "architecture",
+      "slug": "architecture",
+      "type": "docs",
+      "sources": {
+        "ko": "site/content/ko/architecture.md",
+        "en": "ARCHITECTURE.md",
+        "jp": "site/content/jp/architecture.md",
+        "cn": "site/content/cn/architecture.md"
+      },
+      "translations": {
+        "ko": {
+          "title": "kmsg 아키텍처 — macOS 손쉬운 사용 자동화",
+          "description": "Swift와 macOS 손쉬운 사용 API로 KakaoTalk을 자동화하는 구조와 설계 결정을 설명합니다.",
+          "eyebrow": "문서 · 아키텍처"
+        },
+        "en": {
+          "title": "kmsg Architecture — macOS Accessibility automation",
+          "description": "How kmsg uses Swift and the macOS Accessibility API to read, watch, and send KakaoTalk messages without implementing the private LOCO protocol.",
+          "eyebrow": "Documentation · Architecture"
+        },
+        "jp": {
+          "title": "kmsgアーキテクチャ — macOSアクセシビリティ自動化",
+          "description": "SwiftとmacOSアクセシビリティAPIを使う構造、データフロー、設計判断を説明します。",
+          "eyebrow": "ドキュメント · アーキテクチャ"
+        },
+        "cn": {
+          "title": "kmsg架构 — macOS辅助功能自动化",
+          "description": "介绍基于Swift和macOS辅助功能API的组件、数据流与设计决策。",
+          "eyebrow": "文档 · 架构"
+        }
+      }
+    },
+    {
+      "key": "openclaw",
+      "slug": "mcp",
+      "type": "docs",
+      "sources": {
+        "ko": "site/content/ko/openclaw.md",
+        "en": "docs/openclaw.md",
+        "jp": "site/content/jp/openclaw.md",
+        "cn": "site/content/cn/openclaw.md"
+      },
+      "translations": {
+        "ko": {
+          "title": "kmsg와 OpenClaw·MCP 클라이언트 연결하기",
+          "description": "네이티브 kmsg MCP 서버, 실시간 감시, 승인 중심 전송 흐름을 구성합니다.",
+          "eyebrow": "문서 · MCP & OpenClaw"
+        },
+        "en": {
+          "title": "Connect kmsg to OpenClaw and MCP clients",
+          "description": "Configure the native kmsg MCP server and real-time watch mode for OpenClaw and other AI agent clients.",
+          "eyebrow": "Documentation · MCP & OpenClaw"
+        },
+        "jp": {
+          "title": "kmsgをOpenClawとMCPクライアントへ接続",
+          "description": "ネイティブMCPサーバー、リアルタイム監視、承認付き送信フローを構成します。",
+          "eyebrow": "ドキュメント · MCP & OpenClaw"
+        },
+        "cn": {
+          "title": "将kmsg接入OpenClaw与MCP客户端",
+          "description": "配置原生MCP服务器、实时监控和带审批的发送流程。",
+          "eyebrow": "文档 · MCP & OpenClaw"
+        }
+      }
+    },
+    {
+      "key": "skill",
+      "slug": "skill",
+      "type": "docs",
+      "sources": {
+        "ko": "site/content/ko/skill.md",
+        "en": "site/content/en/skill.md",
+        "jp": "site/content/jp/skill.md",
+        "cn": "site/content/cn/skill.md"
+      },
+      "translations": {
+        "ko": {
+          "title": "kmsg 코딩 에이전트 Skill — Claude Code와 Codex에서 사용하기",
+          "description": "Claude Code와 Codex에 kmsg Skill을 설치하고 KakaoTalk을 안전하게 탐색, 읽기, 전송하는 기본 절차를 안내합니다.",
+          "eyebrow": "문서 · 코딩 에이전트 Skill"
+        },
+        "en": {
+          "title": "kmsg coding agent Skill — use KakaoTalk from Claude Code and Codex",
+          "description": "Install the kmsg Skill for Claude Code and Codex, then follow a safe workflow to find, read, and send KakaoTalk messages.",
+          "eyebrow": "Documentation · Coding agent Skill"
+        },
+        "jp": {
+          "title": "kmsgコーディングエージェントSkill — Claude CodeとCodexで利用",
+          "description": "Claude CodeとCodexにkmsg Skillをインストールし、KakaoTalkを安全に探し、読み取り、送信する手順を説明します。",
+          "eyebrow": "ドキュメント · コーディングエージェントSkill"
+        },
+        "cn": {
+          "title": "kmsg编程智能体Skill — 在Claude Code与Codex中使用",
+          "description": "在Claude Code和Codex中安装kmsg Skill，并按照安全流程查找、读取和发送KakaoTalk消息。",
+          "eyebrow": "文档 · 编程智能体Skill"
+        }
+      }
+    },
+    {
+      "key": "versioning",
+      "slug": "versioning",
+      "type": "docs",
+      "sources": {
+        "ko": "site/content/ko/versioning.md",
+        "en": "VERSIONING.md",
+        "jp": "site/content/jp/versioning.md",
+        "cn": "site/content/cn/versioning.md"
+      },
+      "translations": {
+        "ko": {
+          "title": "kmsg 버전 관리와 릴리스 자동화",
+          "description": "날짜 기반 버전 형식, 기준 파일, 릴리스 명령, 호환성 규칙을 설명합니다.",
+          "eyebrow": "문서 · 버전 관리"
+        },
+        "en": {
+          "title": "kmsg Versioning and release automation",
+          "description": "Understand the date-based kmsg version format, source of truth, release commands, and compatibility rules.",
+          "eyebrow": "Documentation · Versioning"
+        },
+        "jp": {
+          "title": "kmsgのバージョン管理とリリース自動化",
+          "description": "日付ベースの形式、正式な値、リリースコマンド、互換性を説明します。",
+          "eyebrow": "ドキュメント · バージョン管理"
+        },
+        "cn": {
+          "title": "kmsg版本管理与发布自动化",
+          "description": "介绍日期版本格式、唯一来源、发布命令和兼容性规则。",
+          "eyebrow": "文档 · 版本管理"
+        }
+      }
+    },
+    {
+      "key": "privacy",
+      "slug": "privacy",
+      "type": "legal",
+      "sources": {
+        "ko": "site/build.mjs",
+        "en": "site/build.mjs",
+        "jp": "site/build.mjs",
+        "cn": "site/build.mjs"
+      },
+      "translations": {
+        "ko": {
+          "title": "개인정보 처리 안내 - kmsg",
+          "description": "kmsg 정적 웹사이트의 데이터 처리와 외부 서비스 이용 범위를 안내합니다.",
+          "eyebrow": "법적 안내"
+        },
+        "en": {
+          "title": "Privacy - kmsg",
+          "description": "How the static kmsg website handles data and links to external services.",
+          "eyebrow": "Legal"
+        },
+        "jp": {
+          "title": "プライバシー - kmsg",
+          "description": "kmsgの静的ウェブサイトにおけるデータ処理と外部サービスの範囲を説明します。",
+          "eyebrow": "法的情報"
+        },
+        "cn": {
+          "title": "隐私说明 - kmsg",
+          "description": "说明kmsg静态网站的数据处理方式与外部服务范围。",
+          "eyebrow": "法律信息"
+        }
+      }
+    },
+    {
+      "key": "terms",
+      "slug": "terms",
+      "type": "legal",
+      "sources": {
+        "ko": "site/build.mjs",
+        "en": "site/build.mjs",
+        "jp": "site/build.mjs",
+        "cn": "site/build.mjs"
+      },
+      "translations": {
+        "ko": {
+          "title": "이용 조건 - kmsg",
+          "description": "kmsg 웹사이트와 오픈소스 소프트웨어의 이용 조건을 안내합니다.",
+          "eyebrow": "법적 안내"
+        },
+        "en": {
+          "title": "Terms - kmsg",
+          "description": "Terms for the kmsg website and open source software.",
+          "eyebrow": "Legal"
+        },
+        "jp": {
+          "title": "利用条件 - kmsg",
+          "description": "kmsgのウェブサイトとオープンソースソフトウェアの利用条件を説明します。",
+          "eyebrow": "法的情報"
+        },
+        "cn": {
+          "title": "使用条款 - kmsg",
+          "description": "说明kmsg网站与开源软件的使用条款。",
+          "eyebrow": "法律信息"
+        }
+      }
+    }
+  ],
+  "pages": [
+    {
+      "title": "kmsg - macOS용 카카오톡 CLI 및 MCP 서버",
+      "description": "터미널과 AI 코딩 에이전트에서 KakaoTalk 채팅을 찾고 읽고 안전하게 보내는 macOS용 오픈소스 CLI와 MCP 서버입니다.",
+      "eyebrow": "카카오톡 자동화 · macOS 13 이상",
+      "sourceLabel": "README.md에서 자동 생성",
+      "faqHeading": "자주 묻는 질문",
+      "previewLabel": "kmsg로 채팅 목록을 확인하고 메시지를 읽은 뒤 답장을 보내는 터미널 미리보기",
+      "chatName": "AI 프로젝트",
+      "secondaryChat": "출시 준비",
+      "firstSender": "지나",
+      "firstMessage": "새 메시지를 확인해줘.",
+      "secondMessage": "지금 확인할게요.",
+      "replyMessage": "확인했어요.",
+      "firstTime": "오후 1:41",
+      "secondTime": "오후 1:42",
+      "pageKey": "home",
+      "source": "README.md",
+      "canonicalSource": "README.en.md",
+      "output": "index.html",
+      "path": "",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "home"
+    },
+    {
+      "title": "kmsg — KakaoTalk CLI & MCP server for macOS",
+      "description": "Open source macOS CLI and MCP server for finding, reading, and safely sending KakaoTalk chats from terminals and AI coding agents.",
+      "eyebrow": "KakaoTalk automation · macOS 13+",
+      "sourceLabel": "Generated from README.en.md",
+      "faqHeading": "Frequently asked questions",
+      "previewLabel": "Terminal replay showing kmsg listing chats, reading messages, and sending a reply",
+      "chatName": "AI Project",
+      "secondaryChat": "Release Prep",
+      "firstSender": "Jina",
+      "firstMessage": "Please check the latest messages.",
+      "secondMessage": "I will check them now.",
+      "replyMessage": "I've checked them.",
+      "firstTime": "1:41 PM",
+      "secondTime": "1:42 PM",
+      "pageKey": "home",
+      "source": "README.en.md",
+      "canonicalSource": "README.en.md",
+      "output": "en/index.html",
+      "path": "en/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "home"
+    },
+    {
+      "title": "kmsg — macOS向けKakaoTalk CLI / MCPサーバー",
+      "description": "ターミナルやAIコーディングエージェントからKakaoTalkのチャットを検索、閲覧、安全に送信できるmacOS向けオープンソースCLI・MCPサーバーです。",
+      "eyebrow": "KakaoTalk自動化 · macOS 13以降",
+      "sourceLabel": "日本語ドキュメント",
+      "faqHeading": "よくある質問",
+      "previewLabel": "kmsgでチャット一覧を確認し、メッセージを読んで返信するターミナル",
+      "chatName": "AIプロジェクト",
+      "secondaryChat": "リリース準備",
+      "firstSender": "ジナ",
+      "firstMessage": "新着メッセージを確認して。",
+      "secondMessage": "今確認します。",
+      "replyMessage": "確認しました。",
+      "firstTime": "午後1:41",
+      "secondTime": "午後1:42",
+      "pageKey": "home",
+      "source": "site/content/jp/home.md",
+      "canonicalSource": "README.en.md",
+      "output": "jp/index.html",
+      "path": "jp/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "home"
+    },
+    {
+      "title": "kmsg — 面向macOS的KakaoTalk CLI与MCP服务器",
+      "description": "面向macOS的开源CLI和MCP服务器，可在终端与AI编程智能体中查找、读取并安全发送KakaoTalk聊天消息。",
+      "eyebrow": "KakaoTalk自动化 · macOS 13+",
+      "sourceLabel": "简体中文文档",
+      "faqHeading": "常见问题",
+      "previewLabel": "使用kmsg查看聊天列表、读取消息并发送回复的终端演示",
+      "chatName": "AI项目",
+      "secondaryChat": "发布准备",
+      "firstSender": "Jina",
+      "firstMessage": "请确认最新消息。",
+      "secondMessage": "我现在确认。",
+      "replyMessage": "已经确认。",
+      "firstTime": "下午1:41",
+      "secondTime": "下午1:42",
+      "pageKey": "home",
+      "source": "site/content/cn/home.md",
+      "canonicalSource": "README.en.md",
+      "output": "cn/index.html",
+      "path": "cn/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "home"
+    },
+    {
+      "title": "kmsg 사용법 — macOS에서 KakaoTalk 자동화하기",
+      "description": "kmsg 설치, 전체 명령, JSON 출력, 안전한 읽기, KakaoTalk 자동화 문제 해결 방법을 안내합니다.",
+      "eyebrow": "문서 · 사용법",
+      "pageKey": "usage",
+      "source": "site/content/ko/usage.md",
+      "canonicalSource": "USAGE.md",
+      "output": "usage/index.html",
+      "path": "usage/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg Usage — install and automate KakaoTalk on macOS",
+      "description": "Install kmsg, learn every command, configure JSON output, and troubleshoot KakaoTalk Accessibility automation on macOS.",
+      "eyebrow": "Documentation · Usage",
+      "pageKey": "usage",
+      "source": "USAGE.md",
+      "canonicalSource": "USAGE.md",
+      "output": "en/usage/index.html",
+      "path": "en/usage/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsgの使い方 — macOSでKakaoTalkを自動化",
+      "description": "インストール、主要コマンド、安全な読み取り、JSON、MCP、トラブルシューティングを説明します。",
+      "eyebrow": "ドキュメント · 使い方",
+      "pageKey": "usage",
+      "source": "site/content/jp/usage.md",
+      "canonicalSource": "USAGE.md",
+      "output": "jp/usage/index.html",
+      "path": "jp/usage/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg使用指南 — 在macOS上自动化KakaoTalk",
+      "description": "介绍安装、主要命令、安全读取、JSON、MCP和故障排除。",
+      "eyebrow": "文档 · 使用指南",
+      "pageKey": "usage",
+      "source": "site/content/cn/usage.md",
+      "canonicalSource": "USAGE.md",
+      "output": "cn/usage/index.html",
+      "path": "cn/usage/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg 아키텍처 — macOS 손쉬운 사용 자동화",
+      "description": "Swift와 macOS 손쉬운 사용 API로 KakaoTalk을 자동화하는 구조와 설계 결정을 설명합니다.",
+      "eyebrow": "문서 · 아키텍처",
+      "pageKey": "architecture",
+      "source": "site/content/ko/architecture.md",
+      "canonicalSource": "ARCHITECTURE.md",
+      "output": "architecture/index.html",
+      "path": "architecture/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg Architecture — macOS Accessibility automation",
+      "description": "How kmsg uses Swift and the macOS Accessibility API to read, watch, and send KakaoTalk messages without implementing the private LOCO protocol.",
+      "eyebrow": "Documentation · Architecture",
+      "pageKey": "architecture",
+      "source": "ARCHITECTURE.md",
+      "canonicalSource": "ARCHITECTURE.md",
+      "output": "en/architecture/index.html",
+      "path": "en/architecture/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsgアーキテクチャ — macOSアクセシビリティ自動化",
+      "description": "SwiftとmacOSアクセシビリティAPIを使う構造、データフロー、設計判断を説明します。",
+      "eyebrow": "ドキュメント · アーキテクチャ",
+      "pageKey": "architecture",
+      "source": "site/content/jp/architecture.md",
+      "canonicalSource": "ARCHITECTURE.md",
+      "output": "jp/architecture/index.html",
+      "path": "jp/architecture/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg架构 — macOS辅助功能自动化",
+      "description": "介绍基于Swift和macOS辅助功能API的组件、数据流与设计决策。",
+      "eyebrow": "文档 · 架构",
+      "pageKey": "architecture",
+      "source": "site/content/cn/architecture.md",
+      "canonicalSource": "ARCHITECTURE.md",
+      "output": "cn/architecture/index.html",
+      "path": "cn/architecture/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg와 OpenClaw·MCP 클라이언트 연결하기",
+      "description": "네이티브 kmsg MCP 서버, 실시간 감시, 승인 중심 전송 흐름을 구성합니다.",
+      "eyebrow": "문서 · MCP & OpenClaw",
+      "pageKey": "openclaw",
+      "source": "site/content/ko/openclaw.md",
+      "canonicalSource": "docs/openclaw.md",
+      "output": "mcp/index.html",
+      "path": "mcp/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "Connect kmsg to OpenClaw and MCP clients",
+      "description": "Configure the native kmsg MCP server and real-time watch mode for OpenClaw and other AI agent clients.",
+      "eyebrow": "Documentation · MCP & OpenClaw",
+      "pageKey": "openclaw",
+      "source": "docs/openclaw.md",
+      "canonicalSource": "docs/openclaw.md",
+      "output": "en/mcp/index.html",
+      "path": "en/mcp/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsgをOpenClawとMCPクライアントへ接続",
+      "description": "ネイティブMCPサーバー、リアルタイム監視、承認付き送信フローを構成します。",
+      "eyebrow": "ドキュメント · MCP & OpenClaw",
+      "pageKey": "openclaw",
+      "source": "site/content/jp/openclaw.md",
+      "canonicalSource": "docs/openclaw.md",
+      "output": "jp/mcp/index.html",
+      "path": "jp/mcp/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "将kmsg接入OpenClaw与MCP客户端",
+      "description": "配置原生MCP服务器、实时监控和带审批的发送流程。",
+      "eyebrow": "文档 · MCP & OpenClaw",
+      "pageKey": "openclaw",
+      "source": "site/content/cn/openclaw.md",
+      "canonicalSource": "docs/openclaw.md",
+      "output": "cn/mcp/index.html",
+      "path": "cn/mcp/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg 코딩 에이전트 Skill — Claude Code와 Codex에서 사용하기",
+      "description": "Claude Code와 Codex에 kmsg Skill을 설치하고 KakaoTalk을 안전하게 탐색, 읽기, 전송하는 기본 절차를 안내합니다.",
+      "eyebrow": "문서 · 코딩 에이전트 Skill",
+      "pageKey": "skill",
+      "source": "site/content/ko/skill.md",
+      "canonicalSource": "site/content/en/skill.md",
+      "output": "skill/index.html",
+      "path": "skill/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg coding agent Skill — use KakaoTalk from Claude Code and Codex",
+      "description": "Install the kmsg Skill for Claude Code and Codex, then follow a safe workflow to find, read, and send KakaoTalk messages.",
+      "eyebrow": "Documentation · Coding agent Skill",
+      "pageKey": "skill",
+      "source": "site/content/en/skill.md",
+      "canonicalSource": "site/content/en/skill.md",
+      "output": "en/skill/index.html",
+      "path": "en/skill/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsgコーディングエージェントSkill — Claude CodeとCodexで利用",
+      "description": "Claude CodeとCodexにkmsg Skillをインストールし、KakaoTalkを安全に探し、読み取り、送信する手順を説明します。",
+      "eyebrow": "ドキュメント · コーディングエージェントSkill",
+      "pageKey": "skill",
+      "source": "site/content/jp/skill.md",
+      "canonicalSource": "site/content/en/skill.md",
+      "output": "jp/skill/index.html",
+      "path": "jp/skill/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg编程智能体Skill — 在Claude Code与Codex中使用",
+      "description": "在Claude Code和Codex中安装kmsg Skill，并按照安全流程查找、读取和发送KakaoTalk消息。",
+      "eyebrow": "文档 · 编程智能体Skill",
+      "pageKey": "skill",
+      "source": "site/content/cn/skill.md",
+      "canonicalSource": "site/content/en/skill.md",
+      "output": "cn/skill/index.html",
+      "path": "cn/skill/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg 버전 관리와 릴리스 자동화",
+      "description": "날짜 기반 버전 형식, 기준 파일, 릴리스 명령, 호환성 규칙을 설명합니다.",
+      "eyebrow": "문서 · 버전 관리",
+      "pageKey": "versioning",
+      "source": "site/content/ko/versioning.md",
+      "canonicalSource": "VERSIONING.md",
+      "output": "versioning/index.html",
+      "path": "versioning/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg Versioning and release automation",
+      "description": "Understand the date-based kmsg version format, source of truth, release commands, and compatibility rules.",
+      "eyebrow": "Documentation · Versioning",
+      "pageKey": "versioning",
+      "source": "VERSIONING.md",
+      "canonicalSource": "VERSIONING.md",
+      "output": "en/versioning/index.html",
+      "path": "en/versioning/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsgのバージョン管理とリリース自動化",
+      "description": "日付ベースの形式、正式な値、リリースコマンド、互換性を説明します。",
+      "eyebrow": "ドキュメント · バージョン管理",
+      "pageKey": "versioning",
+      "source": "site/content/jp/versioning.md",
+      "canonicalSource": "VERSIONING.md",
+      "output": "jp/versioning/index.html",
+      "path": "jp/versioning/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "kmsg版本管理与发布自动化",
+      "description": "介绍日期版本格式、唯一来源、发布命令和兼容性规则。",
+      "eyebrow": "文档 · 版本管理",
+      "pageKey": "versioning",
+      "source": "site/content/cn/versioning.md",
+      "canonicalSource": "VERSIONING.md",
+      "output": "cn/versioning/index.html",
+      "path": "cn/versioning/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "docs"
+    },
+    {
+      "title": "개인정보 처리 안내 - kmsg",
+      "description": "kmsg 정적 웹사이트의 데이터 처리와 외부 서비스 이용 범위를 안내합니다.",
+      "eyebrow": "법적 안내",
+      "pageKey": "privacy",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "privacy/index.html",
+      "path": "privacy/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "Privacy - kmsg",
+      "description": "How the static kmsg website handles data and links to external services.",
+      "eyebrow": "Legal",
+      "pageKey": "privacy",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "en/privacy/index.html",
+      "path": "en/privacy/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "プライバシー - kmsg",
+      "description": "kmsgの静的ウェブサイトにおけるデータ処理と外部サービスの範囲を説明します。",
+      "eyebrow": "法的情報",
+      "pageKey": "privacy",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "jp/privacy/index.html",
+      "path": "jp/privacy/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "隐私说明 - kmsg",
+      "description": "说明kmsg静态网站的数据处理方式与外部服务范围。",
+      "eyebrow": "法律信息",
+      "pageKey": "privacy",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "cn/privacy/index.html",
+      "path": "cn/privacy/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "이용 조건 - kmsg",
+      "description": "kmsg 웹사이트와 오픈소스 소프트웨어의 이용 조건을 안내합니다.",
+      "eyebrow": "법적 안내",
+      "pageKey": "terms",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "terms/index.html",
+      "path": "terms/",
+      "lang": "ko",
+      "locale": "ko",
+      "localeConfig": {
+        "id": "ko",
+        "lang": "ko",
+        "hrefLang": "ko",
+        "prefix": "",
+        "label": "KO",
+        "name": "한국어",
+        "dateLocale": "ko-KR",
+        "ogLocale": "ko_KR",
+        "ui": {
+          "navigation": "주요 탐색 메뉴",
+          "usage": "사용법",
+          "architecture": "구조",
+          "skill": "Skill",
+          "skip": "본문으로 이동",
+          "toc": "이 페이지에서",
+          "source": "원본 Markdown 보기",
+          "sourceAction": "source",
+          "lightTheme": "밝은 테마로 전환",
+          "darkTheme": "어두운 테마로 전환",
+          "menuOpen": "메뉴 열기",
+          "menuClose": "메뉴 닫기",
+          "language": "언어 선택",
+          "copy": "복사",
+          "copied": "복사됨",
+          "copyFailed": "복사 실패",
+          "table": "스크롤 가능한 표",
+          "updated": "업데이트",
+          "edit": "GitHub에서 편집",
+          "pipeline": "현지화 문서",
+          "footerTagline": "macOS용 KakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+          "privacy": "개인정보",
+          "terms": "이용 조건"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "Terms - kmsg",
+      "description": "Terms for the kmsg website and open source software.",
+      "eyebrow": "Legal",
+      "pageKey": "terms",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "en/terms/index.html",
+      "path": "en/terms/",
+      "lang": "en",
+      "locale": "en",
+      "localeConfig": {
+        "id": "en",
+        "lang": "en",
+        "hrefLang": "en",
+        "prefix": "en",
+        "label": "EN",
+        "name": "English",
+        "dateLocale": "en-US",
+        "ogLocale": "en_US",
+        "ui": {
+          "navigation": "Primary navigation",
+          "usage": "Usage",
+          "architecture": "Architecture",
+          "skill": "Skill",
+          "skip": "Skip to content",
+          "toc": "On this page",
+          "source": "View source Markdown",
+          "sourceAction": "source",
+          "lightTheme": "Switch to light theme",
+          "darkTheme": "Switch to dark theme",
+          "menuOpen": "Open menu",
+          "menuClose": "Close menu",
+          "language": "Select language",
+          "copy": "Copy",
+          "copied": "Copied",
+          "copyFailed": "Copy failed",
+          "table": "Scrollable table",
+          "updated": "Updated",
+          "edit": "Edit on GitHub",
+          "pipeline": "Canonical docs",
+          "footerTagline": "KakaoTalk CLI for macOS",
+          "footerDisclaimer": "Independent open source. Not affiliated with Kakao Corp.",
+          "privacy": "Privacy",
+          "terms": "Terms"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "利用条件 - kmsg",
+      "description": "kmsgのウェブサイトとオープンソースソフトウェアの利用条件を説明します。",
+      "eyebrow": "法的情報",
+      "pageKey": "terms",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "jp/terms/index.html",
+      "path": "jp/terms/",
+      "lang": "ja",
+      "locale": "jp",
+      "localeConfig": {
+        "id": "jp",
+        "lang": "ja",
+        "hrefLang": "ja",
+        "prefix": "jp",
+        "label": "JP",
+        "name": "日本語",
+        "dateLocale": "ja-JP",
+        "ogLocale": "ja_JP",
+        "ui": {
+          "navigation": "メインナビゲーション",
+          "usage": "使い方",
+          "architecture": "構成",
+          "skill": "Skill",
+          "skip": "本文へ移動",
+          "toc": "このページの内容",
+          "source": "Markdown原文を見る",
+          "sourceAction": "source",
+          "lightTheme": "ライトテーマに切り替え",
+          "darkTheme": "ダークテーマに切り替え",
+          "menuOpen": "メニューを開く",
+          "menuClose": "メニューを閉じる",
+          "language": "言語を選択",
+          "copy": "コピー",
+          "copied": "コピーしました",
+          "copyFailed": "コピーできませんでした",
+          "table": "横にスクロールできる表",
+          "updated": "更新",
+          "edit": "GitHubで編集",
+          "pipeline": "日本語ドキュメント",
+          "footerTagline": "macOS向けKakaoTalk CLI",
+          "footerDisclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
+          "privacy": "プライバシー",
+          "terms": "利用条件"
+        }
+      },
+      "type": "legal"
+    },
+    {
+      "title": "使用条款 - kmsg",
+      "description": "说明kmsg网站与开源软件的使用条款。",
+      "eyebrow": "法律信息",
+      "pageKey": "terms",
+      "source": "site/build.mjs",
+      "canonicalSource": "site/build.mjs",
+      "output": "cn/terms/index.html",
+      "path": "cn/terms/",
+      "lang": "zh-CN",
+      "locale": "cn",
+      "localeConfig": {
+        "id": "cn",
+        "lang": "zh-CN",
+        "hrefLang": "zh-CN",
+        "prefix": "cn",
+        "label": "CN",
+        "name": "简体中文",
+        "dateLocale": "zh-CN",
+        "ogLocale": "zh_CN",
+        "ui": {
+          "navigation": "主导航",
+          "usage": "使用指南",
+          "architecture": "架构",
+          "skill": "Skill",
+          "skip": "跳到正文",
+          "toc": "本页内容",
+          "source": "查看Markdown原文",
+          "sourceAction": "source",
+          "lightTheme": "切换到浅色主题",
+          "darkTheme": "切换到深色主题",
+          "menuOpen": "打开菜单",
+          "menuClose": "关闭菜单",
+          "language": "选择语言",
+          "copy": "复制",
+          "copied": "已复制",
+          "copyFailed": "复制失败",
+          "table": "可横向滚动的表格",
+          "updated": "更新于",
+          "edit": "在GitHub编辑",
+          "pipeline": "简体中文文档",
+          "footerTagline": "面向macOS的KakaoTalk CLI",
+          "footerDisclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
+          "privacy": "隐私",
+          "terms": "使用条款"
+        }
+      },
+      "type": "legal"
+    }
+  ]
+}
