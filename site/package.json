@@ -7,13 +7,15 @@
     "node": ">=22.22.0"
   },
   "scripts": {
-    "build": "node build.mjs",
+    "build": "npm run sync:content && react-router build && node scripts/build-static.mjs",
     "build:router": "react-router build",
     "dev": "react-router dev",
     "sync:content": "node scripts/sync-markdown-content.mjs",
     "typecheck": "react-router typegen && tsc",
-    "test:unit": "node --test test/react-*.test.mjs",
-    "test": "npm run build && node --test test/*.test.mjs"
+    "test:vitest": "vitest run",
+    "test:node": "node --test test/*.test.mjs",
+    "test:unit": "npm run test:vitest && npm run test:node",
+    "test": "npm run build && npm run typecheck && npm run test:unit"
   },
   "dependencies": {
     "@fontsource-variable/geist": "5.3.0",
