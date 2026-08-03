@@ -16,6 +16,36 @@ AI 에이전트를 위한 구조화된 출력을 제공합니다.
 > 이 도구 사용으로 발생할 수 있는 계정 제한, 오작동, 데이터 손실, 기타 손해에 대한 책임은 사용자에게 있습니다.
 > LOCO Protocol 이 아닌 AX 를 사용한 이유와 계정 제재 가능성에 대한 제 개인적인 판단은 [왜 KakaoTalk 의 LOCO Protocol 을 사용하지 않나요?](ARCHITECTURE.md#accessibility-instead-of-a-private-protocol) 항목을 참고해 주세요.
 
+## AX(Accessibility API)를 핵심으로 개발
+
+`kmsg`는 macOS의 공식 Accessibility API, 즉 AX를 핵심 자동화 계층으로
+사용해 개발되었습니다. Swift에서 `ApplicationServices`와 `AXUIElement`를
+직접 호출해 사용자가 보는 KakaoTalk 창, 채팅 목록, 메시지 영역, 입력창을
+탐색하고 제어합니다. 키보드와 마우스 입력이 필요한 동작은 `CGEvent`를
+사용합니다.
+
+```text
+CLI / MCP
+  → KakaoTalkApp
+  → UIElement
+  → AXUIElement
+  → macOS용 KakaoTalk
+```
+
+- [`UIElement`](Sources/kmsg/Accessibility/UIElement.swift)는 AX 속성 조회,
+  계층 탐색, 값 설정, 액션 실행을 Swift 인터페이스로 감쌉니다.
+- [`AXActionRunner`](Sources/kmsg/Accessibility/AXActionRunner.swift)는
+  AX 액션과 `CGEvent` 기반 입력을 실행합니다.
+- [`AXPathCache`](Sources/kmsg/Accessibility/AXPathCache.swift)는 자주 쓰는
+  UI 경로를 캐시하고, KakaoTalk UI가 바뀌어 경로가 유효하지 않으면 다시
+  탐색할 수 있게 합니다.
+
+이 구조는 `kmsg` 자체가 KakaoTalk 서버나 비공개 LOCO 프로토콜에 직접
+연결하지 않고, 사용자가 실제로 조작하는 앱 UI를 통해 동작한다는 뜻입니다.
+따라서 설치한 `kmsg` 바이너리에 macOS 손쉬운 사용 권한이 필요하며,
+KakaoTalk UI 구조가 바뀌면 일부 탐색 경로가 영향을 받을 수 있습니다.
+자세한 설계 배경과 제약은 [아키텍처 문서](ARCHITECTURE.md)를 참고하세요.
+
 ## 데모
 
 https://github.com/user-attachments/assets/c620b2e3-7106-40fa-86d1-ed847e3b1a6f
