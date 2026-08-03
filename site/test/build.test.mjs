@@ -159,6 +159,23 @@ test("AI Native headline remains legible in both site themes", async () => {
   );
 });
 
+test("hero headline carries the themed text gradient", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /\.product-hero h1\s*\{[^}]*background-image:\s*linear-gradient\(90deg, #ffffff 0%, #9b9b9b 100%\);[^}]*background-clip:\s*text;/s,
+  );
+  assert.match(
+    styles,
+    /:root\[data-theme="paper"\] \.product-hero h1\s*\{[^}]*background-image:\s*linear-gradient\(90deg, #000000 0%, #666666 100%\);/s,
+  );
+  assert.match(
+    styles,
+    /\.product-hero h1 \.hero-highlight\s*\{[^}]*-webkit-text-fill-color:\s*var\(--accent-text\);/s,
+  );
+});
+
 test("Korean headline keeps its second line compact on narrow screens", async () => {
   const styles = await readOutput("assets/styles.css");
 

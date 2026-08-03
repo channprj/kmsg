@@ -2986,6 +2986,23 @@ html[lang="ko"] .hero h1 em {
   color: var(--accent-text);
 }
 
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .product-hero h1 {
+    background-image: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  :root[data-theme="paper"] .product-hero h1 {
+    background-image: linear-gradient(90deg, #000000 0%, #666666 100%);
+  }
+
+  .product-hero h1 .hero-highlight {
+    -webkit-text-fill-color: var(--accent-text);
+  }
+}
+
 .product-hero .hero-lead {
   max-width: 540px;
   margin: 26px 0 0;
