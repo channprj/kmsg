@@ -3,8 +3,13 @@ root.classList.add("js");
 
 const header = document.querySelector("[data-header]");
 const menuPanel = document.querySelector("[data-menu-panel]");
+const menuPanelTitle = menuPanel?.querySelector('[data-slot="sheet-title"]');
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const mobileMenu = window.matchMedia("(max-width: 759px)");
+const menuBackgroundSurfaces = [
+  document.querySelector("main"),
+  document.querySelector(".site-footer"),
+].filter(Boolean);
 let menuRestoreFocus = null;
 
 const menuFocusable = () => {
@@ -29,6 +34,22 @@ const setMenuOpen = (open) => {
     nextOpen ? menuToggle.dataset.closeLabel : menuToggle.dataset.openLabel,
   );
   menuPanel.setAttribute("aria-hidden", String(mobileMenu.matches && !nextOpen));
+  menuPanel.toggleAttribute("inert", mobileMenu.matches && !nextOpen);
+  menuPanel.dataset.state = nextOpen ? "open" : "closed";
+  if (nextOpen) {
+    menuPanel.setAttribute("role", "dialog");
+    menuPanel.setAttribute("aria-modal", "true");
+    if (menuPanelTitle?.id) {
+      menuPanel.setAttribute("aria-labelledby", menuPanelTitle.id);
+    }
+  } else {
+    menuPanel.removeAttribute("role");
+    menuPanel.removeAttribute("aria-modal");
+    menuPanel.removeAttribute("aria-labelledby");
+  }
+  for (const surface of menuBackgroundSurfaces) {
+    surface.toggleAttribute("inert", nextOpen);
+  }
 
   if (nextOpen) {
     menuRestoreFocus = document.activeElement;
@@ -70,7 +91,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 mobileMenu.addEventListener("change", () => setMenuOpen(false));
-menuPanel?.setAttribute("aria-hidden", String(mobileMenu.matches));
+setMenuOpen(false);
 
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeColor = document.querySelector('meta[name="theme-color"]');
@@ -80,7 +101,11 @@ const copyFailedLabel =
   document.body.dataset.copyFailedLabel || "Copy failed";
 
 const setTheme = (theme) => {
+  root.classList.add("is-theme-switching");
   root.dataset.theme = theme;
+  window.requestAnimationFrame(() => {
+    root.classList.remove("is-theme-switching");
+  });
   themeColor?.setAttribute("content", theme === "paper" ? "#f2f2ed" : "#131209");
   const label =
     theme === "dark"

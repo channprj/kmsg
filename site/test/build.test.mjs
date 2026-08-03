@@ -99,6 +99,7 @@ test("shared header exposes one fluid mobile menu in every locale", async () => 
     assert.equal((html.match(/data-menu-toggle/g) || []).length, 1, localeId);
     assert.equal((html.match(/data-menu-panel/g) || []).length, 1, localeId);
     assert.match(html, /aria-expanded="false"/);
+    assert.doesNotMatch(html, /data-menu-panel[^>]*aria-labelledby/);
     assert.match(html, /class="menu-line menu-line-top"/);
     assert.match(html, /class="menu-line menu-line-bottom"/);
   }
@@ -122,10 +123,87 @@ test("landing shell uses the approved primary colors and exact type steps", asyn
   );
 });
 
+test("landing composes shadcn-style semantic tokens and component slots", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  for (const token of [
+    "--background: var(--canvas);",
+    "--foreground: var(--ink);",
+    "--card: var(--canvas-raised);",
+    "--card-foreground: var(--ink);",
+    "--primary: var(--accent);",
+    "--primary-foreground: var(--accent-ink);",
+    "--muted: var(--canvas-soft);",
+    "--muted-foreground: var(--ink-muted);",
+    "--border: var(--line);",
+    "--ring: var(--accent);",
+  ]) {
+    assert.ok(styles.includes(token), token);
+  }
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+
+    assert.match(html, /data-slot="sheet"/);
+    assert.match(html, /data-slot="sheet-title"/);
+    assert.ok((html.match(/data-slot="button"/g) || []).length >= 4, localeId);
+    assert.ok((html.match(/data-slot="badge"/g) || []).length >= 10, localeId);
+    assert.ok((html.match(/data-slot="card"/g) || []).length >= 5, localeId);
+    assert.ok((html.match(/data-slot="card-header"/g) || []).length >= 5, localeId);
+    assert.ok((html.match(/data-slot="card-title"/g) || []).length >= 5, localeId);
+    assert.ok(
+      (html.match(/data-slot="card-description"/g) || []).length >= 5,
+      localeId,
+    );
+    assert.equal((html.match(/data-slot="separator"/g) || []).length, 2, localeId);
+    assert.match(html, /data-slot="accordion"/);
+    assert.match(html, /data-slot="accordion-item"/);
+  }
+});
+
+test("landing avoids asymmetric left-accent card decoration", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.doesNotMatch(
+    styles,
+    /\.capability-copy\s*\{[^}]*box-shadow:\s*inset\s+4px\s+0\s+0/s,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.principle-card:nth-child\(3\)\s*\{[^}]*box-shadow:\s*inset\s+4px\s+0\s+0/s,
+  );
+  assert.doesNotMatch(
+    styles,
+    /\.capability-copy li\s*\{[^}]*border-left:/s,
+  );
+  assert.doesNotMatch(
+    styles,
+    /border-radius:\s*0\s+var\(--radius-sm\)\s+var\(--radius-sm\)\s+0;/,
+  );
+});
+
+test("neutral shadcn cards keep their step badges legible", async () => {
+  const styles = await readOutput("assets/styles.css");
+  assert.match(
+    styles,
+    /\.agent-skill-card:first-child \.agent-skill-step\s*\{[^}]*color:\s*var\(--accent-text\);/s,
+  );
+});
+
 test("mobile menu behavior includes close, Escape, and focus containment", async () => {
   const app = await readOutput("assets/app.js");
   assert.match(app, /const setMenuOpen = \(open\) =>/);
   assert.match(app, /menuToggle\.setAttribute\("aria-expanded", String\(nextOpen\)\)/);
+  assert.match(app, /menuPanel\.dataset\.state = nextOpen \? "open" : "closed"/);
+  assert.match(app, /menuPanel\.setAttribute\("role", "dialog"\)/);
+  assert.match(app, /menuPanel\.setAttribute\("aria-modal", "true"\)/);
+  assert.match(app, /menuPanel\.setAttribute\("aria-labelledby", menuPanelTitle\.id\)/);
+  assert.match(app, /menuPanel\.removeAttribute\("aria-labelledby"\)/);
+  assert.match(
+    app,
+    /menuPanel\.toggleAttribute\("inert", mobileMenu\.matches && !nextOpen\)/,
+  );
+  assert.match(app, /surface\.toggleAttribute\("inert", nextOpen\)/);
   assert.match(app, /event\.key === "Escape"/);
   assert.match(app, /event\.key !== "Tab"/);
   assert.match(app, /first\.focus\(\)/);
@@ -433,7 +511,7 @@ test("curated home keeps product proof, stories, and install actions", async () 
     assert.match(html, /kmsg read &quot;/);
     assert.match(html, /kmsg send &quot;/);
     assert.equal(
-      (html.match(/<article class="principle-card">/g) || []).length,
+      (html.match(/<article class="principle-card"(?=[\s>])/g) || []).length,
       3,
     );
     assert.equal(
@@ -463,7 +541,7 @@ test("home hero pairs its actions with a proof and risk reversal line", async ()
     const proof = html.match(/<ul class="hero-proof">[\s\S]*?<\/ul>/)?.[0];
 
     assert.ok(proof, `${localeId}: missing hero proof line`);
-    assert.equal((proof.match(/<li>/g) || []).length, 3, localeId);
+    assert.equal((proof.match(/<li(?=[\s>])/g) || []).length, 3, localeId);
     assert.ok(proof.includes(heroProofLead[localeId]), localeId);
     assert.match(proof, /dry-run/i);
   }
@@ -543,29 +621,38 @@ test("home routes stage the tagline reveal word by word", async () => {
 });
 
 test("animated tagline keeps an accessible pre-reveal contrast", async () => {
-  const styles = await readOutput("assets/styles.css");
+  const [styles, app] = await Promise.all([
+    readOutput("assets/styles.css"),
+    readOutput("assets/app.js"),
+  ]);
   assert.match(
     styles,
     /\.tagline-armed \.tagline-word\s*{[^}]*color:\s*color-mix\(in srgb, var\(--ink\) 50%, transparent\);/s,
   );
+  assert.match(
+    styles,
+    /\.is-theme-switching \.tagline-word\s*\{[^}]*transition:\s*none !important;/s,
+  );
+  assert.match(app, /root\.classList\.add\("is-theme-switching"\)/);
+  assert.match(app, /root\.classList\.remove\("is-theme-switching"\)/);
 });
 
 test("home routes document cross-agent skill installation and use", async () => {
   const localizedCopy = {
     ko: {
-      title: "코딩 에이전트에서 바로 사용하세요.",
+      title: "에이전트가 달라도, kmsg는 그대로.",
       prompt: "/kmsg 출시 준비 채팅방의 최근 메시지 10개를 요약해줘",
     },
     en: {
-      title: "Use kmsg directly from your coding agent.",
+      title: "One kmsg workflow, across your agents.",
       prompt: "/kmsg Summarize the 10 latest messages in Release Prep",
     },
     jp: {
-      title: "コーディングエージェントからすぐに利用。",
+      title: "エージェントが変わっても、kmsgはそのまま。",
       prompt: "/kmsg リリース準備の最新メッセージ10件を要約して",
     },
     cn: {
-      title: "直接在编程智能体中使用kmsg。",
+      title: "更换智能体，也无需更换kmsg工作流。",
       prompt: "/kmsg 总结发布准备聊天中的最近10条消息",
     },
   };
@@ -582,6 +669,14 @@ test("home routes document cross-agent skill installation and use", async () => 
     assert.ok(html.includes(copy.title));
     assert.ok(html.includes(copy.prompt));
     assert.ok(html.includes(installCommand));
+    for (const agent of ["OpenClaw", "Hermes Agent", "Claude Code", "Codex"]) {
+      assert.ok(html.includes(`>${agent}</span>`), `${localeId}: ${agent}`);
+    }
+    assert.equal(
+      (html.match(/class="agent-compatibility"/g) || []).length,
+      4,
+      localeId,
+    );
     assert.equal(
       (html.match(/<article class="agent-invocation">/g) || []).length,
       2,
@@ -595,6 +690,26 @@ test("home routes document cross-agent skill installation and use", async () => 
       /<span>Codex<\/span>\s*<code translate="no">\$kmsg<\/code>/,
     );
   }
+});
+
+test("local-first tagline states the product boundary without vague automation copy", async () => {
+  const expected = {
+    ko: "kmsg는 별도 서버 없이 Mac에서 직접 실행됩니다.",
+    en: "kmsg runs directly on your Mac, with no separate server.",
+    jp: "kmsgは外部サーバーを使わず、Mac上で直接動作します。",
+    cn: "kmsg无需独立服务器，直接在你的Mac上运行。",
+  };
+
+  for (const [localeId, sentence] of Object.entries(expected)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    const tagline =
+      html.match(/<section[^>]+id="tagline"[\s\S]*?<\/section>/)?.[0] ?? "";
+    const text = tagline.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+    assert.ok(text.includes(sentence), `${localeId}: ${sentence}`);
+  }
+
+  const korean = await readOutput(localizedPath("ko", "home"));
+  assert.doesNotMatch(korean, /자동화는 내 Mac을 벗어나지 않습니다/);
 });
 
 test("home routes omit background-safe messaging", async () => {
@@ -1249,7 +1364,7 @@ test("homepage renders every FAQ represented by structured data", async () => {
       /<section class="product-section faq-section" id="faq" data-reveal>/,
     );
     assert.equal(
-      (html.match(/<details class="faq-item">/g) || []).length,
+      (html.match(/<details class="faq-item"(?=[\s>])/g) || []).length,
       faq.mainEntity.length,
       localeId,
     );

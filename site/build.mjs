@@ -210,22 +210,24 @@ const homeContent = {
       "전송 전 dry-run 확인",
     ],
     agentSkillLabel: "코딩 에이전트",
-    agentSkillTitle: "코딩 에이전트에서 바로 사용하세요.",
+    agentSkillTitle: "에이전트가 달라도, kmsg는 그대로.",
     agentSkillDescription:
-      "Claude Code와 Codex가 채팅방 탐색, 읽기, dry-run 전송을 같은 안전한 절차로 수행합니다.",
-    agentSkillInstallTitle: "스킬 한 번 설치",
+      "OpenClaw, Hermes Agent, Claude Code, Codex에서 같은 CLI와 MCP 워크플로우를 사용합니다.",
+    agentCompatibilityLabel: "지원 에이전트",
+    agentSkillInstallTitle: "MCP로 에이전트 연결",
     agentSkillInstallDescription:
-      "kmsg 바이너리를 설치한 뒤 두 에이전트에 함께 추가합니다.",
-    agentSkillUseTitle: "자연어로 호출",
+      "OpenClaw, Hermes Agent와 모든 MCP 클라이언트에 kmsg 서버를 등록합니다.",
+    agentSkillUseTitle: "Claude Code와 Codex에서는 Skill로",
     agentSkillUseDescription:
-      "Claude Code는 /kmsg, Codex는 $kmsg로 시작합니다.",
+      "공통 Skill을 설치하고 /kmsg 또는 $kmsg로 호출합니다.",
     agentSkillPrompt:
       "/kmsg 출시 준비 채팅방의 최근 메시지 10개를 요약해줘",
     principlesLabel: "왜 kmsg인가",
     principlesTitle: "로컬 자동화에 필요한 것만 담았습니다.",
     capabilitiesLabel: "주요 기능",
     capabilitiesTitle: "읽기부터 전송까지, 하나의 명령 체계로.",
-    tagline: "모든 대화를 명령 한 줄로.\n자동화는 내 Mac을 벗어나지 않습니다.",
+    tagline:
+      "모든 대화를 명령 한 줄로.\nkmsg는 별도 서버 없이 Mac에서 직접 실행됩니다.",
     storiesLabel: "실사용 후기",
     storiesTitle: "실제 자동화 워크플로우에서\n널리 사용되고 있습니다",
     storiesDescription:
@@ -332,22 +334,24 @@ const homeContent = {
       "Dry-run before every send",
     ],
     agentSkillLabel: "Coding agents",
-    agentSkillTitle: "Use kmsg directly from your coding agent.",
+    agentSkillTitle: "One kmsg workflow, across your agents.",
     agentSkillDescription:
-      "Claude Code and Codex follow the same safe workflow for chat discovery, reading, and dry-run sends.",
-    agentSkillInstallTitle: "Install the skill once",
+      "Use the same CLI and MCP workflow in OpenClaw, Hermes Agent, Claude Code, and Codex.",
+    agentCompatibilityLabel: "Supported agents",
+    agentSkillInstallTitle: "Connect agents through MCP",
     agentSkillInstallDescription:
-      "After installing the kmsg binary, add the skill to both agents.",
-    agentSkillUseTitle: "Ask in natural language",
+      "Register the kmsg server in OpenClaw, Hermes Agent, or any MCP client.",
+    agentSkillUseTitle: "Use a Skill in Claude Code and Codex",
     agentSkillUseDescription:
-      "Start with /kmsg in Claude Code or $kmsg in Codex.",
+      "Install the shared Skill, then start with /kmsg or $kmsg.",
     agentSkillPrompt:
       "/kmsg Summarize the 10 latest messages in Release Prep",
     principlesLabel: "Why kmsg",
     principlesTitle: "Only what local automation needs.",
     capabilitiesLabel: "Core capabilities",
     capabilitiesTitle: "One command model, from reading to sending.",
-    tagline: "Every chat, one command away.\nAutomation that never leaves your Mac.",
+    tagline:
+      "Every chat, one command away.\nkmsg runs directly on your Mac, with no separate server.",
     storiesLabel: "In use",
     storiesTitle: "Used in real automation workflows.",
     storiesDescription:
@@ -451,22 +455,24 @@ const homeContent = {
       "送信前にdry-runで確認",
     ],
     agentSkillLabel: "コーディングエージェント",
-    agentSkillTitle: "コーディングエージェントからすぐに利用。",
+    agentSkillTitle: "エージェントが変わっても、kmsgはそのまま。",
     agentSkillDescription:
-      "Claude CodeとCodexが、チャット検索・読み取り・dry-run送信を同じ安全な手順で実行します。",
-    agentSkillInstallTitle: "スキルを一度インストール",
+      "OpenClaw、Hermes Agent、Claude Code、Codexで同じCLIとMCPワークフローを利用できます。",
+    agentCompatibilityLabel: "対応エージェント",
+    agentSkillInstallTitle: "MCPでエージェントに接続",
     agentSkillInstallDescription:
-      "kmsg本体をインストールした後、両方のエージェントに追加します。",
-    agentSkillUseTitle: "自然な言葉で呼び出す",
+      "OpenClaw、Hermes Agent、その他のMCPクライアントにkmsgサーバーを登録します。",
+    agentSkillUseTitle: "Claude CodeとCodexではSkillで",
     agentSkillUseDescription:
-      "Claude Codeでは/kmsg、Codexでは$kmsgから始めます。",
+      "共通Skillをインストールし、/kmsgまたは$kmsgで呼び出します。",
     agentSkillPrompt:
       "/kmsg リリース準備の最新メッセージ10件を要約して",
     principlesLabel: "kmsgを選ぶ理由",
     principlesTitle: "ローカル自動化に必要な機能だけ。",
     capabilitiesLabel: "主な機能",
     capabilitiesTitle: "読み取りから送信まで、一つのコマンド体系で。",
-    tagline: "すべての会話を、コマンド一つで。\n自動化はMacの外に出ません。",
+    tagline:
+      "すべての会話を、コマンド一つで。\nkmsgは外部サーバーを使わず、Mac上で直接動作します。",
     storiesLabel: "活用事例",
     storiesTitle: "実際の自動化ワークフローで使われています。",
     storiesDescription:
@@ -571,22 +577,24 @@ const homeContent = {
       "发送前先dry-run确认",
     ],
     agentSkillLabel: "编程智能体",
-    agentSkillTitle: "直接在编程智能体中使用kmsg。",
+    agentSkillTitle: "更换智能体，也无需更换kmsg工作流。",
     agentSkillDescription:
-      "Claude Code与Codex使用同一套安全流程查找聊天、读取消息并在发送前进行dry-run。",
-    agentSkillInstallTitle: "一次安装技能",
+      "在OpenClaw、Hermes Agent、Claude Code和Codex中使用同一套CLI与MCP工作流。",
+    agentCompatibilityLabel: "支持的智能体",
+    agentSkillInstallTitle: "通过MCP连接智能体",
     agentSkillInstallDescription:
-      "安装kmsg命令行工具后，将技能同时添加到两个智能体。",
-    agentSkillUseTitle: "使用自然语言调用",
+      "在OpenClaw、Hermes Agent或任何MCP客户端中注册kmsg服务器。",
+    agentSkillUseTitle: "在Claude Code和Codex中使用Skill",
     agentSkillUseDescription:
-      "在Claude Code中使用/kmsg，在Codex中使用$kmsg。",
+      "安装通用Skill，然后使用/kmsg或$kmsg调用。",
     agentSkillPrompt:
       "/kmsg 总结发布准备聊天中的最近10条消息",
     principlesLabel: "为什么选择kmsg",
     principlesTitle: "只保留本地自动化所需的功能。",
     capabilitiesLabel: "核心功能",
     capabilitiesTitle: "从读取到发送，使用同一套命令体系。",
-    tagline: "每一段对话，只差一条命令。\n自动化从不离开你的Mac。",
+    tagline:
+      "每一段对话，只差一条命令。\nkmsg无需独立服务器，直接在你的Mac上运行。",
     storiesLabel: "实际案例",
     storiesTitle: "已用于真实的自动化工作流。",
     storiesDescription:
@@ -1583,7 +1591,8 @@ const renderHeader = (page) => {
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="32" height="32">
           <span>kmsg</span>
         </a>
-        <div class="header-menu" data-menu-panel>
+        <div class="header-menu" data-menu-panel data-slot="sheet">
+          <span class="sr-only" id="menu-title-${page.locale}" data-slot="sheet-title">${escapeHtml(ui.navigation)}</span>
           <nav class="primary-nav" aria-label="${ui.navigation}" tabindex="0">
             <a href="${usageLink}"${active("usage")}>${ui.usage}</a>
             <a href="${architectureLink}"${active("architecture")}>${ui.architecture}</a>
@@ -1591,7 +1600,7 @@ const renderHeader = (page) => {
             <a href="${skillLink}"${active("skill")}>${ui.skill}</a>
             <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub ${renderIcon("external-link", 16)}</a>
           </nav>
-          <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
+          <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-slot="button" data-variant="ghost" data-size="icon" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
             <span class="theme-icon" aria-hidden="true">
               ${renderIcon("sun", 18)}
               ${renderIcon("moon", 18)}
@@ -1606,7 +1615,7 @@ const renderHeader = (page) => {
             </select>
             <span class="language-chevron" aria-hidden="true">${renderIcon("chevron-down", 18)}</span>
           </label>
-          <button class="menu-toggle" type="button" aria-label="${ui.menuOpen}" aria-expanded="false" data-menu-toggle data-open-label="${ui.menuOpen}" data-close-label="${ui.menuClose}">
+          <button class="menu-toggle" type="button" aria-label="${ui.menuOpen}" aria-expanded="false" data-slot="button" data-variant="outline" data-size="icon" data-menu-toggle data-open-label="${ui.menuOpen}" data-close-label="${ui.menuClose}">
             <span class="menu-lines" aria-hidden="true">
               <span class="menu-line menu-line-top"></span>
               <span class="menu-line menu-line-bottom"></span>
@@ -1734,10 +1743,14 @@ const renderPrinciples = (copy) => `
       ${copy.principles
         .map(
           (item) => `
-        <article class="principle-card">
-          <span class="principle-token" aria-hidden="true">${escapeHtml(item.token)}</span>
-          <h3>${escapeHtml(item.title)}</h3>
-          <p>${escapeHtml(item.description)}</p>
+        <article class="principle-card" data-slot="card">
+          <div class="principle-card-header" data-slot="card-header">
+            <span class="principle-token" data-slot="badge" data-variant="outline" aria-hidden="true">${escapeHtml(item.token)}</span>
+            <h3 data-slot="card-title">${escapeHtml(item.title)}</h3>
+          </div>
+          <div class="principle-card-content" data-slot="card-content">
+            <p data-slot="card-description">${escapeHtml(item.description)}</p>
+          </div>
         </article>`,
         )
         .join("")}
@@ -1750,13 +1763,14 @@ const renderCapabilities = (copy) => `
     <div class="capability-list">
       ${copy.capabilities
         .map(
-          (item) => `
+          (item, index) => `
+        ${index > 0 ? '<div class="capability-separator" data-slot="separator" role="separator" aria-orientation="horizontal"></div>' : ""}
         <article class="capability-row">
           <div class="capability-copy">
             <h3>${escapeHtml(item.title)}</h3>
             <p>${escapeHtml(item.description)}</p>
             <ul>
-              ${item.points.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}
+              ${item.points.map((point) => `<li data-slot="badge" data-variant="secondary">${escapeHtml(point)}</li>`).join("")}
             </ul>
           </div>
           ${renderCommandPanel(item.command, item.output)}
@@ -1810,6 +1824,13 @@ const renderHomeTagline = (copy, locale) => `
 
 const agentSkillInstallCommand =
   "npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y";
+const agentMcpCommand = "kmsg mcp-server";
+const agentCompatibility = [
+  { id: "openclaw", name: "OpenClaw", mode: "MCP" },
+  { id: "hermes", name: "Hermes Agent", mode: "MCP" },
+  { id: "claude-code", name: "Claude Code", mode: "Skill + MCP" },
+  { id: "codex", name: "Codex", mode: "Skill + MCP" },
+];
 
 const renderAgentSkill = (page, copy) => `
   <section class="product-section agent-skill-section" id="agent-skill" data-agent-skill data-reveal>
@@ -1818,34 +1839,58 @@ const renderAgentSkill = (page, copy) => `
       copy.agentSkillTitle,
       copy.agentSkillDescription,
     )}
+    <ul class="agent-compatibility-list" aria-label="${escapeHtml(copy.agentCompatibilityLabel)}">
+      ${agentCompatibility
+        .map(
+          (agent) => `
+        <li class="agent-compatibility" data-agent="${agent.id}">
+          <span data-slot="badge" data-variant="outline">${agent.name}</span>
+          <span>${agent.mode}</span>
+        </li>`,
+        )
+        .join("")}
+    </ul>
     <div class="agent-skill-grid">
-      <article class="agent-skill-card">
-        <span class="agent-skill-step">01</span>
-        <h3>${escapeHtml(copy.agentSkillInstallTitle)}</h3>
-        <p>${escapeHtml(copy.agentSkillInstallDescription)}</p>
-        <button class="agent-skill-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: ${agentSkillInstallCommand}`)}" aria-live="polite" translate="no" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
-          <span class="prompt" aria-hidden="true">$</span>
-          <code translate="no">${agentSkillInstallCommand}</code>
-          ${renderCopyIcons()}
-        </button>
-      </article>
-      <article class="agent-skill-card">
-        <span class="agent-skill-step">02</span>
-        <h3>${escapeHtml(copy.agentSkillUseTitle)}</h3>
-        <p>${escapeHtml(copy.agentSkillUseDescription)}</p>
-        <div class="agent-invocation-grid">
-          <article class="agent-invocation">
-            <span>Claude Code</span>
-            <code translate="no">/kmsg</code>
-          </article>
-          <article class="agent-invocation">
-            <span>Codex</span>
-            <code translate="no">$kmsg</code>
-          </article>
+      <article class="agent-skill-card" data-slot="card">
+        <div class="agent-skill-card-header" data-slot="card-header">
+          <span class="agent-skill-step" data-slot="badge" data-variant="secondary">01</span>
+          <h3 data-slot="card-title">${escapeHtml(copy.agentSkillInstallTitle)}</h3>
+          <p data-slot="card-description">${escapeHtml(copy.agentSkillInstallDescription)}</p>
         </div>
-        <div class="agent-prompt-example">
-          <span>prompt</span>
-          <code translate="no">${escapeHtml(copy.agentSkillPrompt)}</code>
+        <div class="agent-skill-card-content" data-slot="card-content">
+          <button class="agent-skill-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: ${agentMcpCommand}`)}" aria-live="polite" translate="no" data-slot="button" data-variant="outline" data-copy="${agentMcpCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+            <span class="prompt" aria-hidden="true">$</span>
+            <code translate="no">${agentMcpCommand}</code>
+            ${renderCopyIcons()}
+          </button>
+        </div>
+      </article>
+      <article class="agent-skill-card" data-slot="card">
+        <div class="agent-skill-card-header" data-slot="card-header">
+          <span class="agent-skill-step" data-slot="badge" data-variant="secondary">02</span>
+          <h3 data-slot="card-title">${escapeHtml(copy.agentSkillUseTitle)}</h3>
+          <p data-slot="card-description">${escapeHtml(copy.agentSkillUseDescription)}</p>
+        </div>
+        <div class="agent-skill-card-content" data-slot="card-content">
+          <button class="agent-skill-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: ${agentSkillInstallCommand}`)}" aria-live="polite" translate="no" data-slot="button" data-variant="outline" data-copy="${agentSkillInstallCommand}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+            <span class="prompt" aria-hidden="true">$</span>
+            <code translate="no">${agentSkillInstallCommand}</code>
+            ${renderCopyIcons()}
+          </button>
+          <div class="agent-invocation-grid">
+            <article class="agent-invocation">
+              <span>Claude Code</span>
+              <code translate="no">/kmsg</code>
+            </article>
+            <article class="agent-invocation">
+              <span>Codex</span>
+              <code translate="no">$kmsg</code>
+            </article>
+          </div>
+          <div class="agent-prompt-example">
+            <span>prompt</span>
+            <code translate="no">${escapeHtml(copy.agentSkillPrompt)}</code>
+          </div>
         </div>
       </article>
     </div>
@@ -1909,11 +1954,11 @@ const renderHomeFaq = (copy, faqs) => `
       copy.faqTitle,
       copy.faqDescription,
     )}
-    <div class="faq-list">
+    <div class="faq-list" data-slot="accordion">
       ${faqs
         .map(
           ({ question, answer }) => `
-        <details class="faq-item">
+        <details class="faq-item" data-slot="accordion-item">
           <summary>${escapeHtml(question)}<span class="faq-icons" aria-hidden="true">${renderIcon("plus")}${renderIcon("minus")}</span></summary>
           <p>${escapeHtml(answer)}</p>
         </details>`,
@@ -1937,7 +1982,7 @@ const renderHomeInstall = (page, copy) => {
         <ol class="install-steps">
           ${copy.installSteps.map((step) => `<li>${escapeHtml(step)}</li>`).join("\n          ")}
         </ol>
-        <button class="install-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: brew install channprj/tap/kmsg`)}" aria-live="polite" translate="no" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+        <button class="install-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: brew install channprj/tap/kmsg`)}" aria-live="polite" translate="no" data-slot="button" data-variant="outline" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code translate="no">brew install channprj/tap/kmsg</code>
           ${renderCopyIcons()}
@@ -2006,11 +2051,11 @@ const renderProductHome = (page, faqs) => {
         <h1 id="hero-title">${renderHomeHeadline(copy)}</h1>
         <p class="hero-lead">${escapeHtml(copy.description)}</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
-          <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
+          <a class="button button-primary" href="#install" data-slot="button" data-variant="default">${escapeHtml(copy.installAction)}</a>
+          <a class="hero-docs-link" href="${docsLink}" data-slot="button" data-variant="link">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
         </div>
         <ul class="hero-proof">
-          ${copy.heroProof.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n          ")}
+          ${copy.heroProof.map((item) => `<li data-slot="badge" data-variant="secondary">${escapeHtml(item)}</li>`).join("\n          ")}
         </ul>
       </div>
       <figure class="hero-media">
