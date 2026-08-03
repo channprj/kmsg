@@ -28,6 +28,16 @@ function copyWithTextarea(text: string) {
   }
 }
 
+export async function copyTextToClipboard(text: string) {
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable")
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    return copyWithTextarea(text)
+  }
+}
+
 export function CopyButton({
   text,
   idleLabel,
@@ -53,14 +63,7 @@ export function CopyButton({
         : idleLabel
 
   const copyText = async () => {
-    let copied = false
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable")
-      await navigator.clipboard.writeText(text)
-      copied = true
-    } catch {
-      copied = copyWithTextarea(text)
-    }
+    const copied = await copyTextToClipboard(text)
 
     setStatus(copied ? "copied" : "failed")
     if (resetTimer.current) clearTimeout(resetTimer.current)

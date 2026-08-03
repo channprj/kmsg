@@ -6,13 +6,8 @@ import { LOCALES } from "~/content/locales"
 import { LOCALE_IDS, routeFromPath } from "~/content/routes"
 import { metadataFor } from "~/lib/metadata"
 
-function routeFromParams(params: Route.MetaArgs["params"]) {
-  const splat = params["*"]
-  return routeFromPath(splat ? `/${splat}/` : "/")
-}
-
-export function meta({ params }: Route.MetaArgs) {
-  const route = routeFromParams(params) ?? { locale: "ko" as const, pageKey: "home" as const }
+export function meta({ location }: Route.MetaArgs) {
+  const route = routeFromPath(location.pathname) ?? { locale: "ko" as const, pageKey: "home" as const }
   const metadata = metadataFor(route.locale, route.pageKey)
   return [
     { title: metadata.title },

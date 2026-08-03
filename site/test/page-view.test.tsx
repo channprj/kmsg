@@ -32,7 +32,13 @@ describe("PageView", () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })))
     render(<PageView locale="cn" pageKey="architecture" />)
     expect(
-      screen.getByRole("heading", { level: 1, name: "kmsg架构 — macOS辅助功能自动化" }),
+      screen.getByRole("heading", { level: 1, name: "kmsg架构" }),
     ).toBeVisible()
+    expect(screen.getByRole("navigation", { name: "本页内容" })).toBeVisible()
+    expect(screen.getByRole("heading", { level: 2, name: "设计决策" })).toBeVisible()
+    expect(screen.getByRole("link", { name: "查看Markdown原文" })).toHaveAttribute(
+      "href",
+      "https://github.com/channprj/kmsg/blob/main/site/content/cn/architecture.md",
+    )
   })
 })

@@ -10,6 +10,7 @@
     "build": "node build.mjs",
     "build:router": "react-router build",
     "dev": "react-router dev",
+    "sync:content": "node scripts/sync-markdown-content.mjs",
     "typecheck": "react-router typegen && tsc",
     "test:unit": "node --test test/react-*.test.mjs",
     "test": "npm run build && node --test test/*.test.mjs"

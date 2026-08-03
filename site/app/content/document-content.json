@@ -1,0 +1,1492 @@
+[
+  {
+    "locale": "ko",
+    "pageKey": "usage",
+    "title": "kmsg 사용법",
+    "source": "site/content/ko/usage.md",
+    "sourceLabel": "site/content/ko/usage.md",
+    "lastModified": "2026-07-31T02:58:39+09:00",
+    "html": "<p>이 문서는 설치부터 메시지 읽기·전송, MCP 서버, 문제 해결까지 자주 쓰는 흐름을 한국어로 정리합니다. 모든 옵션과 최신 계약은 <a href=\"https://github.com/channprj/kmsg/blob/main/USAGE.md\" target=\"_blank\" rel=\"noopener noreferrer\">영문 전체 레퍼런스</a>에서 확인할 수 있습니다.</p>\n<h2 id=\"설치\"><a class=\"heading-anchor\" href=\"#설치\">설치</a></h2>\n<h3 id=\"요구-사항\"><a class=\"heading-anchor\" href=\"#요구-사항\">요구 사항</a></h3>\n<ul>\n<li>macOS 13 이상</li>\n<li>macOS용 KakaoTalk</li>\n<li>설치한 <code>kmsg</code> 바이너리에 대한 손쉬운 사용 권한</li>\n</ul>\n<h3 id=\"homebrew\"><a class=\"heading-anchor\" href=\"#homebrew\">Homebrew</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">brew install channprj/tap/kmsg\n</code></pre>\n<p>업데이트는 다음과 같이 진행합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\n</code></pre>\n<h3 id=\"직접-다운로드\"><a class=\"heading-anchor\" href=\"#직접-다운로드\">직접 다운로드</a></h3>\n<p>릴리스에는 Apple Silicon과 Intel Mac을 모두 지원하는 <code>kmsg-macos-universal</code> 바이너리가 포함됩니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">mkdir -p ~/.local/bin\ncurl -fL \\\n  https://github.com/channprj/kmsg/releases/latest/download/kmsg-macos-universal \\\n  -o ~/.local/bin/kmsg\nchmod +x ~/.local/bin/kmsg\nkmsg --version\n</code></pre>\n<h3 id=\"소스에서-빌드\"><a class=\"heading-anchor\" href=\"#소스에서-빌드\">소스에서 빌드</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">git clone https://github.com/channprj/kmsg.git\ncd kmsg\nswift build -c release\ninstall -m 755 .build/release/kmsg ~/.local/bin/kmsg\n</code></pre>\n<h2 id=\"빠른-시작\"><a class=\"heading-anchor\" href=\"#빠른-시작\">빠른 시작</a></h2>\n<p>먼저 권한과 KakaoTalk 상태를 확인합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg status --verbose\n</code></pre>\n<p>채팅 목록을 확인하고 최근 메시지를 읽습니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg chats --limit 20\nkmsg read \"채팅방 이름\" --limit 20\n</code></pre>\n<p>실제 전송 전에는 반드시 dry run으로 대상과 메시지를 확인할 수 있습니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg send \"채팅방 이름\" \"안녕하세요\" --dry-run\n</code></pre>\n<p><code>--dry-run</code>은 KakaoTalk UI에 접근하기 전에 종료하므로 실제 메시지를 전송하지 않습니다.</p>\n<h2 id=\"로그인과-권한\"><a class=\"heading-anchor\" href=\"#로그인과-권한\">로그인과 권한</a></h2>\n<p>대화형 명령은 KakaoTalk 로그인 상태를 확인합니다. 새 자격 증명을 입력하거나 저장된 자격 증명을 재사용할 수 있습니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg auth login\nkmsg auth login --auto\n</code></pre>\n<p>비밀번호는 AES-GCM으로 암호화하며 자격 증명과 키를 소유자 전용 권한으로 분리 저장합니다. 이 파일은 공유하거나 이슈에 첨부하지 마세요.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">~/.config/kmsg/credentials.json\n~/.config/kmsg/credentials/primary.key\n</code></pre>\n<h2 id=\"명령-레퍼런스\"><a class=\"heading-anchor\" href=\"#명령-레퍼런스\">명령 레퍼런스</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>명령</th>\n<th>용도</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg status</code></td>\n<td>손쉬운 사용 권한, KakaoTalk 실행·로그인, 준비 상태 확인</td>\n</tr>\n<tr>\n<td><code>kmsg auth login</code></td>\n<td>자격 증명 입력 또는 저장된 자격 증명 재사용</td>\n</tr>\n<tr>\n<td><code>kmsg chats</code></td>\n<td>채팅 목록과 로컬 <code>chat_id</code> 조회</td>\n</tr>\n<tr>\n<td><code>kmsg read</code></td>\n<td>최근 메시지 읽기</td>\n</tr>\n<tr>\n<td><code>kmsg watch</code></td>\n<td>새 메시지를 지속적으로 감시</td>\n</tr>\n<tr>\n<td><code>kmsg send</code></td>\n<td>텍스트 메시지 전송</td>\n</tr>\n<tr>\n<td><code>kmsg send-image</code></td>\n<td>이미지 전송</td>\n</tr>\n<tr>\n<td><code>kmsg inspect</code></td>\n<td>KakaoTalk AX 계층 구조 조사</td>\n</tr>\n<tr>\n<td><code>kmsg cache</code></td>\n<td>self-healing AX 경로 캐시 관리</td>\n</tr>\n<tr>\n<td><code>kmsg mcp-server</code></td>\n<td>네이티브 stdio MCP 서버 실행</td>\n</tr>\n</tbody></table></div>\n<h3 id=\"안전한-읽기\"><a class=\"heading-anchor\" href=\"#안전한-읽기\">안전한 읽기</a></h3>\n<p>포그라운드 작업을 방해하면 안 되는 자동화에서는 <code>--background-safe</code>를 사용합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg read \"채팅방 이름\" --json --background-safe\n</code></pre>\n<p>이 모드는 KakaoTalk을 실행하거나 활성화하지 않고, 로그인·검색·창 열기·크기 조절·닫기도 수행하지 않습니다. 일치하는 채팅 창이 이미 열려 있지 않으면 실패합니다.</p>\n<h4 id=\"background-safe-가-보이지-않을-때\"><a class=\"heading-anchor\" href=\"#background-safe-가-보이지-않을-때\"><code>--background-safe</code>가 보이지 않을 때</a></h4>\n<p>이 CLI 플래그는 kmsg <code>v1.260618.0</code>부터 제공되며 <code>kmsg read</code> 명령에서만 사용할 수 있습니다. 현재 셸이 실행하는 바이너리를 먼저 확인하세요.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg --version\nkmsg read --help\n</code></pre>\n<p>도움말에 플래그가 없다면 Homebrew 설치본을 업데이트한 뒤 다시 확인합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\nkmsg read --help\n</code></pre>\n<p>MCP 클라이언트에서는 CLI 표기인 <code>--background-safe</code> 대신 JSON 인자 <code>background_safe: true</code>를 사용합니다.</p>\n<h3 id=\"텍스트-전송\"><a class=\"heading-anchor\" href=\"#텍스트-전송\">텍스트 전송</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg send &lt;recipient&gt; &lt;message&gt; [options]\nkmsg send --chat-id &lt;chat-id&gt; &lt;message&gt; [options]\n</code></pre>\n<p>주요 옵션은 다음과 같습니다.</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>옵션</th>\n<th>동작</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--dry-run</code></td>\n<td>UI에 접근하지 않고 대상과 메시지만 출력</td>\n</tr>\n<tr>\n<td><code>--chat-id ID</code></td>\n<td><code>kmsg chats</code>에서 생성한 로컬 ID 사용</td>\n</tr>\n<tr>\n<td><code>--keep-window</code></td>\n<td>명령이 연 채팅 창을 유지</td>\n</tr>\n<tr>\n<td><code>--no-cache</code></td>\n<td>관련 AX 캐시를 지우고 다시 탐색</td>\n</tr>\n<tr>\n<td><code>--layout MODE</code></td>\n<td><code>preserve</code>, <code>left</code>, <code>right</code>, <code>split-left</code>, <code>split-right</code> 중 선택</td>\n</tr>\n</tbody></table></div>\n<h3 id=\"이미지-전송\"><a class=\"heading-anchor\" href=\"#이미지-전송\">이미지 전송</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg send-image \"채팅방 이름\" /absolute/path/image.png --dry-run\n</code></pre>\n<p>이미지 경로는 읽을 수 있는 로컬 파일이어야 합니다. dry run으로 확인한 뒤에만 실제 전송을 실행하세요.</p>\n<h2 id=\"json-출력과-mcp\"><a class=\"heading-anchor\" href=\"#json-출력과-mcp\">JSON 출력과 MCP</a></h2>\n<p><code>--json</code>을 지원하는 명령은 구조화된 결과를 <code>stdout</code>에 기록하고 AX 추적 로그는 <code>stderr</code>에 분리합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg chats --json\nkmsg read \"채팅방 이름\" --json --limit 20\nkmsg watch \"채팅방 이름\" --json\n</code></pre>\n<p>네이티브 MCP 서버는 다음 도구를 제공합니다.</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>도구</th>\n<th>용도</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg_read</code></td>\n<td>채팅 이름으로 최근 메시지 읽기</td>\n</tr>\n<tr>\n<td><code>kmsg_send</code></td>\n<td>채팅 이름으로 텍스트 전송</td>\n</tr>\n<tr>\n<td><code>kmsg_send_image</code></td>\n<td>채팅 이름으로 로컬 이미지 전송</td>\n</tr>\n</tbody></table></div>\n<p>전송 도구에서 <code>confirm=false</code> 또는 생략된 <code>confirm</code>은 즉시 전송합니다. <code>confirm=true</code>는 전송하지 않고 <code>CONFIRMATION_REQUIRED</code>를 반환합니다.</p>\n<h2 id=\"환경-변수\"><a class=\"heading-anchor\" href=\"#환경-변수\">환경 변수</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>변수</th>\n<th>기본값</th>\n<th>설명</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>KMSG_MCP_KMSG_PATH</code></td>\n<td>현재 실행 파일</td>\n<td>MCP 서버가 호출할 <code>kmsg</code> 경로</td>\n</tr>\n<tr>\n<td><code>KMSG_MCP_TIMEOUT_SECONDS</code></td>\n<td><code>30</code></td>\n<td>하위 프로세스 제한 시간</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_LAYOUT</code></td>\n<td><code>preserve</code></td>\n<td>기본 창 배치</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_BACKGROUND_SAFE</code></td>\n<td><code>false</code></td>\n<td><code>kmsg_read</code>의 기본 안전 읽기 모드</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_DEEP_RECOVERY</code></td>\n<td><code>false</code></td>\n<td>더 깊은 창 복구 기본값</td>\n</tr>\n<tr>\n<td><code>KMSG_MCP_STARTUP_STATUS_CHECK</code></td>\n<td><code>false</code></td>\n<td>MCP 시작 시 상태 확인 여부</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"문제-해결\"><a class=\"heading-anchor\" href=\"#문제-해결\">문제 해결</a></h2>\n<h3 id=\"손쉬운-사용-권한이-없습니다\"><a class=\"heading-anchor\" href=\"#손쉬운-사용-권한이-없습니다\">손쉬운 사용 권한이 없습니다</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg status\n</code></pre>\n<p>시스템 설정에서 실제로 실행하는 바이너리를 허용한 뒤 다시 시도합니다. Homebrew 경로와 직접 빌드 경로는 서로 다른 바이너리로 인식될 수 있습니다.</p>\n<h3 id=\"채팅을-찾지-못합니다\"><a class=\"heading-anchor\" href=\"#채팅을-찾지-못합니다\">채팅을 찾지 못합니다</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg chats --verbose --limit 50\nkmsg cache clear\nkmsg read \"정확한 채팅방 이름\" --deep-recovery\n</code></pre>\n<p>반복 자동화에서는 <code>kmsg chats</code>로 레지스트리를 갱신하고 <code>chat_id</code>를 사용하는 편이 안정적입니다.</p>\n<h3 id=\"메시지-파싱이나-ax-경로가-불안정합니다\"><a class=\"heading-anchor\" href=\"#메시지-파싱이나-ax-경로가-불안정합니다\">메시지 파싱이나 AX 경로가 불안정합니다</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg read \"채팅방 이름\" --debug --trace-ax\nkmsg inspect --depth 5\nkmsg cache stats\n</code></pre>\n<p>KakaoTalk 업데이트 후에는 캐시를 지우고 다시 탐색하세요.</p>\n<h2 id=\"개발과-릴리스\"><a class=\"heading-anchor\" href=\"#개발과-릴리스\">개발과 릴리스</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">swift build\nswift build -c release\npython3 -m pytest -q\n</code></pre>\n<p>릴리스 버전은 루트의 <code>VERSION</code>을 기준으로 하며 수동 편집 대신 프로젝트의 릴리스 명령을 사용합니다. 자세한 규칙은 <a href=\"/kmsg/versioning/\">버전 관리 문서</a>를 참고하세요.</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "설치",
+        "label": "설치"
+      },
+      {
+        "level": 3,
+        "id": "요구-사항",
+        "label": "요구 사항"
+      },
+      {
+        "level": 3,
+        "id": "homebrew",
+        "label": "Homebrew"
+      },
+      {
+        "level": 3,
+        "id": "직접-다운로드",
+        "label": "직접 다운로드"
+      },
+      {
+        "level": 3,
+        "id": "소스에서-빌드",
+        "label": "소스에서 빌드"
+      },
+      {
+        "level": 2,
+        "id": "빠른-시작",
+        "label": "빠른 시작"
+      },
+      {
+        "level": 2,
+        "id": "로그인과-권한",
+        "label": "로그인과 권한"
+      },
+      {
+        "level": 2,
+        "id": "명령-레퍼런스",
+        "label": "명령 레퍼런스"
+      },
+      {
+        "level": 3,
+        "id": "안전한-읽기",
+        "label": "안전한 읽기"
+      },
+      {
+        "level": 4,
+        "id": "background-safe-가-보이지-않을-때",
+        "label": "--background-safe 가 보이지 않을 때"
+      },
+      {
+        "level": 3,
+        "id": "텍스트-전송",
+        "label": "텍스트 전송"
+      },
+      {
+        "level": 3,
+        "id": "이미지-전송",
+        "label": "이미지 전송"
+      },
+      {
+        "level": 2,
+        "id": "json-출력과-mcp",
+        "label": "JSON 출력과 MCP"
+      },
+      {
+        "level": 2,
+        "id": "환경-변수",
+        "label": "환경 변수"
+      },
+      {
+        "level": 2,
+        "id": "문제-해결",
+        "label": "문제 해결"
+      },
+      {
+        "level": 3,
+        "id": "손쉬운-사용-권한이-없습니다",
+        "label": "손쉬운 사용 권한이 없습니다"
+      },
+      {
+        "level": 3,
+        "id": "채팅을-찾지-못합니다",
+        "label": "채팅을 찾지 못합니다"
+      },
+      {
+        "level": 3,
+        "id": "메시지-파싱이나-ax-경로가-불안정합니다",
+        "label": "메시지 파싱이나 AX 경로가 불안정합니다"
+      },
+      {
+        "level": 2,
+        "id": "개발과-릴리스",
+        "label": "개발과 릴리스"
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "pageKey": "usage",
+    "title": "kmsg Usage",
+    "source": "USAGE.md",
+    "sourceLabel": "USAGE.md",
+    "lastModified": "2026-07-31T02:58:39+09:00",
+    "html": "<p>This guide covers installation, first-run setup, every public CLI command,\nconfiguration, output formats, MCP operation, troubleshooting, and release\nmaintenance.</p>\n<h2 id=\"installation\"><a class=\"heading-anchor\" href=\"#installation\">Installation</a></h2>\n<h3 id=\"requirements\"><a class=\"heading-anchor\" href=\"#requirements\">Requirements</a></h3>\n<ul>\n<li>macOS 13 or later</li>\n<li>KakaoTalk for macOS</li>\n<li>Accessibility permission for the installed <code>kmsg</code> binary</li>\n</ul>\n<h3 id=\"homebrew\"><a class=\"heading-anchor\" href=\"#homebrew\">Homebrew</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">brew install channprj/tap/kmsg\n</code></pre>\n<p>The tap publishes <code>kmsg</code> for the latest release and retains exact-version\nformulae for the ten most recent published releases.</p>\n<p>Upgrade the current formula with:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\n</code></pre>\n<h3 id=\"direct-download\"><a class=\"heading-anchor\" href=\"#direct-download\">Direct download</a></h3>\n<p>The release workflow publishes a universal macOS binary named\n<code>kmsg-macos-universal</code>.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">mkdir -p ~/.local/bin\ncurl -fL \\\n  https://github.com/channprj/kmsg/releases/latest/download/kmsg-macos-universal \\\n  -o ~/.local/bin/kmsg\nchmod +x ~/.local/bin/kmsg\n</code></pre>\n<p>Ensure <code>~/.local/bin</code> is in <code>PATH</code>, then verify the binary:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg --version\n</code></pre>\n<h3 id=\"build-from-source\"><a class=\"heading-anchor\" href=\"#build-from-source\">Build from source</a></h3>\n<p>Source builds require Swift 6.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">git clone https://github.com/channprj/kmsg.git\ncd kmsg\nswift build -c release\ninstall -m 755 .build/release/kmsg ~/.local/bin/kmsg\n</code></pre>\n<h2 id=\"quick-start\"><a class=\"heading-anchor\" href=\"#quick-start\">Quick start</a></h2>\n<p>Run the environment check first:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg status\n</code></pre>\n<p>macOS may open the Accessibility settings pane. Enable the binary you actually\nrun, then retry <code>kmsg status</code>.</p>\n<p>List chats and read recent messages:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg chats\nkmsg read \"Chat name\" --limit 20\n</code></pre>\n<p>Preview a send without changing KakaoTalk:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg send \"Chat name\" \"Hello\" --dry-run\n</code></pre>\n<p>After verifying the target and message, omit <code>--dry-run</code> to send.</p>\n<h2 id=\"authentication\"><a class=\"heading-anchor\" href=\"#authentication\">Authentication</a></h2>\n<p>Commands that require interactive KakaoTalk access automatically check the\nlogin state. If saved credentials are unavailable, <code>kmsg</code> prompts in the\nterminal and stores them locally.</p>\n<p>Enter fresh credentials explicitly:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg auth login\n</code></pre>\n<p>Reuse stored credentials when available:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg auth login --auto\n</code></pre>\n<p>Add <code>--trace-ax</code> to print Accessibility traversal and retry diagnostics.</p>\n<p>The password is encrypted with AES-GCM. The credential document and encryption\nkey are stored separately with owner-only filesystem permissions:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">~/.config/kmsg/credentials.json\n~/.config/kmsg/credentials/primary.key\n</code></pre>\n<h2 id=\"command-reference\"><a class=\"heading-anchor\" href=\"#command-reference\">Command reference</a></h2>\n<h3 id=\"global-behavior\"><a class=\"heading-anchor\" href=\"#global-behavior\">Global behavior</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg\nkmsg --help\nkmsg --version\nkmsg -v\n</code></pre>\n<p>Running <code>kmsg</code> without a subcommand runs <code>status</code>.</p>\n<h3 id=\"status\"><a class=\"heading-anchor\" href=\"#status\"><code>status</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg status [--verbose]\n</code></pre>\n<p>Checks Accessibility permission, launches KakaoTalk if needed, verifies\nauthentication, and prints readiness information.</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--verbose</code></td>\n<td>Include window titles, indexes, positions, and sizes.</td>\n</tr>\n</tbody></table></div>\n<h3 id=\"auth-login\"><a class=\"heading-anchor\" href=\"#auth-login\"><code>auth login</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg auth login [--auto] [--trace-ax]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--auto</code></td>\n<td>Use stored credentials when available; otherwise prompt and save.</td>\n</tr>\n<tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and retry details to <code>stderr</code>.</td>\n</tr>\n</tbody></table></div>\n<p>Without <code>--auto</code>, the command prompts for fresh credentials and replaces the\nstored values.</p>\n<h3 id=\"chats\"><a class=\"heading-anchor\" href=\"#chats\"><code>chats</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg chats [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>-v</code>, <code>--verbose</code></td>\n<td>Include the last visible message preview.</td>\n</tr>\n<tr>\n<td><code>-l N</code>, <code>--limit N</code></td>\n<td>Return at most <code>N</code> chats. Default: <code>20</code>.</td>\n</tr>\n<tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and retry details.</td>\n</tr>\n<tr>\n<td><code>--json</code></td>\n<td>Return one structured JSON document.</td>\n</tr>\n<tr>\n<td><code>-k</code>, <code>--keep-window</code></td>\n<td>Keep a chat-list window that the command opened.</td>\n</tr>\n</tbody></table></div>\n<p>Each result includes a local synthetic <code>chat_id</code>. The registry is refreshed by\nrunning <code>kmsg chats</code> and stored at <code>~/.kmsg/chat-registry.json</code>.</p>\n<h3 id=\"read\"><a class=\"heading-anchor\" href=\"#read\"><code>read</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg read &lt;chat&gt; [options]\nkmsg read --chat-id &lt;chat-id&gt; [options]\n</code></pre>\n<p>A chat name and <code>--chat-id</code> are mutually exclusive.</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--chat-id ID</code></td>\n<td>Resolve a synthetic ID produced by <code>kmsg chats</code>.</td>\n</tr>\n<tr>\n<td><code>-l N</code>, <code>--limit N</code></td>\n<td>Maximum messages to return. Default: <code>20</code>.</td>\n</tr>\n<tr>\n<td><code>--debug</code></td>\n<td>Show compact raw parsing information in text output.</td>\n</tr>\n<tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and retry details.</td>\n</tr>\n<tr>\n<td><code>-k</code>, <code>--keep-window</code></td>\n<td>Keep a chat window opened by the command.</td>\n</tr>\n<tr>\n<td><code>--background-safe</code></td>\n<td>Read only an already exposed matching window without launching, activating, logging in, searching, opening, resizing, or closing UI.</td>\n</tr>\n<tr>\n<td><code>--deep-recovery</code></td>\n<td>Enable deeper window recovery after the fast path fails.</td>\n</tr>\n<tr>\n<td><code>--layout MODE</code></td>\n<td>Use <code>preserve</code>, <code>left</code>, <code>right</code>, <code>split-left</code>, or <code>split-right</code>. Default: <code>preserve</code>.</td>\n</tr>\n<tr>\n<td><code>--json</code></td>\n<td>Return one structured JSON document.</td>\n</tr>\n</tbody></table></div>\n<p>The name form supports partial matching. For repeated automation, use a\n<code>chat_id</code> after refreshing the registry with <code>kmsg chats</code>.</p>\n<p><code>--background-safe</code> is suitable for automation that must not disturb foreground\nwork, but it fails unless the matching chat window is already exposed.</p>\n<h4 id=\"if-background-safe-is-missing\"><a class=\"heading-anchor\" href=\"#if-background-safe-is-missing\">If <code>--background-safe</code> is missing</a></h4>\n<p>The CLI flag is available in kmsg <code>v1.260618.0</code> and later, and belongs only to\nthe <code>kmsg read</code> command. Check the binary that your shell actually resolves:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg --version\nkmsg read --help\n</code></pre>\n<p>If the help output does not list the flag, update the Homebrew installation and\ncheck again:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\nkmsg read --help\n</code></pre>\n<p>MCP clients use the JSON argument <code>background_safe: true</code> instead of the CLI\nspelling <code>--background-safe</code>.</p>\n<p>Messages whose author cannot be resolved are represented as <code>\"(me)\"</code>.</p>\n<h3 id=\"watch\"><a class=\"heading-anchor\" href=\"#watch\"><code>watch</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg watch &lt;chat&gt; [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--poll-interval S</code></td>\n<td>Poll interval in seconds. Default: <code>0.2</code>; values are clamped to <code>0.2...10.0</code>.</td>\n</tr>\n<tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and recovery details.</td>\n</tr>\n<tr>\n<td><code>-k</code>, <code>--keep-window</code></td>\n<td>Keep a chat window opened by the command.</td>\n</tr>\n<tr>\n<td><code>--deep-recovery</code></td>\n<td>Enable deeper recovery when fast window detection fails.</td>\n</tr>\n<tr>\n<td><code>--json</code></td>\n<td>Emit each event as a separate pretty-printed JSON object.</td>\n</tr>\n<tr>\n<td><code>--include-system</code></td>\n<td>Include system rows such as date separators.</td>\n</tr>\n</tbody></table></div>\n<p>At startup, <code>watch</code> stabilizes a transcript baseline for up to two seconds and\ndoes not replay the existing history. Rows that cannot be assigned a safe\ntimestamp may be suppressed during startup.</p>\n<p>Stop the process with Ctrl-C or <code>SIGTERM</code>.</p>\n<h3 id=\"send\"><a class=\"heading-anchor\" href=\"#send\"><code>send</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg send &lt;recipient&gt; &lt;message&gt; [options]\nkmsg send --chat-id &lt;chat-id&gt; &lt;message&gt; [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--chat-id ID</code></td>\n<td>Resolve a synthetic ID produced by <code>kmsg chats</code>.</td>\n</tr>\n<tr>\n<td><code>--dry-run</code></td>\n<td>Print the target and message without accessing or changing KakaoTalk.</td>\n</tr>\n<tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and retry details.</td>\n</tr>\n<tr>\n<td><code>--no-cache</code></td>\n<td>Disable AX path cache use for this invocation.</td>\n</tr>\n<tr>\n<td><code>--refresh-cache</code></td>\n<td>Remove relevant cached paths before sending.</td>\n</tr>\n<tr>\n<td><code>-k</code>, <code>--keep-window</code></td>\n<td>Keep chat and list windows opened by the command.</td>\n</tr>\n<tr>\n<td><code>--deep-recovery</code></td>\n<td>Enable deeper recovery after the fast path fails.</td>\n</tr>\n</tbody></table></div>\n<p>Without <code>--keep-window</code>, windows opened transiently by the command are closed\nafter the send attempt.</p>\n<h3 id=\"send-image\"><a class=\"heading-anchor\" href=\"#send-image\"><code>send-image</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg send-image &lt;recipient&gt; &lt;image-path&gt; [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and retry details.</td>\n</tr>\n<tr>\n<td><code>--no-cache</code></td>\n<td>Disable AX path cache use for this invocation.</td>\n</tr>\n<tr>\n<td><code>-k</code>, <code>--keep-window</code></td>\n<td>Keep chat and list windows opened by the command.</td>\n</tr>\n<tr>\n<td><code>--deep-recovery</code></td>\n<td>Enable deeper recovery after the fast path fails.</td>\n</tr>\n</tbody></table></div>\n<p>The path must point to a readable image. <code>kmsg</code> loads the image into the macOS\npasteboard and completes KakaoTalk's image-send UI.</p>\n<h3 id=\"inspect\"><a class=\"heading-anchor\" href=\"#inspect\"><code>inspect</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg inspect [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>-d N</code>, <code>--depth N</code></td>\n<td>Maximum hierarchy depth. Default: <code>4</code>.</td>\n</tr>\n<tr>\n<td><code>-w N</code>, <code>--window N</code></td>\n<td>Inspect a window by zero-based index.</td>\n</tr>\n<tr>\n<td><code>--show-attributes</code></td>\n<td>Print available AX attributes.</td>\n</tr>\n<tr>\n<td><code>--show-path</code></td>\n<td>Print the hierarchy path.</td>\n</tr>\n<tr>\n<td><code>--show-frame</code></td>\n<td>Print element frames.</td>\n</tr>\n<tr>\n<td><code>--show-index</code></td>\n<td>Print sibling indexes.</td>\n</tr>\n<tr>\n<td><code>--show-flags</code></td>\n<td>Print enabled, focused, selected, and editable state.</td>\n</tr>\n<tr>\n<td><code>--show-actions</code></td>\n<td>Print supported AX actions.</td>\n</tr>\n<tr>\n<td><code>--debug-layout</code></td>\n<td>Enable path, frame, index, and state output together.</td>\n</tr>\n<tr>\n<td><code>--row-summary</code></td>\n<td>Print message-row parsing diagnostics.</td>\n</tr>\n<tr>\n<td><code>--row-range A:B</code></td>\n<td>Limit row summaries to an inclusive zero-based range.</td>\n</tr>\n</tbody></table></div>\n<p><code>--row-range</code> applies only with <code>--row-summary</code>.</p>\n<h3 id=\"cache\"><a class=\"heading-anchor\" href=\"#cache\"><code>cache</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg cache\nkmsg cache status\nkmsg cache clear\nkmsg cache export &lt;output-path&gt;\nkmsg cache import &lt;input-path&gt;\nkmsg cache warmup [options]\n</code></pre>\n<p>Running <code>kmsg cache</code> without a subcommand runs <code>cache status</code>.</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Subcommand</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>status</code></td>\n<td>Show path, schema, KakaoTalk fingerprint, entry count, and update time.</td>\n</tr>\n<tr>\n<td><code>clear</code></td>\n<td>Delete the local AX path cache.</td>\n</tr>\n<tr>\n<td><code>export PATH</code></td>\n<td>Export the current cache document as JSON.</td>\n</tr>\n<tr>\n<td><code>import PATH</code></td>\n<td>Import JSON after schema and KakaoTalk fingerprint validation.</td>\n</tr>\n<tr>\n<td><code>warmup</code></td>\n<td>Discover and store common chat-list, search, and input paths.</td>\n</tr>\n</tbody></table></div>\n<p><code>cache warmup</code> accepts:</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Option</th>\n<th>Description</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--recipient NAME</code></td>\n<td>Also warm the chat-open and message-input path for a recipient.</td>\n</tr>\n<tr>\n<td><code>--trace-ax</code></td>\n<td>Print AX traversal and retry details.</td>\n</tr>\n<tr>\n<td><code>-k</code>, <code>--keep-window</code></td>\n<td>Keep a chat window opened by warmup.</td>\n</tr>\n</tbody></table></div>\n<h3 id=\"mcp-server\"><a class=\"heading-anchor\" href=\"#mcp-server\"><code>mcp-server</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg mcp-server\n</code></pre>\n<p>Starts the native stdio MCP server. It accepts both <code>Content-Length</code> framing and\none JSON-RPC request per line, and responds using the request's transport style.</p>\n<p>The server exposes:</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Tool</th>\n<th>Purpose</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg_read</code></td>\n<td>Read by <code>chat</code> or <code>chat_id</code>, with limit, layout, recovery, background-safe, window, and trace controls.</td>\n</tr>\n<tr>\n<td><code>kmsg_send</code></td>\n<td>Send a text message by chat name.</td>\n</tr>\n<tr>\n<td><code>kmsg_send_image</code></td>\n<td>Send a local image by chat name.</td>\n</tr>\n</tbody></table></div>\n<p>For send tools, <code>confirm=false</code> or an omitted <code>confirm</code> sends immediately.\n<code>confirm=true</code> does not send; it returns <code>CONFIRMATION_REQUIRED</code> so a supervisor\ncan request approval and call again.</p>\n<p>See <a href=\"/kmsg/en/mcp/\">docs/openclaw.md</a> for complete integration examples.</p>\n<h2 id=\"json-output\"><a class=\"heading-anchor\" href=\"#json-output\">JSON output</a></h2>\n<h3 id=\"chats-2\"><a class=\"heading-anchor\" href=\"#chats-2\">Chats</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg chats --json\n</code></pre>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"count\": 1,\n  \"chats\": [\n    {\n      \"title\": \"홍길동\",\n      \"chat_id\": \"chat_7f42c5e1d9ab\",\n      \"last_message\": \"곧 도착해요\"\n    }\n  ]\n}\n</code></pre>\n<h3 id=\"read-2\"><a class=\"heading-anchor\" href=\"#read-2\">Read</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg read \"홍길동\" --limit 20 --json\n</code></pre>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"chat\": \"홍길동\",\n  \"fetched_at\": \"2026-02-26T01:23:45.678Z\",\n  \"count\": 1,\n  \"messages\": [\n    {\n      \"author\": \"홍길동\",\n      \"time_raw\": \"00:27\",\n      \"date\": \"2026-02-26\",\n      \"body\": \"밤이 깊었네\",\n      \"has_image\": false,\n      \"image_count\": 0,\n      \"link_count\": 0,\n      \"has_attachment\": false,\n      \"attachment_count\": 0\n    }\n  ]\n}\n</code></pre>\n<p><code>date</code> and <code>time_raw</code> may be absent when KakaoTalk does not expose the\ncorresponding metadata.</p>\n<h3 id=\"watch-2\"><a class=\"heading-anchor\" href=\"#watch-2\">Watch</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg watch \"홍길동\" --json\n</code></pre>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"chat\": \"홍길동\",\n  \"detected_at\": \"2026-03-25T10:20:30.123Z\",\n  \"event\": \"message\",\n  \"message\": {\n    \"author\": \"홍길동\",\n    \"time_raw\": \"10:20\",\n    \"body\": \"새 메시지\",\n    \"has_image\": false,\n    \"image_count\": 0,\n    \"link_count\": 0,\n    \"has_attachment\": false,\n    \"attachment_count\": 0\n  }\n}\n</code></pre>\n<p>With <code>--include-system</code>, <code>event</code> may be <code>\"system\"</code>.</p>\n<p>JSON payloads are written to <code>stdout</code>. <code>--trace-ax</code> diagnostics remain on\n<code>stderr</code>.</p>\n<h2 id=\"configuration\"><a class=\"heading-anchor\" href=\"#configuration\">Configuration</a></h2>\n<h3 id=\"environment-variables\"><a class=\"heading-anchor\" href=\"#environment-variables\">Environment variables</a></h3>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Variable</th>\n<th>Default</th>\n<th>Behavior</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>KMSG_AX_TIMEOUT</code></td>\n<td><code>0.25</code></td>\n<td>AX messaging timeout in seconds. Accepted range: <code>0.05...5.0</code>; invalid values fall back to the default.</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_DEEP_RECOVERY</code></td>\n<td><code>false</code></td>\n<td>Default <code>deep_recovery</code> value for MCP tools.</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_BACKGROUND_SAFE</code></td>\n<td><code>false</code></td>\n<td>Default <code>background_safe</code> value for <code>kmsg_read</code>.</td>\n</tr>\n<tr>\n<td><code>KMSG_TRACE_DEFAULT</code></td>\n<td><code>false</code></td>\n<td>Default <code>trace_ax</code> value for MCP tools.</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_READ_LAYOUT</code></td>\n<td><code>preserve</code></td>\n<td>Default MCP read layout: <code>preserve</code>, <code>left</code>, <code>right</code>, <code>split-left</code>, or <code>split-right</code>.</td>\n</tr>\n<tr>\n<td><code>KMSG_MCP_STARTUP_STATUS_CHECK</code></td>\n<td><code>false</code></td>\n<td>When <code>true</code>, MCP initialization also runs <code>kmsg status</code>; otherwise it checks only the binary version.</td>\n</tr>\n<tr>\n<td><code>KMSG_MCP_VERSION</code></td>\n<td>build version</td>\n<td>Overrides MCP server version metadata.</td>\n</tr>\n</tbody></table></div>\n<p>Example:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">KMSG_DEFAULT_BACKGROUND_SAFE=true \\\nKMSG_DEFAULT_READ_LAYOUT=split-right \\\nkmsg mcp-server\n</code></pre>\n<h3 id=\"local-state\"><a class=\"heading-anchor\" href=\"#local-state\">Local state</a></h3>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Path</th>\n<th>Contents</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>~/.config/kmsg/credentials.json</code></td>\n<td>Encrypted credential document.</td>\n</tr>\n<tr>\n<td><code>~/.config/kmsg/credentials/primary.key</code></td>\n<td>Local AES-GCM key.</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/chat-registry.json</code></td>\n<td>Synthetic chat identities.</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/ax-cache.json</code></td>\n<td>Self-healing AX paths.</td>\n</tr>\n</tbody></table></div>\n<p>Do not publish these files or include their contents in issue reports.</p>\n<h2 id=\"examples\"><a class=\"heading-anchor\" href=\"#examples\">Examples</a></h2>\n<p>Read without disturbing foreground windows:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg read \"홍길동\" --json --background-safe\n</code></pre>\n<p>Read by synthetic ID and arrange the window on the right:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg chats --json\nkmsg read --chat-id \"chat_7f42c5e1d9ab\" \\\n  --layout split-right \\\n  --limit 50 \\\n  --json\n</code></pre>\n<p>Watch for new messages:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg watch \"홍길동\" --json --poll-interval 0.5\n</code></pre>\n<p>Preview and then send:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg send \"홍길동\" \"안녕하세요\" --dry-run\nkmsg send \"홍길동\" \"안녕하세요\"\n</code></pre>\n<p>Warm and inspect the AX cache:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg cache warmup --recipient \"홍길동\" --trace-ax\nkmsg cache status\n</code></pre>\n<p>Collect parsing diagnostics:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg inspect --window 0 --depth 20 --debug-layout\nkmsg inspect --window 0 --depth 20 --row-summary --row-range 10:30\nkmsg read \"홍길동\" --limit 20 --trace-ax\n</code></pre>\n<h2 id=\"troubleshooting\"><a class=\"heading-anchor\" href=\"#troubleshooting\">Troubleshooting</a></h2>\n<h3 id=\"accessibility-permission-is-not-granted\"><a class=\"heading-anchor\" href=\"#accessibility-permission-is-not-granted\">Accessibility permission is not granted</a></h3>\n<ol>\n<li>Run <code>kmsg status</code>.</li>\n<li>Open <strong>System Settings → Privacy &amp; Security → Accessibility</strong>.</li>\n<li>Add or enable the exact <code>kmsg</code> binary you run.</li>\n<li>Retry <code>kmsg status</code>.</li>\n</ol>\n<p>A rebuilt or moved binary may need to be added again.</p>\n<h3 id=\"kakaotalk-cannot-be-launched-or-has-no-usable-window\"><a class=\"heading-anchor\" href=\"#kakaotalk-cannot-be-launched-or-has-no-usable-window\">KakaoTalk cannot be launched or has no usable window</a></h3>\n<p>Open KakaoTalk manually, complete login if necessary, and run:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg status --verbose\n</code></pre>\n<p>Use <code>--deep-recovery</code> only when the normal fast path cannot recover a window.</p>\n<h3 id=\"a-chat-name-or-chat-id-is-not-found\"><a class=\"heading-anchor\" href=\"#a-chat-name-or-chat-id-is-not-found\">A chat name or <code>chat_id</code> is not found</a></h3>\n<p>Refresh local identities:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg chats --json\n</code></pre>\n<p>A renamed room receives a new local identity. If duplicate rooms have the same\nname, prefer the <code>chat_id</code> values produced from the current chat list.</p>\n<h3 id=\"background-safe-read-fails\"><a class=\"heading-anchor\" href=\"#background-safe-read-fails\">Background-safe read fails</a></h3>\n<p><code>--background-safe</code> never opens or searches for a chat. Expose the target chat\nwindow first, or omit the flag when foreground automation is acceptable.</p>\n<h3 id=\"messages-cannot-be-parsed\"><a class=\"heading-anchor\" href=\"#messages-cannot-be-parsed\">Messages cannot be parsed</a></h3>\n<p>Collect both hierarchy and trace evidence:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg inspect --window 0 --depth 20 --row-summary\nkmsg read \"Chat name\" --trace-ax\n</code></pre>\n<p>Attach the relevant output to an issue after removing private message content.</p>\n<h3 id=\"cached-paths-appear-stale\"><a class=\"heading-anchor\" href=\"#cached-paths-appear-stale\">Cached paths appear stale</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg cache status\nkmsg cache clear\n</code></pre>\n<p>Verify target and message parsing without touching KakaoTalk:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg send \"Chat name\" \"Test\" --dry-run\n</code></pre>\n<p><code>--dry-run</code> exits before KakaoTalk access. If a real test send is acceptable,\nretry that send with <code>--no-cache</code> to compare the uncached UI path:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg send \"Chat name\" \"Test\" --no-cache\n</code></pre>\n<h3 id=\"mcp-initialization-fails\"><a class=\"heading-anchor\" href=\"#mcp-initialization-fails\">MCP initialization fails</a></h3>\n<p>Verify the binary directly:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg --version\nkmsg status\nkmsg mcp-server\n</code></pre>\n<p>The MCP server skips the interactive status check by default. Set\n<code>KMSG_MCP_STARTUP_STATUS_CHECK=true</code> only when startup should validate full\nKakaoTalk readiness.</p>\n<h2 id=\"development-and-releases\"><a class=\"heading-anchor\" href=\"#development-and-releases\">Development and releases</a></h2>\n<p>Build debug and release variants:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">swift build\nswift build -c release\n.build/debug/kmsg --version\n</code></pre>\n<p>Useful manual checks:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">.build/debug/kmsg status --verbose\n.build/debug/kmsg inspect --depth 5\n.build/debug/kmsg chats --verbose --limit 20\n.build/debug/kmsg send \"Name\" \"Message\" --dry-run\n.build/debug/kmsg read \"Chat\" --limit 50\n</code></pre>\n<p>The root <code>VERSION</code> file is managed through Headatever-backed make targets:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">make version\nmake release\nmake release-major\nmake release-push\n</code></pre>\n<p>Do not hand-edit <code>VERSION</code>. See <a href=\"/kmsg/en/versioning/\">VERSIONING.md</a> for the\n<code>MAJOR.YYMMDD.PATCH_COUNT</code> rules.</p>\n<p>Pushing a matching <code>v*</code> tag triggers the release workflow, which:</p>\n<ol>\n<li>Builds arm64 and x86_64 release binaries.</li>\n<li>combines them as <code>kmsg-macos-universal</code>;</li>\n<li>verifies the embedded version against the tag;</li>\n<li>creates or updates the GitHub Release; and</li>\n<li>synchronizes the required Homebrew tap metadata.</li>\n</ol>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "installation",
+        "label": "Installation"
+      },
+      {
+        "level": 3,
+        "id": "requirements",
+        "label": "Requirements"
+      },
+      {
+        "level": 3,
+        "id": "homebrew",
+        "label": "Homebrew"
+      },
+      {
+        "level": 3,
+        "id": "direct-download",
+        "label": "Direct download"
+      },
+      {
+        "level": 3,
+        "id": "build-from-source",
+        "label": "Build from source"
+      },
+      {
+        "level": 2,
+        "id": "quick-start",
+        "label": "Quick start"
+      },
+      {
+        "level": 2,
+        "id": "authentication",
+        "label": "Authentication"
+      },
+      {
+        "level": 2,
+        "id": "command-reference",
+        "label": "Command reference"
+      },
+      {
+        "level": 3,
+        "id": "global-behavior",
+        "label": "Global behavior"
+      },
+      {
+        "level": 3,
+        "id": "status",
+        "label": "status"
+      },
+      {
+        "level": 3,
+        "id": "auth-login",
+        "label": "auth login"
+      },
+      {
+        "level": 3,
+        "id": "chats",
+        "label": "chats"
+      },
+      {
+        "level": 3,
+        "id": "read",
+        "label": "read"
+      },
+      {
+        "level": 4,
+        "id": "if-background-safe-is-missing",
+        "label": "If --background-safe is missing"
+      },
+      {
+        "level": 3,
+        "id": "watch",
+        "label": "watch"
+      },
+      {
+        "level": 3,
+        "id": "send",
+        "label": "send"
+      },
+      {
+        "level": 3,
+        "id": "send-image",
+        "label": "send-image"
+      },
+      {
+        "level": 3,
+        "id": "inspect",
+        "label": "inspect"
+      },
+      {
+        "level": 3,
+        "id": "cache",
+        "label": "cache"
+      },
+      {
+        "level": 3,
+        "id": "mcp-server",
+        "label": "mcp-server"
+      },
+      {
+        "level": 2,
+        "id": "json-output",
+        "label": "JSON output"
+      },
+      {
+        "level": 3,
+        "id": "chats-2",
+        "label": "Chats"
+      },
+      {
+        "level": 3,
+        "id": "read-2",
+        "label": "Read"
+      },
+      {
+        "level": 3,
+        "id": "watch-2",
+        "label": "Watch"
+      },
+      {
+        "level": 2,
+        "id": "configuration",
+        "label": "Configuration"
+      },
+      {
+        "level": 3,
+        "id": "environment-variables",
+        "label": "Environment variables"
+      },
+      {
+        "level": 3,
+        "id": "local-state",
+        "label": "Local state"
+      },
+      {
+        "level": 2,
+        "id": "examples",
+        "label": "Examples"
+      },
+      {
+        "level": 2,
+        "id": "troubleshooting",
+        "label": "Troubleshooting"
+      },
+      {
+        "level": 3,
+        "id": "accessibility-permission-is-not-granted",
+        "label": "Accessibility permission is not granted"
+      },
+      {
+        "level": 3,
+        "id": "kakaotalk-cannot-be-launched-or-has-no-usable-window",
+        "label": "KakaoTalk cannot be launched or has no usable window"
+      },
+      {
+        "level": 3,
+        "id": "a-chat-name-or-chat-id-is-not-found",
+        "label": "A chat name or chat_id is not found"
+      },
+      {
+        "level": 3,
+        "id": "background-safe-read-fails",
+        "label": "Background-safe read fails"
+      },
+      {
+        "level": 3,
+        "id": "messages-cannot-be-parsed",
+        "label": "Messages cannot be parsed"
+      },
+      {
+        "level": 3,
+        "id": "cached-paths-appear-stale",
+        "label": "Cached paths appear stale"
+      },
+      {
+        "level": 3,
+        "id": "mcp-initialization-fails",
+        "label": "MCP initialization fails"
+      },
+      {
+        "level": 2,
+        "id": "development-and-releases",
+        "label": "Development and releases"
+      }
+    ]
+  },
+  {
+    "locale": "jp",
+    "pageKey": "usage",
+    "title": "kmsgの使い方",
+    "source": "site/content/jp/usage.md",
+    "sourceLabel": "site/content/jp/usage.md",
+    "lastModified": "2026-07-31T02:58:39+09:00",
+    "html": "<p>このページでは、インストールからメッセージの読み取り・送信、MCPサーバー、トラブルシューティングまでの主要な操作を説明します。全オプションは<a href=\"https://github.com/channprj/kmsg/blob/main/USAGE.md\" target=\"_blank\" rel=\"noopener noreferrer\">英語版リファレンス</a>で確認できます。</p>\n<h2 id=\"インストール\"><a class=\"heading-anchor\" href=\"#インストール\">インストール</a></h2>\n<h3 id=\"必要な環境\"><a class=\"heading-anchor\" href=\"#必要な環境\">必要な環境</a></h3>\n<ul>\n<li>macOS 13以降</li>\n<li>macOS版KakaoTalk</li>\n<li>実際に実行する<code>kmsg</code>バイナリへのアクセシビリティ権限</li>\n</ul>\n<h3 id=\"homebrew\"><a class=\"heading-anchor\" href=\"#homebrew\">Homebrew</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">brew install channprj/tap/kmsg\n</code></pre>\n<p>アップデート:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\n</code></pre>\n<h3 id=\"ソースからビルド\"><a class=\"heading-anchor\" href=\"#ソースからビルド\">ソースからビルド</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">git clone https://github.com/channprj/kmsg.git\ncd kmsg\nswift build -c release\ninstall -m 755 .build/release/kmsg ~/.local/bin/kmsg\n</code></pre>\n<h2 id=\"クイックスタート\"><a class=\"heading-anchor\" href=\"#クイックスタート\">クイックスタート</a></h2>\n<p>最初に権限とKakaoTalkの状態を確認します。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg status --verbose\n</code></pre>\n<p>チャット一覧を取得し、最近のメッセージを読みます。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg chats --limit 20\nkmsg read \"チャット名\" --limit 20\n</code></pre>\n<p>送信前に対象と内容を確認します。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg send \"チャット名\" \"こんにちは\" --dry-run\n</code></pre>\n<p><code>--dry-run</code>はKakaoTalk UIへアクセスする前に終了するため、メッセージを送信しません。</p>\n<h2 id=\"ログインと権限\"><a class=\"heading-anchor\" href=\"#ログインと権限\">ログインと権限</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg auth login\nkmsg auth login --auto\n</code></pre>\n<p>パスワードはAES-GCMで暗号化され、認証情報と鍵は所有者だけが読める別々のファイルに保存されます。これらのファイルを公開しないでください。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-text\">~/.config/kmsg/credentials.json\n~/.config/kmsg/credentials/primary.key\n</code></pre>\n<h2 id=\"コマンド一覧\"><a class=\"heading-anchor\" href=\"#コマンド一覧\">コマンド一覧</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>コマンド</th>\n<th>用途</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg status</code></td>\n<td>権限、KakaoTalk、ログイン、準備状態を確認</td>\n</tr>\n<tr>\n<td><code>kmsg auth login</code></td>\n<td>認証情報を入力または再利用</td>\n</tr>\n<tr>\n<td><code>kmsg chats</code></td>\n<td>チャット一覧とローカル<code>chat_id</code>を取得</td>\n</tr>\n<tr>\n<td><code>kmsg read</code></td>\n<td>最近のメッセージを読み取る</td>\n</tr>\n<tr>\n<td><code>kmsg watch</code></td>\n<td>新着メッセージを継続監視</td>\n</tr>\n<tr>\n<td><code>kmsg send</code></td>\n<td>テキストメッセージを送信</td>\n</tr>\n<tr>\n<td><code>kmsg send-image</code></td>\n<td>画像を送信</td>\n</tr>\n<tr>\n<td><code>kmsg inspect</code></td>\n<td>AX階層を調査</td>\n</tr>\n<tr>\n<td><code>kmsg cache</code></td>\n<td>AXパスキャッシュを管理</td>\n</tr>\n<tr>\n<td><code>kmsg mcp-server</code></td>\n<td>ネイティブstdio MCPサーバーを起動</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"安全な読み取り\"><a class=\"heading-anchor\" href=\"#安全な読み取り\">安全な読み取り</a></h2>\n<p>前面での作業を妨げたくない場合は<code>--background-safe</code>を使います。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg read \"チャット名\" --json --background-safe\n</code></pre>\n<p>このモードはKakaoTalkの起動・アクティブ化・ログイン・検索・ウィンドウ操作を行いません。対象のチャットウィンドウがすでに表示されていなければ失敗します。</p>\n<h3 id=\"background-safe-が表示されない場合\"><a class=\"heading-anchor\" href=\"#background-safe-が表示されない場合\"><code>--background-safe</code>が表示されない場合</a></h3>\n<p>このCLIフラグはkmsg <code>v1.260618.0</code>以降で提供され、<code>kmsg read</code>コマンドでのみ使用できます。現在のシェルが実行するバイナリを確認してください。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg --version\nkmsg read --help\n</code></pre>\n<p>ヘルプにフラグが表示されない場合は、Homebrew版を更新して再確認します。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\nkmsg read --help\n</code></pre>\n<p>MCPクライアントでは、CLI表記の<code>--background-safe</code>ではなくJSON引数<code>background_safe: true</code>を使用します。</p>\n<h2 id=\"送信\"><a class=\"heading-anchor\" href=\"#送信\">送信</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg send &lt;recipient&gt; &lt;message&gt; [options]\nkmsg send --chat-id &lt;chat-id&gt; &lt;message&gt; [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>オプション</th>\n<th>動作</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--dry-run</code></td>\n<td>UIを操作せず、対象と内容だけを表示</td>\n</tr>\n<tr>\n<td><code>--chat-id ID</code></td>\n<td><code>kmsg chats</code>が生成したローカルIDを利用</td>\n</tr>\n<tr>\n<td><code>--keep-window</code></td>\n<td>コマンドが開いたチャットを維持</td>\n</tr>\n<tr>\n<td><code>--no-cache</code></td>\n<td>関連AXキャッシュを破棄して再探索</td>\n</tr>\n<tr>\n<td><code>--layout MODE</code></td>\n<td>ウィンドウ配置を指定</td>\n</tr>\n</tbody></table></div>\n<p>画像送信:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg send-image \"チャット名\" /absolute/path/image.png --dry-run\n</code></pre>\n<h2 id=\"jsonとmcp\"><a class=\"heading-anchor\" href=\"#jsonとmcp\">JSONとMCP</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg chats --json\nkmsg read \"チャット名\" --json\nkmsg watch \"チャット名\" --json\n</code></pre>\n<p>構造化結果は<code>stdout</code>、AX診断は<code>stderr</code>に出力されます。</p>\n<p>MCPサーバーは次のツールを公開します。</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>ツール</th>\n<th>用途</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg_read</code></td>\n<td>最近のメッセージを読み取る</td>\n</tr>\n<tr>\n<td><code>kmsg_send</code></td>\n<td>テキストを送信</td>\n</tr>\n<tr>\n<td><code>kmsg_send_image</code></td>\n<td>ローカル画像を送信</td>\n</tr>\n</tbody></table></div>\n<p>送信ツールでは、<code>confirm=true</code>は送信せず<code>CONFIRMATION_REQUIRED</code>を返します。<code>confirm=false</code>または省略時は即時送信です。</p>\n<h2 id=\"主な環境変数\"><a class=\"heading-anchor\" href=\"#主な環境変数\">主な環境変数</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>変数</th>\n<th>既定値</th>\n<th>説明</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>KMSG_MCP_KMSG_PATH</code></td>\n<td>現在の実行ファイル</td>\n<td>MCPサーバーが呼び出すパス</td>\n</tr>\n<tr>\n<td><code>KMSG_MCP_TIMEOUT_SECONDS</code></td>\n<td><code>30</code></td>\n<td>サブプロセスの制限時間</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_LAYOUT</code></td>\n<td><code>preserve</code></td>\n<td>既定のウィンドウ配置</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_BACKGROUND_SAFE</code></td>\n<td><code>false</code></td>\n<td>安全な読み取りの既定値</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_DEEP_RECOVERY</code></td>\n<td><code>false</code></td>\n<td>深い復旧の既定値</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"トラブルシューティング\"><a class=\"heading-anchor\" href=\"#トラブルシューティング\">トラブルシューティング</a></h2>\n<h3 id=\"アクセシビリティ権限がない\"><a class=\"heading-anchor\" href=\"#アクセシビリティ権限がない\">アクセシビリティ権限がない</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg status\n</code></pre>\n<p>システム設定で、実際に実行しているバイナリを許可します。Homebrew版とローカルビルドは別のバイナリとして扱われる場合があります。</p>\n<h3 id=\"チャットが見つからない\"><a class=\"heading-anchor\" href=\"#チャットが見つからない\">チャットが見つからない</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg chats --verbose --limit 50\nkmsg cache clear\nkmsg read \"正確なチャット名\" --deep-recovery\n</code></pre>\n<p>繰り返し実行する自動化では、<code>kmsg chats</code>でレジストリを更新し<code>chat_id</code>を利用すると安定します。</p>\n<h3 id=\"ui構造が変わった\"><a class=\"heading-anchor\" href=\"#ui構造が変わった\">UI構造が変わった</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg read \"チャット名\" --debug --trace-ax\nkmsg inspect --depth 5\nkmsg cache stats\n</code></pre>\n<p>KakaoTalk更新後はキャッシュを消去して再探索してください。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "インストール",
+        "label": "インストール"
+      },
+      {
+        "level": 3,
+        "id": "必要な環境",
+        "label": "必要な環境"
+      },
+      {
+        "level": 3,
+        "id": "homebrew",
+        "label": "Homebrew"
+      },
+      {
+        "level": 3,
+        "id": "ソースからビルド",
+        "label": "ソースからビルド"
+      },
+      {
+        "level": 2,
+        "id": "クイックスタート",
+        "label": "クイックスタート"
+      },
+      {
+        "level": 2,
+        "id": "ログインと権限",
+        "label": "ログインと権限"
+      },
+      {
+        "level": 2,
+        "id": "コマンド一覧",
+        "label": "コマンド一覧"
+      },
+      {
+        "level": 2,
+        "id": "安全な読み取り",
+        "label": "安全な読み取り"
+      },
+      {
+        "level": 3,
+        "id": "background-safe-が表示されない場合",
+        "label": "--background-safe が表示されない場合"
+      },
+      {
+        "level": 2,
+        "id": "送信",
+        "label": "送信"
+      },
+      {
+        "level": 2,
+        "id": "jsonとmcp",
+        "label": "JSONとMCP"
+      },
+      {
+        "level": 2,
+        "id": "主な環境変数",
+        "label": "主な環境変数"
+      },
+      {
+        "level": 2,
+        "id": "トラブルシューティング",
+        "label": "トラブルシューティング"
+      },
+      {
+        "level": 3,
+        "id": "アクセシビリティ権限がない",
+        "label": "アクセシビリティ権限がない"
+      },
+      {
+        "level": 3,
+        "id": "チャットが見つからない",
+        "label": "チャットが見つからない"
+      },
+      {
+        "level": 3,
+        "id": "ui構造が変わった",
+        "label": "UI構造が変わった"
+      }
+    ]
+  },
+  {
+    "locale": "cn",
+    "pageKey": "usage",
+    "title": "kmsg使用指南",
+    "source": "site/content/cn/usage.md",
+    "sourceLabel": "site/content/cn/usage.md",
+    "lastModified": "2026-07-31T02:58:39+09:00",
+    "html": "<p>本页介绍安装、消息读取与发送、MCP服务器以及常见故障处理。全部参数与最新契约请参阅<a href=\"https://github.com/channprj/kmsg/blob/main/USAGE.md\" target=\"_blank\" rel=\"noopener noreferrer\">英文完整参考</a>。</p>\n<h2 id=\"安装\"><a class=\"heading-anchor\" href=\"#安装\">安装</a></h2>\n<h3 id=\"环境要求\"><a class=\"heading-anchor\" href=\"#环境要求\">环境要求</a></h3>\n<ul>\n<li>macOS 13或更高版本</li>\n<li>macOS版KakaoTalk</li>\n<li>为实际运行的<code>kmsg</code>二进制授予辅助功能权限</li>\n</ul>\n<h3 id=\"homebrew\"><a class=\"heading-anchor\" href=\"#homebrew\">Homebrew</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">brew install channprj/tap/kmsg\n</code></pre>\n<p>更新:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\n</code></pre>\n<h3 id=\"从源码构建\"><a class=\"heading-anchor\" href=\"#从源码构建\">从源码构建</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">git clone https://github.com/channprj/kmsg.git\ncd kmsg\nswift build -c release\ninstall -m 755 .build/release/kmsg ~/.local/bin/kmsg\n</code></pre>\n<h2 id=\"快速开始\"><a class=\"heading-anchor\" href=\"#快速开始\">快速开始</a></h2>\n<p>首先检查权限和KakaoTalk状态。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg status --verbose\n</code></pre>\n<p>列出聊天并读取最近消息。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg chats --limit 20\nkmsg read \"聊天名称\" --limit 20\n</code></pre>\n<p>发送前先检查目标与内容。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg send \"聊天名称\" \"你好\" --dry-run\n</code></pre>\n<p><code>--dry-run</code>会在访问KakaoTalk UI之前结束，因此不会发送消息。</p>\n<h2 id=\"登录与权限\"><a class=\"heading-anchor\" href=\"#登录与权限\">登录与权限</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg auth login\nkmsg auth login --auto\n</code></pre>\n<p>密码使用AES-GCM加密，凭据和密钥分别存放在仅所有者可访问的文件中。请勿公开或上传这些文件。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-text\">~/.config/kmsg/credentials.json\n~/.config/kmsg/credentials/primary.key\n</code></pre>\n<h2 id=\"命令概览\"><a class=\"heading-anchor\" href=\"#命令概览\">命令概览</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>命令</th>\n<th>用途</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg status</code></td>\n<td>检查权限、KakaoTalk、登录和就绪状态</td>\n</tr>\n<tr>\n<td><code>kmsg auth login</code></td>\n<td>输入或复用凭据</td>\n</tr>\n<tr>\n<td><code>kmsg chats</code></td>\n<td>获取聊天列表与本地<code>chat_id</code></td>\n</tr>\n<tr>\n<td><code>kmsg read</code></td>\n<td>读取最近消息</td>\n</tr>\n<tr>\n<td><code>kmsg watch</code></td>\n<td>持续监控新消息</td>\n</tr>\n<tr>\n<td><code>kmsg send</code></td>\n<td>发送文本消息</td>\n</tr>\n<tr>\n<td><code>kmsg send-image</code></td>\n<td>发送图片</td>\n</tr>\n<tr>\n<td><code>kmsg inspect</code></td>\n<td>检查AX层级</td>\n</tr>\n<tr>\n<td><code>kmsg cache</code></td>\n<td>管理AX路径缓存</td>\n</tr>\n<tr>\n<td><code>kmsg mcp-server</code></td>\n<td>启动原生stdio MCP服务器</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"安全读取\"><a class=\"heading-anchor\" href=\"#安全读取\">安全读取</a></h2>\n<p>不希望打断前台工作时，可使用<code>--background-safe</code>。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg read \"聊天名称\" --json --background-safe\n</code></pre>\n<p>此模式不会启动或激活KakaoTalk，也不会登录、搜索、打开、调整或关闭窗口。如果匹配的聊天窗口尚未显示，读取会失败。</p>\n<h3 id=\"找不到-background-safe-时\"><a class=\"heading-anchor\" href=\"#找不到-background-safe-时\">找不到<code>--background-safe</code>时</a></h3>\n<p>此CLI标志从kmsg <code>v1.260618.0</code>开始提供，并且仅适用于<code>kmsg read</code>命令。请先确认当前Shell实际执行的二进制文件：</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg --version\nkmsg read --help\n</code></pre>\n<p>如果帮助中没有此标志，请更新Homebrew安装后再次检查：</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">brew update\nbrew upgrade kmsg\nkmsg read --help\n</code></pre>\n<p>MCP客户端不使用CLI写法<code>--background-safe</code>，而是使用JSON参数<code>background_safe: true</code>。</p>\n<h2 id=\"发送\"><a class=\"heading-anchor\" href=\"#发送\">发送</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg send &lt;recipient&gt; &lt;message&gt; [options]\nkmsg send --chat-id &lt;chat-id&gt; &lt;message&gt; [options]\n</code></pre>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>选项</th>\n<th>行为</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>--dry-run</code></td>\n<td>不操作UI，只显示目标与内容</td>\n</tr>\n<tr>\n<td><code>--chat-id ID</code></td>\n<td>使用<code>kmsg chats</code>生成的本地ID</td>\n</tr>\n<tr>\n<td><code>--keep-window</code></td>\n<td>保留命令打开的聊天窗口</td>\n</tr>\n<tr>\n<td><code>--no-cache</code></td>\n<td>清除相关AX缓存并重新查找</td>\n</tr>\n<tr>\n<td><code>--layout MODE</code></td>\n<td>指定窗口布局</td>\n</tr>\n</tbody></table></div>\n<p>发送图片:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg send-image \"聊天名称\" /absolute/path/image.png --dry-run\n</code></pre>\n<h2 id=\"json与mcp\"><a class=\"heading-anchor\" href=\"#json与mcp\">JSON与MCP</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg chats --json\nkmsg read \"聊天名称\" --json\nkmsg watch \"聊天名称\" --json\n</code></pre>\n<p>结构化结果写入<code>stdout</code>，AX诊断写入<code>stderr</code>。</p>\n<p>MCP服务器提供以下工具。</p>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>工具</th>\n<th>用途</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>kmsg_read</code></td>\n<td>读取最近消息</td>\n</tr>\n<tr>\n<td><code>kmsg_send</code></td>\n<td>发送文本</td>\n</tr>\n<tr>\n<td><code>kmsg_send_image</code></td>\n<td>发送本地图片</td>\n</tr>\n</tbody></table></div>\n<p>对于发送工具，<code>confirm=true</code>不会发送，而是返回<code>CONFIRMATION_REQUIRED</code>。<code>confirm=false</code>或省略时会立即发送。</p>\n<h2 id=\"主要环境变量\"><a class=\"heading-anchor\" href=\"#主要环境变量\">主要环境变量</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>变量</th>\n<th>默认值</th>\n<th>说明</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>KMSG_MCP_KMSG_PATH</code></td>\n<td>当前可执行文件</td>\n<td>MCP服务器调用的<code>kmsg</code>路径</td>\n</tr>\n<tr>\n<td><code>KMSG_MCP_TIMEOUT_SECONDS</code></td>\n<td><code>30</code></td>\n<td>子进程超时时间</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_LAYOUT</code></td>\n<td><code>preserve</code></td>\n<td>默认窗口布局</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_BACKGROUND_SAFE</code></td>\n<td><code>false</code></td>\n<td>安全读取默认值</td>\n</tr>\n<tr>\n<td><code>KMSG_DEFAULT_DEEP_RECOVERY</code></td>\n<td><code>false</code></td>\n<td>深度恢复默认值</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"故障排除\"><a class=\"heading-anchor\" href=\"#故障排除\">故障排除</a></h2>\n<h3 id=\"没有辅助功能权限\"><a class=\"heading-anchor\" href=\"#没有辅助功能权限\">没有辅助功能权限</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg status\n</code></pre>\n<p>请在系统设置中允许实际运行的二进制。Homebrew版本和本地构建可能会被视为不同的程序。</p>\n<h3 id=\"找不到聊天\"><a class=\"heading-anchor\" href=\"#找不到聊天\">找不到聊天</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg chats --verbose --limit 50\nkmsg cache clear\nkmsg read \"准确的聊天名称\" --deep-recovery\n</code></pre>\n<p>重复自动化时，建议先用<code>kmsg chats</code>刷新注册表，再使用<code>chat_id</code>。</p>\n<h3 id=\"ui结构发生变化\"><a class=\"heading-anchor\" href=\"#ui结构发生变化\">UI结构发生变化</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg read \"聊天名称\" --debug --trace-ax\nkmsg inspect --depth 5\nkmsg cache stats\n</code></pre>\n<p>KakaoTalk更新后，可清除缓存并重新发现路径。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "安装",
+        "label": "安装"
+      },
+      {
+        "level": 3,
+        "id": "环境要求",
+        "label": "环境要求"
+      },
+      {
+        "level": 3,
+        "id": "homebrew",
+        "label": "Homebrew"
+      },
+      {
+        "level": 3,
+        "id": "从源码构建",
+        "label": "从源码构建"
+      },
+      {
+        "level": 2,
+        "id": "快速开始",
+        "label": "快速开始"
+      },
+      {
+        "level": 2,
+        "id": "登录与权限",
+        "label": "登录与权限"
+      },
+      {
+        "level": 2,
+        "id": "命令概览",
+        "label": "命令概览"
+      },
+      {
+        "level": 2,
+        "id": "安全读取",
+        "label": "安全读取"
+      },
+      {
+        "level": 3,
+        "id": "找不到-background-safe-时",
+        "label": "找不到 --background-safe 时"
+      },
+      {
+        "level": 2,
+        "id": "发送",
+        "label": "发送"
+      },
+      {
+        "level": 2,
+        "id": "json与mcp",
+        "label": "JSON与MCP"
+      },
+      {
+        "level": 2,
+        "id": "主要环境变量",
+        "label": "主要环境变量"
+      },
+      {
+        "level": 2,
+        "id": "故障排除",
+        "label": "故障排除"
+      },
+      {
+        "level": 3,
+        "id": "没有辅助功能权限",
+        "label": "没有辅助功能权限"
+      },
+      {
+        "level": 3,
+        "id": "找不到聊天",
+        "label": "找不到聊天"
+      },
+      {
+        "level": 3,
+        "id": "ui结构发生变化",
+        "label": "UI结构发生变化"
+      }
+    ]
+  },
+  {
+    "locale": "ko",
+    "pageKey": "architecture",
+    "title": "kmsg 아키텍처",
+    "source": "site/content/ko/architecture.md",
+    "sourceLabel": "site/content/ko/architecture.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<h2 id=\"개요\"><a class=\"heading-anchor\" href=\"#개요\">개요</a></h2>\n<p><code>kmsg</code>는 macOS 13 이상에서 동작하는 Swift 6 실행 파일입니다. KakaoTalk의 비공개 네트워크 프로토콜을 구현하지 않고, 사용자가 보는 macOS 앱을 손쉬운 사용 API로 제어합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">CLI commands\n    ↓\nKakaoTalk domain services\n    ↓\nAccessibility helpers + AX path cache\n    ↓\nAXUIElement / CGEvent / AppKit\n    ↓\nKakaoTalk for macOS\n</code></pre>\n<p>네이티브 stdio MCP 서버는 동일한 <code>kmsg</code> 실행 경로를 하위 프로세스로 호출하고 결과를 구조화해 반환합니다. CLI와 MCP가 자동화 로직을 따로 구현하지 않도록 한 구조입니다.</p>\n<h2 id=\"주요-구성-요소\"><a class=\"heading-anchor\" href=\"#주요-구성-요소\">주요 구성 요소</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>구성 요소</th>\n<th>책임</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>Sources/kmsg/kmsg.swift</code></td>\n<td>명령 등록, 버전 노출, 도움말 진입점</td>\n</tr>\n<tr>\n<td><code>Sources/kmsg/Commands/</code></td>\n<td>인수 파싱, 권한·인증 조정, 출력 형식</td>\n</tr>\n<tr>\n<td><code>UIElement</code></td>\n<td><code>AXUIElement</code> 래퍼와 제한된 계층 탐색</td>\n</tr>\n<tr>\n<td><code>AXActionRunner</code></td>\n<td>포커스, 텍스트 입력, 키보드, 재시도</td>\n</tr>\n<tr>\n<td><code>AXPathCacheStore</code></td>\n<td>검증된 AX 경로 저장과 stale 경로 폐기</td>\n</tr>\n<tr>\n<td><code>KakaoTalkApp</code></td>\n<td>프로세스·창 탐색, 실행, 활성화, 복구</td>\n</tr>\n<tr>\n<td><code>ChatListScanner</code></td>\n<td>채팅 목록과 미리보기 읽기</td>\n</tr>\n<tr>\n<td><code>ChatIdentityRegistryStore</code></td>\n<td>로컬 합성 <code>chat_id</code> 관리</td>\n</tr>\n<tr>\n<td><code>ChatWindowResolver</code></td>\n<td>기존 창 재사용과 검색·복구</td>\n</tr>\n<tr>\n<td><code>KakaoTalkTranscriptReader</code></td>\n<td>메시지, 시간, 이미지, 링크 파싱</td>\n</tr>\n<tr>\n<td><code>KmsgMCPServer</code></td>\n<td>MCP 프레이밍, 도구 스키마, 제한 시간, 오류 매핑</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"데이터-흐름\"><a class=\"heading-anchor\" href=\"#데이터-흐름\">데이터 흐름</a></h2>\n<h3 id=\"시작과-인증\"><a class=\"heading-anchor\" href=\"#시작과-인증\">시작과 인증</a></h3>\n<ol>\n<li>UI 접근이 필요한 명령이 손쉬운 사용 권한을 확인합니다.</li>\n<li>필요하면 <code>KakaoTalkApp</code>이 KakaoTalk을 실행합니다.</li>\n<li>현재 로그인 상태를 확인합니다.</li>\n<li>로그인이 필요하면 암호화된 자격 증명을 사용하거나 입력을 요청합니다.</li>\n</ol>\n<p><code>read --background-safe</code>는 <code>KakaoTalkApp(autoLaunch: false)</code>를 사용하고 자동 로그인과 포그라운드 UI 조작을 건너뜁니다.</p>\n<h3 id=\"채팅-탐색과-읽기\"><a class=\"heading-anchor\" href=\"#채팅-탐색과-읽기\">채팅 탐색과 읽기</a></h3>\n<ol>\n<li>채팅 이름 또는 로컬 <code>chat_id</code>로 창을 찾습니다.</li>\n<li>입력 요소, 채팅 패널, 메시지 목록 루트를 결정합니다.</li>\n<li>표시된 행을 정규화된 메시지 레코드로 변환합니다.</li>\n<li>사람이 읽는 텍스트 또는 단일 JSON 문서로 출력합니다.</li>\n<li>명령이 임시로 연 창만 닫습니다.</li>\n</ol>\n<h3 id=\"감시\"><a class=\"heading-anchor\" href=\"#감시\">감시</a></h3>\n<p><code>watch</code>는 시작 시 기존 기록을 기준선으로 잡고 이후에 나타난 메시지만 내보냅니다. 안정적인 시간 정보가 없는 행은 과거 메시지를 다시 재생하지 않도록 시작 구간에서 억제할 수 있습니다.</p>\n<h3 id=\"전송\"><a class=\"heading-anchor\" href=\"#전송\">전송</a></h3>\n<p>텍스트 전송은 대상 창과 입력 요소를 찾고 Unicode 텍스트를 입력한 뒤 전송 동작을 검증합니다. 이미지 전송은 macOS pasteboard를 사용하고 KakaoTalk의 확인 UI를 처리합니다.</p>\n<h3 id=\"mcp-호출\"><a class=\"heading-anchor\" href=\"#mcp-호출\">MCP 호출</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">MCP client\n    ↓ stdio\nkmsg mcp-server\n    ↓ subprocess\nkmsg read / send / send-image\n    ↓\nKakaoTalk Accessibility automation\n</code></pre>\n<p>이 프로세스 경계 덕분에 MCP 호출도 일반 CLI와 같은 권한, 캐시, 오류 계약을 사용합니다.</p>\n<h2 id=\"로컬-상태\"><a class=\"heading-anchor\" href=\"#로컬-상태\">로컬 상태</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>경로</th>\n<th>내용</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>~/.config/kmsg/credentials.json</code></td>\n<td>자격 증명 메타데이터와 암호문</td>\n</tr>\n<tr>\n<td><code>~/.config/kmsg/credentials/primary.key</code></td>\n<td>로컬 AES-GCM 키</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/ax-path-cache.json</code></td>\n<td>검증된 AX 경로</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/chat-registry.json</code></td>\n<td>로컬 합성 채팅 ID</td>\n</tr>\n</tbody></table></div>\n<p>자격 증명과 키 파일은 <code>0600</code> 권한을 사용합니다. AX 캐시는 KakaoTalk 버전·루트 지문·스키마·TTL을 확인하며, 검증에 실패한 경로는 제한된 재탐색으로 복구합니다.</p>\n<h2 id=\"설계-결정\"><a class=\"heading-anchor\" href=\"#설계-결정\">설계 결정</a></h2>\n<h3 id=\"비공개-프로토콜-대신-손쉬운-사용-api\"><a class=\"heading-anchor\" href=\"#비공개-프로토콜-대신-손쉬운-사용-api\">비공개 프로토콜 대신 손쉬운 사용 API</a></h3>\n<p>KakaoTalk은 서드파티 메시징 API를 공식 제공하지 않습니다. <code>kmsg</code>는 비공개 LOCO 프로토콜을 역공학하지 않고, 사용자가 실행 중인 앱의 보이는 UI와 상호작용합니다. 이것이 공식 연동이나 무위험 사용을 뜻하지는 않으며, 서비스 약관과 제재 판단은 Kakao에 있습니다.</p>\n<h3 id=\"macos-네이티브-실행-파일\"><a class=\"heading-anchor\" href=\"#macos-네이티브-실행-파일\">macOS 네이티브 실행 파일</a></h3>\n<p>Swift는 <code>AppKit</code>, <code>ApplicationServices</code>, <code>AXUIElement</code>, <code>CGEvent</code> 같은 macOS API와 직접 맞닿습니다. 별도 런타임 없이 단일 바이너리로 배포하고 SwiftPM으로 빌드·검증할 수 있습니다.</p>\n<h3 id=\"제한된-탐색과-self-healing-캐시\"><a class=\"heading-anchor\" href=\"#제한된-탐색과-self-healing-캐시\">제한된 탐색과 self-healing 캐시</a></h3>\n<p>AX 계층 전체 탐색은 비싸고 KakaoTalk 버전에 따라 바뀔 수 있습니다. 모든 탐색에는 노드 예산과 제한을 적용하고, 성공한 경로는 저장하되 사용 전 다시 검증합니다.</p>\n<h3 id=\"명시적인-상호작용-모드\"><a class=\"heading-anchor\" href=\"#명시적인-상호작용-모드\">명시적인 상호작용 모드</a></h3>\n<p>기본 경로는 불필요한 재실행과 창 조작을 피합니다. background-safe 읽기, 깊은 복구, 창 배치는 사용자가 명시적으로 선택합니다.</p>\n<h3 id=\"출력-채널-분리\"><a class=\"heading-anchor\" href=\"#출력-채널-분리\">출력 채널 분리</a></h3>\n<p>구조화된 결과는 <code>stdout</code>, AX 진단은 <code>stderr</code>에 기록합니다. JSON 소비자와 MCP 하위 프로세스가 로그와 payload를 혼합하지 않도록 하기 위한 계약입니다.</p>\n<h2 id=\"더-자세한-원문\"><a class=\"heading-anchor\" href=\"#더-자세한-원문\">더 자세한 원문</a></h2>\n<p>전체 데이터 흐름과 디렉터리 구조, 설계 근거는 <a href=\"https://github.com/channprj/kmsg/blob/main/ARCHITECTURE.md\" target=\"_blank\" rel=\"noopener noreferrer\">영문 아키텍처 문서</a>에서 확인할 수 있습니다.</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "개요",
+        "label": "개요"
+      },
+      {
+        "level": 2,
+        "id": "주요-구성-요소",
+        "label": "주요 구성 요소"
+      },
+      {
+        "level": 2,
+        "id": "데이터-흐름",
+        "label": "데이터 흐름"
+      },
+      {
+        "level": 3,
+        "id": "시작과-인증",
+        "label": "시작과 인증"
+      },
+      {
+        "level": 3,
+        "id": "채팅-탐색과-읽기",
+        "label": "채팅 탐색과 읽기"
+      },
+      {
+        "level": 3,
+        "id": "감시",
+        "label": "감시"
+      },
+      {
+        "level": 3,
+        "id": "전송",
+        "label": "전송"
+      },
+      {
+        "level": 3,
+        "id": "mcp-호출",
+        "label": "MCP 호출"
+      },
+      {
+        "level": 2,
+        "id": "로컬-상태",
+        "label": "로컬 상태"
+      },
+      {
+        "level": 2,
+        "id": "설계-결정",
+        "label": "설계 결정"
+      },
+      {
+        "level": 3,
+        "id": "비공개-프로토콜-대신-손쉬운-사용-api",
+        "label": "비공개 프로토콜 대신 손쉬운 사용 API"
+      },
+      {
+        "level": 3,
+        "id": "macos-네이티브-실행-파일",
+        "label": "macOS 네이티브 실행 파일"
+      },
+      {
+        "level": 3,
+        "id": "제한된-탐색과-self-healing-캐시",
+        "label": "제한된 탐색과 self-healing 캐시"
+      },
+      {
+        "level": 3,
+        "id": "명시적인-상호작용-모드",
+        "label": "명시적인 상호작용 모드"
+      },
+      {
+        "level": 3,
+        "id": "출력-채널-분리",
+        "label": "출력 채널 분리"
+      },
+      {
+        "level": 2,
+        "id": "더-자세한-원문",
+        "label": "더 자세한 원문"
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "pageKey": "architecture",
+    "title": "kmsg Architecture",
+    "source": "ARCHITECTURE.md",
+    "sourceLabel": "ARCHITECTURE.md",
+    "lastModified": "2026-07-26T13:28:43+09:00",
+    "html": "<h2 id=\"overview\"><a class=\"heading-anchor\" href=\"#overview\">Overview</a></h2>\n<p><code>kmsg</code> is a Swift 6 executable for macOS 13 and later. It controls KakaoTalk\nthrough macOS Accessibility APIs instead of a network protocol.</p>\n<p>The primary dependency direction is:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">CLI commands\n    |\n    +-- authentication and command orchestration\n    |\n    +-- KakaoTalk domain services\n    |     +-- chat discovery and identity\n    |     +-- window resolution\n    |     +-- transcript resolution and parsing\n    |\n    +-- Accessibility helpers and AX path cache\n          |\n          +-- AXUIElement / CGEvent / AppKit\n                |\n                +-- KakaoTalk for macOS\n</code></pre>\n<p>The stdio MCP server is another entry point. It translates MCP tool calls into\nsubprocess invocations of the currently running <code>kmsg</code> executable, then returns\nstructured results to the client.</p>\n<h2 id=\"components\"><a class=\"heading-anchor\" href=\"#components\">Components</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Component</th>\n<th>Responsibility</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>Sources/kmsg/kmsg.swift</code></td>\n<td>Registers commands, exposes the embedded build version, and uses the invoked executable name in help output.</td>\n</tr>\n<tr>\n<td><code>Sources/kmsg/Commands/</code></td>\n<td>Parses CLI arguments, checks permissions, coordinates authentication, delegates operations, and formats human or JSON output.</td>\n</tr>\n<tr>\n<td><code>AccessibilityPermission</code></td>\n<td>Checks and requests macOS Accessibility permission and opens the correct System Settings pane.</td>\n</tr>\n<tr>\n<td><code>UIElement</code></td>\n<td>Wraps <code>AXUIElement</code>, exposes attributes and actions, and performs bounded hierarchy searches.</td>\n</tr>\n<tr>\n<td><code>AXActionRunner</code></td>\n<td>Performs focus, text-entry, keyboard, retry, and trace operations.</td>\n</tr>\n<tr>\n<td><code>AXPathCacheStore</code></td>\n<td>Stores validated AX paths for frequently used UI elements and invalidates stale entries.</td>\n</tr>\n<tr>\n<td><code>CredentialStore</code></td>\n<td>Encrypts the KakaoTalk password with AES-GCM and stores credentials and key material in owner-only files.</td>\n</tr>\n<tr>\n<td><code>KakaoTalkAuthenticator</code></td>\n<td>Detects login state, fills the login form, and provides a keyboard-only fallback.</td>\n</tr>\n<tr>\n<td><code>KakaoTalkApp</code></td>\n<td>Finds, launches, activates, and recovers the KakaoTalk process and its windows.</td>\n</tr>\n<tr>\n<td><code>ChatListScanner</code></td>\n<td>Locates the chat list, extracts names and previews, and warms related AX cache slots.</td>\n</tr>\n<tr>\n<td><code>ChatIdentityRegistryStore</code></td>\n<td>Assigns local synthetic <code>chat_id</code> values and maps them back to chat display names.</td>\n</tr>\n<tr>\n<td><code>ChatWindowResolver</code></td>\n<td>Reuses existing windows or opens chats through the list/search UI, with optional layout and recovery behavior.</td>\n</tr>\n<tr>\n<td><code>MessageContextResolver</code></td>\n<td>Finds the message input, chat pane, and transcript root for a resolved window.</td>\n</tr>\n<tr>\n<td><code>KakaoTalkTranscriptReader</code></td>\n<td>Extracts normalized message records, timestamps, images, links, and attachments from transcript rows.</td>\n</tr>\n<tr>\n<td><code>WatchCommand</code></td>\n<td>Repeatedly reads transcript snapshots, establishes a startup baseline, and emits only new eligible messages.</td>\n</tr>\n<tr>\n<td><code>KmsgMCPServer</code></td>\n<td>Implements MCP initialization, tool schemas, stdio framing, subprocess execution, timeout handling, and structured error mapping.</td>\n</tr>\n<tr>\n<td><code>VersionGenPlugin</code> / <code>VersionGenTool</code></td>\n<td>Validates <code>VERSION</code> and generates the build-time <code>BuildVersion</code> source.</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"data-flow\"><a class=\"heading-anchor\" href=\"#data-flow\">Data flow</a></h2>\n<h3 id=\"startup-and-authentication\"><a class=\"heading-anchor\" href=\"#startup-and-authentication\">Startup and authentication</a></h3>\n<ol>\n<li>A command checks Accessibility permission when UI access is required.</li>\n<li><code>AuthBootstrap</code> constructs <code>KakaoTalkApp</code>, which launches KakaoTalk when\nnecessary.</li>\n<li><code>KakaoTalkAuthenticator</code> checks the current login state.</li>\n<li>If login is required, it loads encrypted credentials or prompts the user,\nperforms the login, and stores newly entered credentials.</li>\n</ol>\n<p><code>read --background-safe</code> is deliberately different: it constructs\n<code>KakaoTalkApp(autoLaunch: false)</code> and skips automatic login and foreground UI\nautomation.</p>\n<h3 id=\"listing-chats\"><a class=\"heading-anchor\" href=\"#listing-chats\">Listing chats</a></h3>\n<ol>\n<li><code>ChatsCommand</code> selects the visible chat-list window or recovers a usable\nKakaoTalk window.</li>\n<li><code>ChatListScanner</code> locates the chat-list container and extracts row titles and\npreviews.</li>\n<li><code>ChatIdentityRegistryStore</code> matches discoveries against local records and\nassigns synthetic IDs.</li>\n<li>Results are printed as text or encoded as JSON.</li>\n</ol>\n<p>The registry is local state, not a KakaoTalk identifier. A renamed room is\ntreated as a new display identity, and duplicate names receive distinct local\nrecords when they can be distinguished from the list.</p>\n<h3 id=\"resolving-a-chat\"><a class=\"heading-anchor\" href=\"#resolving-a-chat\">Resolving a chat</a></h3>\n<p><code>ChatWindowResolver</code> tries progressively more invasive paths:</p>\n<ol>\n<li>Reuse an existing matching chat window.</li>\n<li>For a known <code>chat_id</code>, try its associated chat-list row.</li>\n<li>Search for the recorded or requested display name.</li>\n<li>When explicitly enabled, perform deeper window recovery.</li>\n</ol>\n<p>In background-safe mode only step 1 is allowed. The resolver will not launch,\nactivate, search, open, resize, or close KakaoTalk windows.</p>\n<h3 id=\"reading-messages\"><a class=\"heading-anchor\" href=\"#reading-messages\">Reading messages</a></h3>\n<ol>\n<li>Resolve a chat window by name or <code>chat_id</code>.</li>\n<li><code>MessageContextResolver</code> identifies the input element, chat pane, and\ntranscript root.</li>\n<li><code>KakaoTalkTranscriptReader</code> gathers message rows and extracts their semantic\nfields.</li>\n<li><code>ReadCommand</code> prints human-readable output or one JSON document.</li>\n<li>A transiently opened window is closed unless <code>--keep-window</code> was supplied.</li>\n</ol>\n<h3 id=\"watching-messages\"><a class=\"heading-anchor\" href=\"#watching-messages\">Watching messages</a></h3>\n<ol>\n<li>Resolve the chat and read snapshots for up to two seconds until the tail\nstabilizes.</li>\n<li>Use messages later than the watch start time as the initial eligible state.</li>\n<li>Poll at a clamped interval between 0.2 and 10 seconds.</li>\n<li>Compare snapshot overlap to find newly appended messages.</li>\n<li>Emit human-readable records or one pretty JSON object per event.</li>\n</ol>\n<p>Rows without a safe logical timestamp may be suppressed at startup to avoid\nreplaying old messages.</p>\n<h3 id=\"sending-text-or-images\"><a class=\"heading-anchor\" href=\"#sending-text-or-images\">Sending text or images</a></h3>\n<p>Text sending resolves the target window, finds and focuses the message input,\nenters Unicode text through AX/keyboard helpers, and verifies the send action.\nImage sending places the image on the macOS pasteboard, pastes it into the chat,\nand handles KakaoTalk's confirmation UI.</p>\n<p>Commands close only windows they opened transiently. <code>--keep-window</code> preserves\nthem.</p>\n<h3 id=\"mcp-calls\"><a class=\"heading-anchor\" href=\"#mcp-calls\">MCP calls</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">MCP client\n    |\n    | Content-Length or newline-delimited JSON-RPC\n    v\nkmsg mcp-server\n    |\n    | subprocess: current kmsg executable\n    +-- kmsg read --json ...\n    +-- kmsg send ...\n    +-- kmsg send-image ...\n    |\n    v\nstructured MCP content and error metadata\n</code></pre>\n<p>The process boundary reuses the same CLI paths as direct operation and prevents\nthe MCP layer from maintaining a second implementation of KakaoTalk automation.</p>\n<h2 id=\"local-state\"><a class=\"heading-anchor\" href=\"#local-state\">Local state</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Path</th>\n<th>Purpose</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>~/.config/kmsg/credentials.json</code></td>\n<td>Identifier, encrypted password, key identifier, schema, and timestamp.</td>\n</tr>\n<tr>\n<td><code>~/.config/kmsg/credentials/primary.key</code></td>\n<td>Local AES-GCM key material stored separately from the credential document.</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/ax-cache.json</code></td>\n<td>Validated paths to frequently accessed AX elements.</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/chat-registry.json</code></td>\n<td>Synthetic chat identities derived from local chat-list observations.</td>\n</tr>\n</tbody></table></div>\n<p>Credential directories use owner-only <code>0700</code> permissions; credential and key\nfiles use <code>0600</code>. Encryption protects the stored representation, but both the\nciphertext and its local key remain on the same machine.</p>\n<p>AX cache entries use schema validation, a KakaoTalk version/build fingerprint,\na root fingerprint, candidate validation, and a seven-day TTL. An invalid or\nstale entry falls back to discovery and is replaced or removed.</p>\n<h2 id=\"directory-structure\"><a class=\"heading-anchor\" href=\"#directory-structure\">Directory structure</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">.\n├── Package.swift\n├── VERSION\n├── VERSIONING.md\n├── Plugins/\n│   └── VersionGenPlugin/\n├── Sources/\n│   ├── VersionGenTool/\n│   └── kmsg/\n│       ├── Accessibility/\n│       ├── Auth/\n│       ├── Commands/\n│       ├── KakaoTalk/\n│       └── kmsg.swift\n├── docs/\n│   ├── openclaw.md\n│   └── openclaw.mcp.example.json\n├── tests/\n├── tools/\n│   ├── kmsg-mcp.py\n│   └── sync_homebrew_tap.py\n├── scripts/\n│   └── headatever.sh\n├── .github/workflows/\n│   ├── ci.yml\n│   └── release.yml\n└── video/\n</code></pre>\n<p><code>tools/kmsg-mcp.py</code> is a legacy/development reference implementation. The\ninstalled integration entry point is the native <code>kmsg mcp-server</code> command.\n<code>video/</code> contains promotional Remotion assets and is not part of the CLI\nruntime.</p>\n<h2 id=\"design-decisions\"><a class=\"heading-anchor\" href=\"#design-decisions\">Design decisions</a></h2>\n<h3 id=\"accessibility-instead-of-a-private-protocol\"><a class=\"heading-anchor\" href=\"#accessibility-instead-of-a-private-protocol\">Accessibility instead of a private protocol</a></h3>\n<p>KakaoTalk does not expose an official CLI. <code>kmsg</code> therefore interacts with the\nsame visible application UI a user operates, using Apple's Accessibility APIs.</p>\n<p>This avoids implementing or reverse-engineering KakaoTalk's private LOCO\nprotocol. It does not make <code>kmsg</code> an official or risk-free integration:\nservice terms and enforcement remain Kakao's decision.</p>\n<h3 id=\"swift-for-a-macos-native-executable\"><a class=\"heading-anchor\" href=\"#swift-for-a-macos-native-executable\">Swift for a macOS-native executable</a></h3>\n<p>The implementation depends directly on <code>AppKit</code>, <code>ApplicationServices</code>,\n<code>AXUIElement</code>, <code>CGEvent</code>, <code>CryptoKit</code>, and the pasteboard. Swift provides direct\naccess to those frameworks, native distribution, and Objective-C\ninteroperability without an additional runtime.</p>\n<h3 id=\"bounded-discovery-with-self-healing-fast-paths\"><a class=\"heading-anchor\" href=\"#bounded-discovery-with-self-healing-fast-paths\">Bounded discovery with self-healing fast paths</a></h3>\n<p>AX hierarchies are expensive and can change between KakaoTalk versions.\nDiscovery methods use limits and node budgets. Successful paths are cached, but\nevery cached result is revalidated before use; stale paths fall back to bounded\ndiscovery.</p>\n<h3 id=\"explicit-interaction-modes\"><a class=\"heading-anchor\" href=\"#explicit-interaction-modes\">Explicit interaction modes</a></h3>\n<p>Normal commands may launch, activate, recover, search, resize, and close\nwindows. Background-safe reads opt into a narrower contract that forbids those\noperations and succeeds only when a matching chat is already exposed.</p>\n<p>Deep recovery is also opt-in for direct CLI commands. Fast paths remain the\ndefault to avoid unnecessary relaunch and window manipulation.</p>\n<h3 id=\"local-synthetic-chat-identity\"><a class=\"heading-anchor\" href=\"#local-synthetic-chat-identity\">Local synthetic chat identity</a></h3>\n<p>KakaoTalk's Accessibility tree does not expose a durable public chat ID.\n<code>kmsg chats</code> therefore generates a local <code>chat_id</code> from normalized names and\nmaintains collision records locally. It improves repeated lookup but is not a\nremote identifier or a guarantee across machines.</p>\n<h3 id=\"output-channel-separation\"><a class=\"heading-anchor\" href=\"#output-channel-separation\">Output-channel separation</a></h3>\n<p>Structured command output is written to <code>stdout</code>. AX traces remain on\n<code>stderr</code>, allowing JSON consumers and MCP subprocesses to parse output without\nmixing diagnostic logs into payloads.</p>\n<h3 id=\"version-source-of-truth\"><a class=\"heading-anchor\" href=\"#version-source-of-truth\">Version source of truth</a></h3>\n<p>The root <code>VERSION</code> file is authoritative. A SwiftPM build-tool plugin validates\nit and generates <code>BuildVersion</code> during compilation. Release tags use\n<code>vMAJOR.YYMMDD.PATCH_COUNT</code>; the release workflow verifies that the universal\nbinary reports the same version before publishing it.</p>\n<h3 id=\"preserved-project-rationale\"><a class=\"heading-anchor\" href=\"#preserved-project-rationale\">Preserved project rationale</a></h3>\n<p>The following prose is preserved verbatim from the original Korean README.</p>\n<details>\n<summary>원문 보기</summary><h4 id=\"왜-swift-로-만들었나요\"><a class=\"heading-anchor\" href=\"#왜-swift-로-만들었나요\">왜 Swift 로 만들었나요?</a></h4>\n<p><code>kmsg</code> 는 macOS 전용 도구이고, 핵심 기능이 <code>AppKit</code>, <code>ApplicationServices</code>, <code>AXUIElement</code>, <code>CGEvent</code> 같은 macOS native API 위에 올라가 있습니다. Swift 는 이 API 들과의 연결이 가장 직접적이고 안정적이며, Objective-C 계열 프레임워크와의 상호운용도 자연스럽습니다.\n반대로 Python 은 런타임/배포 의존성이 늘어나고, Rust 는 macOS framework binding 과 FFI 관리 복잡도가 커지기 때문에 현재 목적에는 Swift 쪽이 구현과 유지보수 모두 더 실용적이었습니다.</p>\n<h4 id=\"ax-가-뭔가요\"><a class=\"heading-anchor\" href=\"#ax-가-뭔가요\">AX 가 뭔가요?</a></h4>\n<p>AX 는 macOS Accessibility(손쉬운 사용) API 를 뜻합니다. 앱의 창, 버튼, 입력창, 텍스트 같은 UI 요소를 <code>AXUIElement</code> 로 읽고 제어할 수 있게 해주는 시스템 인터페이스입니다.</p>\n<h4 id=\"왜-ax-를-사용하나요\"><a class=\"heading-anchor\" href=\"#왜-ax-를-사용하나요\">왜 AX 를 사용하나요?</a></h4>\n<p>KakaoTalk 은 공식적으로 CLI 를 제공하지 않습니다. 그래서 실제 사용자가 보고 클릭하는 UI 를 시스템 레벨에서 읽고 조작할 수 있는 현실적인 방법이 AX 입니다.\n<code>kmsg</code> 의 채팅 목록 읽기, 검색, 메시지 전송, 이미지 전송, 창 제어가 모두 이 레이어 위에서 동작하기 때문에 Accessibility permission 이 필요합니다.</p>\n<h4 id=\"왜-kakaotalk-의-loco-protocol-을-사용하지-않나요\"><a class=\"heading-anchor\" href=\"#왜-kakaotalk-의-loco-protocol-을-사용하지-않나요\">왜 KakaoTalk 의 LOCO Protocol 을 사용하지 않나요?</a></h4>\n<p>LOCO Protocol 을 쓰려면 사실상 비공개 동작을 리버스 엔지니어링해야 하는데, 저는 이 접근이 명백한 약관 위반으로 해석될 여지가 크다고 봅니다. 실제로 이런 방식의 자동화나 비공식 프로토콜 사용과 관련해 계정이 영구정지된 사례도 이미 적지 않게 알려져 있어서, 기능적으로 가능하더라도 감수해야 하는 리스크가 너무 크다고 판단했습니다.</p>\n<p>반면 AX 방식은 사용자가 실제로 보고 조작하는 KakaoTalk UI 를 macOS 의 공식 Accessibility API 로 읽고 제어하는 접근이라, 적어도 LOCO 를 직접 건드리는 방식보다는 상대적으로 안전할 것이라고 판단했습니다. 다만 이것도 어디까지나 제 개인적인 판단일 뿐이며, 카카오의 공식 입장이나 카카오 법무팀의 해석과는 다를 수 있습니다. 실제 약관 해석과 제재 기준은 카카오 측 판단이 우선합니다.</p>\n<h4 id=\"이-기능을-rust-로-작성하면-더-빨라질까요\"><a class=\"heading-anchor\" href=\"#이-기능을-rust-로-작성하면-더-빨라질까요\">이 기능을 Rust 로 작성하면 더 빨라질까요?</a></h4>\n<p>일부 구간은 빨라질 수 있지만, 체감 성능 향상은 제한적일 가능성이 큽니다. <code>kmsg</code> 의 주된 지연은 언어 런타임보다 <code>AXUIElement</code> 호출, UI 탐색, KakaoTalk 창 활성화/복구, 실제 앱 응답 시간에서 발생합니다.\nRust 로 바꾸면 단발 CLI cold start, 순수 stdio 프레이밍, JSON encode/decode 같은 좁은 구간은 유리할 수 있습니다. 하지만 MCP 서버처럼 프로세스가 이미 떠 있는 경로에서는 그 이득이 더 작아지고, 전체 end-to-end latency 는 여전히 macOS AX 와 KakaoTalk UI 응답 시간이 지배합니다. 대신 Rust 는 macOS native framework binding 과 FFI 관리 비용이 Swift 보다 커질 수 있습니다.</p>\n</details>",
+    "headings": [
+      {
+        "level": 2,
+        "id": "overview",
+        "label": "Overview"
+      },
+      {
+        "level": 2,
+        "id": "components",
+        "label": "Components"
+      },
+      {
+        "level": 2,
+        "id": "data-flow",
+        "label": "Data flow"
+      },
+      {
+        "level": 3,
+        "id": "startup-and-authentication",
+        "label": "Startup and authentication"
+      },
+      {
+        "level": 3,
+        "id": "listing-chats",
+        "label": "Listing chats"
+      },
+      {
+        "level": 3,
+        "id": "resolving-a-chat",
+        "label": "Resolving a chat"
+      },
+      {
+        "level": 3,
+        "id": "reading-messages",
+        "label": "Reading messages"
+      },
+      {
+        "level": 3,
+        "id": "watching-messages",
+        "label": "Watching messages"
+      },
+      {
+        "level": 3,
+        "id": "sending-text-or-images",
+        "label": "Sending text or images"
+      },
+      {
+        "level": 3,
+        "id": "mcp-calls",
+        "label": "MCP calls"
+      },
+      {
+        "level": 2,
+        "id": "local-state",
+        "label": "Local state"
+      },
+      {
+        "level": 2,
+        "id": "directory-structure",
+        "label": "Directory structure"
+      },
+      {
+        "level": 2,
+        "id": "design-decisions",
+        "label": "Design decisions"
+      },
+      {
+        "level": 3,
+        "id": "accessibility-instead-of-a-private-protocol",
+        "label": "Accessibility instead of a private protocol"
+      },
+      {
+        "level": 3,
+        "id": "swift-for-a-macos-native-executable",
+        "label": "Swift for a macOS-native executable"
+      },
+      {
+        "level": 3,
+        "id": "bounded-discovery-with-self-healing-fast-paths",
+        "label": "Bounded discovery with self-healing fast paths"
+      },
+      {
+        "level": 3,
+        "id": "explicit-interaction-modes",
+        "label": "Explicit interaction modes"
+      },
+      {
+        "level": 3,
+        "id": "local-synthetic-chat-identity",
+        "label": "Local synthetic chat identity"
+      },
+      {
+        "level": 3,
+        "id": "output-channel-separation",
+        "label": "Output-channel separation"
+      },
+      {
+        "level": 3,
+        "id": "version-source-of-truth",
+        "label": "Version source of truth"
+      },
+      {
+        "level": 3,
+        "id": "preserved-project-rationale",
+        "label": "Preserved project rationale"
+      },
+      {
+        "level": 4,
+        "id": "왜-swift-로-만들었나요",
+        "label": "왜 Swift 로 만들었나요?"
+      },
+      {
+        "level": 4,
+        "id": "ax-가-뭔가요",
+        "label": "AX 가 뭔가요?"
+      },
+      {
+        "level": 4,
+        "id": "왜-ax-를-사용하나요",
+        "label": "왜 AX 를 사용하나요?"
+      },
+      {
+        "level": 4,
+        "id": "왜-kakaotalk-의-loco-protocol-을-사용하지-않나요",
+        "label": "왜 KakaoTalk 의 LOCO Protocol 을 사용하지 않나요?"
+      },
+      {
+        "level": 4,
+        "id": "이-기능을-rust-로-작성하면-더-빨라질까요",
+        "label": "이 기능을 Rust 로 작성하면 더 빨라질까요?"
+      }
+    ]
+  },
+  {
+    "locale": "jp",
+    "pageKey": "architecture",
+    "title": "kmsgアーキテクチャ",
+    "source": "site/content/jp/architecture.md",
+    "sourceLabel": "site/content/jp/architecture.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<h2 id=\"概要\"><a class=\"heading-anchor\" href=\"#概要\">概要</a></h2>\n<p><code>kmsg</code>はmacOS 13以降で動作するSwift 6実行ファイルです。KakaoTalkの非公開ネットワークプロトコルを実装せず、画面に表示されたmacOSアプリをアクセシビリティAPIで操作します。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-text\">CLI commands\n    ↓\nKakaoTalk domain services\n    ↓\nAccessibility helpers + AX path cache\n    ↓\nAXUIElement / CGEvent / AppKit\n    ↓\nKakaoTalk for macOS\n</code></pre>\n<p>ネイティブstdio MCPサーバーは、同じ<code>kmsg</code>コマンドをサブプロセスとして実行し、結果を構造化して返します。CLIとMCPで自動化処理を重複実装しない設計です。</p>\n<h2 id=\"主なコンポーネント\"><a class=\"heading-anchor\" href=\"#主なコンポーネント\">主なコンポーネント</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>コンポーネント</th>\n<th>責務</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>Sources/kmsg/Commands/</code></td>\n<td>引数解析、権限・認証、出力形式</td>\n</tr>\n<tr>\n<td><code>UIElement</code></td>\n<td><code>AXUIElement</code>ラッパーと制限付き探索</td>\n</tr>\n<tr>\n<td><code>AXActionRunner</code></td>\n<td>フォーカス、入力、キーボード、再試行</td>\n</tr>\n<tr>\n<td><code>AXPathCacheStore</code></td>\n<td>検証済みAXパスの保存と無効化</td>\n</tr>\n<tr>\n<td><code>KakaoTalkApp</code></td>\n<td>プロセスとウィンドウの起動・復旧</td>\n</tr>\n<tr>\n<td><code>ChatListScanner</code></td>\n<td>チャット一覧とプレビューの取得</td>\n</tr>\n<tr>\n<td><code>ChatIdentityRegistryStore</code></td>\n<td>ローカル<code>chat_id</code>の管理</td>\n</tr>\n<tr>\n<td><code>ChatWindowResolver</code></td>\n<td>ウィンドウ再利用、検索、復旧</td>\n</tr>\n<tr>\n<td><code>KakaoTalkTranscriptReader</code></td>\n<td>メッセージ行の正規化</td>\n</tr>\n<tr>\n<td><code>KmsgMCPServer</code></td>\n<td>MCPフレーム、ツール、タイムアウト、エラー</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"データフロー\"><a class=\"heading-anchor\" href=\"#データフロー\">データフロー</a></h2>\n<h3 id=\"起動と認証\"><a class=\"heading-anchor\" href=\"#起動と認証\">起動と認証</a></h3>\n<ol>\n<li>UIアクセスが必要なコマンドがアクセシビリティ権限を確認します。</li>\n<li>必要ならKakaoTalkを起動します。</li>\n<li>ログイン状態を確認します。</li>\n<li>暗号化済み認証情報を利用するか、入力を求めます。</li>\n</ol>\n<p><code>read --background-safe</code>は自動起動・ログイン・前面UI操作を行いません。</p>\n<h3 id=\"読み取り\"><a class=\"heading-anchor\" href=\"#読み取り\">読み取り</a></h3>\n<ol>\n<li>チャット名または<code>chat_id</code>から対象ウィンドウを解決します。</li>\n<li>入力欄、チャットパネル、メッセージ一覧を特定します。</li>\n<li>表示行を正規化されたメッセージレコードに変換します。</li>\n<li>テキストまたは単一JSON文書として出力します。</li>\n</ol>\n<h3 id=\"監視\"><a class=\"heading-anchor\" href=\"#監視\">監視</a></h3>\n<p><code>watch</code>は開始時の履歴を基準線として扱い、その後に現れたメッセージのみを出力します。既存メッセージの再送を避けるため、信頼できる時刻がない行を開始直後に抑制することがあります。</p>\n<h3 id=\"送信\"><a class=\"heading-anchor\" href=\"#送信\">送信</a></h3>\n<p>テキスト送信は入力欄へUnicode文字列を入力し、送信操作を検証します。画像送信はmacOS pasteboardを使い、KakaoTalkの確認UIを処理します。</p>\n<h2 id=\"ローカル状態\"><a class=\"heading-anchor\" href=\"#ローカル状態\">ローカル状態</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>パス</th>\n<th>内容</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>~/.config/kmsg/credentials.json</code></td>\n<td>暗号化された認証情報</td>\n</tr>\n<tr>\n<td><code>~/.config/kmsg/credentials/primary.key</code></td>\n<td>ローカルAES-GCM鍵</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/ax-path-cache.json</code></td>\n<td>検証済みAXパス</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/chat-registry.json</code></td>\n<td>ローカルチャットID</td>\n</tr>\n</tbody></table></div>\n<p>キャッシュはKakaoTalkのバージョン、ルート指紋、スキーマ、TTLを確認します。古いパスは破棄し、制限付き探索で復旧します。</p>\n<h2 id=\"設計判断\"><a class=\"heading-anchor\" href=\"#設計判断\">設計判断</a></h2>\n<h3 id=\"非公開プロトコルを使わない\"><a class=\"heading-anchor\" href=\"#非公開プロトコルを使わない\">非公開プロトコルを使わない</a></h3>\n<p>KakaoTalkは公式のサードパーティ向けメッセージAPIを公開していません。<code>kmsg</code>はLOCOプロトコルをリバースエンジニアリングせず、ユーザーが実行中のアプリUIと対話します。これは公式連携や無リスクな利用を意味しません。</p>\n<h3 id=\"macosネイティブ\"><a class=\"heading-anchor\" href=\"#macosネイティブ\">macOSネイティブ</a></h3>\n<p>Swiftは<code>AppKit</code>、<code>ApplicationServices</code>、<code>AXUIElement</code>、<code>CGEvent</code>と直接連携できます。追加ランタイムなしの単一バイナリとして配布できます。</p>\n<h3 id=\"制限付き探索と自己修復\"><a class=\"heading-anchor\" href=\"#制限付き探索と自己修復\">制限付き探索と自己修復</a></h3>\n<p>AX階層は高コストで、KakaoTalkの更新により変わる可能性があります。探索にはノード上限を設け、成功したパスを保存しつつ毎回再検証します。</p>\n<h3 id=\"出力チャネルの分離\"><a class=\"heading-anchor\" href=\"#出力チャネルの分離\">出力チャネルの分離</a></h3>\n<p>構造化結果は<code>stdout</code>、AX診断は<code>stderr</code>へ出力します。JSON利用者やMCPサブプロセスがログをpayloadへ混ぜないための契約です。</p>\n<p>詳細なディレクトリ構造と設計根拠は<a href=\"https://github.com/channprj/kmsg/blob/main/ARCHITECTURE.md\" target=\"_blank\" rel=\"noopener noreferrer\">英語版アーキテクチャ</a>を参照してください。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "概要",
+        "label": "概要"
+      },
+      {
+        "level": 2,
+        "id": "主なコンポーネント",
+        "label": "主なコンポーネント"
+      },
+      {
+        "level": 2,
+        "id": "データフロー",
+        "label": "データフロー"
+      },
+      {
+        "level": 3,
+        "id": "起動と認証",
+        "label": "起動と認証"
+      },
+      {
+        "level": 3,
+        "id": "読み取り",
+        "label": "読み取り"
+      },
+      {
+        "level": 3,
+        "id": "監視",
+        "label": "監視"
+      },
+      {
+        "level": 3,
+        "id": "送信",
+        "label": "送信"
+      },
+      {
+        "level": 2,
+        "id": "ローカル状態",
+        "label": "ローカル状態"
+      },
+      {
+        "level": 2,
+        "id": "設計判断",
+        "label": "設計判断"
+      },
+      {
+        "level": 3,
+        "id": "非公開プロトコルを使わない",
+        "label": "非公開プロトコルを使わない"
+      },
+      {
+        "level": 3,
+        "id": "macosネイティブ",
+        "label": "macOSネイティブ"
+      },
+      {
+        "level": 3,
+        "id": "制限付き探索と自己修復",
+        "label": "制限付き探索と自己修復"
+      },
+      {
+        "level": 3,
+        "id": "出力チャネルの分離",
+        "label": "出力チャネルの分離"
+      }
+    ]
+  },
+  {
+    "locale": "cn",
+    "pageKey": "architecture",
+    "title": "kmsg架构",
+    "source": "site/content/cn/architecture.md",
+    "sourceLabel": "site/content/cn/architecture.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<h2 id=\"概览\"><a class=\"heading-anchor\" href=\"#概览\">概览</a></h2>\n<p><code>kmsg</code>是面向macOS 13及更高版本的Swift 6可执行文件。它不实现KakaoTalk私有网络协议，而是通过辅助功能API操作屏幕上可见的macOS应用。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-text\">CLI commands\n    ↓\nKakaoTalk domain services\n    ↓\nAccessibility helpers + AX path cache\n    ↓\nAXUIElement / CGEvent / AppKit\n    ↓\nKakaoTalk for macOS\n</code></pre>\n<p>原生stdio MCP服务器通过子进程调用同一套<code>kmsg</code>命令，再将结果结构化返回。CLI与MCP因此共享权限、缓存及错误处理逻辑。</p>\n<h2 id=\"主要组件\"><a class=\"heading-anchor\" href=\"#主要组件\">主要组件</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>组件</th>\n<th>职责</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>Sources/kmsg/Commands/</code></td>\n<td>参数解析、权限与认证、输出格式</td>\n</tr>\n<tr>\n<td><code>UIElement</code></td>\n<td><code>AXUIElement</code>封装和有界层级搜索</td>\n</tr>\n<tr>\n<td><code>AXActionRunner</code></td>\n<td>焦点、文本输入、键盘与重试</td>\n</tr>\n<tr>\n<td><code>AXPathCacheStore</code></td>\n<td>保存并验证AX路径</td>\n</tr>\n<tr>\n<td><code>KakaoTalkApp</code></td>\n<td>进程与窗口的启动、定位和恢复</td>\n</tr>\n<tr>\n<td><code>ChatListScanner</code></td>\n<td>读取聊天列表和预览</td>\n</tr>\n<tr>\n<td><code>ChatIdentityRegistryStore</code></td>\n<td>管理本地<code>chat_id</code></td>\n</tr>\n<tr>\n<td><code>ChatWindowResolver</code></td>\n<td>复用、搜索和恢复聊天窗口</td>\n</tr>\n<tr>\n<td><code>KakaoTalkTranscriptReader</code></td>\n<td>将消息行规范化</td>\n</tr>\n<tr>\n<td><code>KmsgMCPServer</code></td>\n<td>MCP帧、工具、超时和错误映射</td>\n</tr>\n</tbody></table></div>\n<h2 id=\"数据流\"><a class=\"heading-anchor\" href=\"#数据流\">数据流</a></h2>\n<h3 id=\"启动与认证\"><a class=\"heading-anchor\" href=\"#启动与认证\">启动与认证</a></h3>\n<ol>\n<li>需要UI访问的命令检查辅助功能权限。</li>\n<li>如有需要，启动KakaoTalk。</li>\n<li>检查当前登录状态。</li>\n<li>使用加密凭据或提示用户输入。</li>\n</ol>\n<p><code>read --background-safe</code>不会自动启动、登录或操作前台UI。</p>\n<h3 id=\"读取\"><a class=\"heading-anchor\" href=\"#读取\">读取</a></h3>\n<ol>\n<li>通过聊天名称或<code>chat_id</code>解析目标窗口。</li>\n<li>找到输入框、聊天面板和消息列表。</li>\n<li>将可见行转换为规范化消息记录。</li>\n<li>输出可读文本或单个JSON文档。</li>\n</ol>\n<h3 id=\"监控\"><a class=\"heading-anchor\" href=\"#监控\">监控</a></h3>\n<p><code>watch</code>在启动时建立现有记录基线，仅输出之后出现的消息。为避免重放旧消息，缺少可靠时间信息的行可能会在启动阶段被抑制。</p>\n<h3 id=\"发送\"><a class=\"heading-anchor\" href=\"#发送\">发送</a></h3>\n<p>文本发送会找到输入框、输入Unicode文本并验证发送动作。图片发送使用macOS pasteboard，并处理KakaoTalk的确认UI。</p>\n<h2 id=\"本地状态\"><a class=\"heading-anchor\" href=\"#本地状态\">本地状态</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>路径</th>\n<th>内容</th>\n</tr>\n</thead>\n<tbody><tr>\n<td><code>~/.config/kmsg/credentials.json</code></td>\n<td>加密凭据</td>\n</tr>\n<tr>\n<td><code>~/.config/kmsg/credentials/primary.key</code></td>\n<td>本地AES-GCM密钥</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/ax-path-cache.json</code></td>\n<td>已验证的AX路径</td>\n</tr>\n<tr>\n<td><code>~/.kmsg/chat-registry.json</code></td>\n<td>本地聊天ID</td>\n</tr>\n</tbody></table></div>\n<p>缓存会检查KakaoTalk版本、根指纹、schema和TTL。过期路径会被丢弃，并通过有界搜索恢复。</p>\n<h2 id=\"设计决策\"><a class=\"heading-anchor\" href=\"#设计决策\">设计决策</a></h2>\n<h3 id=\"不使用私有协议\"><a class=\"heading-anchor\" href=\"#不使用私有协议\">不使用私有协议</a></h3>\n<p>KakaoTalk没有公开面向第三方的官方消息API。<code>kmsg</code>不对LOCO协议进行逆向工程，而是与用户正在运行的应用UI交互。这并不代表官方集成或零风险使用。</p>\n<h3 id=\"macos原生实现\"><a class=\"heading-anchor\" href=\"#macos原生实现\">macOS原生实现</a></h3>\n<p>Swift可直接连接<code>AppKit</code>、<code>ApplicationServices</code>、<code>AXUIElement</code>和<code>CGEvent</code>，并以无需额外运行时的单个二进制发布。</p>\n<h3 id=\"有界搜索与自修复\"><a class=\"heading-anchor\" href=\"#有界搜索与自修复\">有界搜索与自修复</a></h3>\n<p>AX层级搜索开销较高，而且KakaoTalk更新后结构可能变化。所有搜索都设置节点预算；已缓存路径在使用前会再次验证。</p>\n<h3 id=\"输出通道分离\"><a class=\"heading-anchor\" href=\"#输出通道分离\">输出通道分离</a></h3>\n<p>结构化结果写入<code>stdout</code>，AX诊断写入<code>stderr</code>，避免JSON消费者和MCP子进程把日志混入payload。</p>\n<p>更完整的数据流与目录结构请参阅<a href=\"https://github.com/channprj/kmsg/blob/main/ARCHITECTURE.md\" target=\"_blank\" rel=\"noopener noreferrer\">英文架构文档</a>。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "概览",
+        "label": "概览"
+      },
+      {
+        "level": 2,
+        "id": "主要组件",
+        "label": "主要组件"
+      },
+      {
+        "level": 2,
+        "id": "数据流",
+        "label": "数据流"
+      },
+      {
+        "level": 3,
+        "id": "启动与认证",
+        "label": "启动与认证"
+      },
+      {
+        "level": 3,
+        "id": "读取",
+        "label": "读取"
+      },
+      {
+        "level": 3,
+        "id": "监控",
+        "label": "监控"
+      },
+      {
+        "level": 3,
+        "id": "发送",
+        "label": "发送"
+      },
+      {
+        "level": 2,
+        "id": "本地状态",
+        "label": "本地状态"
+      },
+      {
+        "level": 2,
+        "id": "设计决策",
+        "label": "设计决策"
+      },
+      {
+        "level": 3,
+        "id": "不使用私有协议",
+        "label": "不使用私有协议"
+      },
+      {
+        "level": 3,
+        "id": "macos原生实现",
+        "label": "macOS原生实现"
+      },
+      {
+        "level": 3,
+        "id": "有界搜索与自修复",
+        "label": "有界搜索与自修复"
+      },
+      {
+        "level": 3,
+        "id": "输出通道分离",
+        "label": "输出通道分离"
+      }
+    ]
+  },
+  {
+    "locale": "ko",
+    "pageKey": "mcp",
+    "title": "OpenClaw 연동 가이드",
+    "source": "site/content/ko/openclaw.md",
+    "sourceLabel": "site/content/ko/openclaw.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<p>이 문서는 <code>kmsg</code>를 OpenClaw 또는 다른 MCP 클라이언트에 연결하는 안전한 기본 구성을 설명합니다.</p>\n<h2 id=\"핵심-모델\"><a class=\"heading-anchor\" href=\"#핵심-모델\">핵심 모델</a></h2>\n<p>연동에는 서로 다른 두 인터페이스가 있습니다.</p>\n<ul>\n<li>요청·응답: 네이티브 <code>kmsg mcp-server</code></li>\n<li>실시간 이벤트: 별도 프로세스로 실행하는 <code>kmsg watch --json</code></li>\n</ul>\n<p>MCP 서버는 <code>kmsg_read</code>, <code>kmsg_send</code>, <code>kmsg_send_image</code>를 제공합니다. <code>watch</code>는 MCP 도구가 아니므로 실시간 자동 응답이 필요하면 감시 프로세스의 이벤트를 OpenClaw에 전달하는 작은 supervisor가 필요합니다.</p>\n<h2 id=\"권장-구조\"><a class=\"heading-anchor\" href=\"#권장-구조\">권장 구조</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">kmsg watch --json\n    ↓ one JSON object per event\nsupervisor / OpenClaw\n    ↓ reasoning and approval\nkmsg_send through MCP\n</code></pre>\n<p>감시와 요청·응답을 분리하면 MCP 호출은 짧고 예측 가능하게 유지되고, 장시간 실행 스트림은 독립적으로 재시작할 수 있습니다.</p>\n<h2 id=\"준비-사항\"><a class=\"heading-anchor\" href=\"#준비-사항\">준비 사항</a></h2>\n<ul>\n<li>macOS용 KakaoTalk 설치와 로그인</li>\n<li>실제 <code>kmsg</code> 바이너리에 대한 손쉬운 사용 권한</li>\n<li><code>kmsg status</code> 성공</li>\n<li><code>kmsg chats</code>와 dry run 검증</li>\n</ul>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg status --verbose\nkmsg chats --limit 20\nkmsg send \"채팅방 이름\" \"연결 테스트\" --dry-run\n</code></pre>\n<h2 id=\"mcp-설정\"><a class=\"heading-anchor\" href=\"#mcp-설정\">MCP 설정</a></h2>\n<p>서버를 직접 실행할 수 있습니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg mcp-server\n</code></pre>\n<p>MCP 클라이언트 설정 예시는 다음과 같습니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-json\">{\n  \"mcpServers\": {\n    \"kmsg\": {\n      \"command\": \"/absolute/path/to/kmsg\",\n      \"args\": [\"mcp-server\"],\n      \"env\": {\n        \"KMSG_MCP_TIMEOUT_SECONDS\": \"30\",\n        \"KMSG_DEFAULT_LAYOUT\": \"preserve\",\n        \"KMSG_DEFAULT_BACKGROUND_SAFE\": \"true\"\n      }\n    }\n  }\n}\n</code></pre>\n<p>MCP 프로세스에서 Homebrew 경로를 찾지 못하면 <code>command</code>에 절대 경로를 지정하세요.</p>\n<h2 id=\"실시간-감시\"><a class=\"heading-anchor\" href=\"#실시간-감시\">실시간 감시</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg watch \"채팅방 이름\" --json\n</code></pre>\n<p>출력은 이벤트마다 JSON 한 개이며, 진단 로그는 <code>stderr</code>에 남습니다. supervisor는 <code>stdout</code>만 파싱하고 재시작·중복 처리·승인 정책을 책임지는 것이 좋습니다.</p>\n<h2 id=\"도구-계약\"><a class=\"heading-anchor\" href=\"#도구-계약\">도구 계약</a></h2>\n<h3 id=\"kmsg-read\"><a class=\"heading-anchor\" href=\"#kmsg-read\"><code>kmsg_read</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_read\",\n  \"arguments\": {\n    \"chat\": \"채팅방 이름\",\n    \"limit\": 20,\n    \"background_safe\": true\n  }\n}\n</code></pre>\n<p><code>background_safe=true</code>는 이미 열려 있는 일치 창만 읽습니다. KakaoTalk 실행·활성화·로그인·검색·창 열기·크기 조절·닫기를 수행하지 않습니다.</p>\n<h3 id=\"kmsg-send\"><a class=\"heading-anchor\" href=\"#kmsg-send\"><code>kmsg_send</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send\",\n  \"arguments\": {\n    \"chat\": \"채팅방 이름\",\n    \"message\": \"안녕하세요\",\n    \"confirm\": true\n  }\n}\n</code></pre>\n<ul>\n<li><code>confirm=true</code>: 전송하지 않고 <code>CONFIRMATION_REQUIRED</code> 반환</li>\n<li><code>confirm=false</code> 또는 생략: 즉시 전송</li>\n<li><code>dry_run=true</code>: KakaoTalk UI에 접근하지 않고 대상과 내용만 확인</li>\n</ul>\n<h3 id=\"kmsg-send-image\"><a class=\"heading-anchor\" href=\"#kmsg-send-image\"><code>kmsg_send_image</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send_image\",\n  \"arguments\": {\n    \"chat\": \"채팅방 이름\",\n    \"image_path\": \"/absolute/path/image.png\",\n    \"confirm\": true\n  }\n}\n</code></pre>\n<p>경로는 MCP 서버가 실행되는 Mac에서 읽을 수 있는 절대 경로여야 합니다.</p>\n<h2 id=\"운영-모드\"><a class=\"heading-anchor\" href=\"#운영-모드\">운영 모드</a></h2>\n<h3 id=\"권장-초안-후-승인\"><a class=\"heading-anchor\" href=\"#권장-초안-후-승인\">권장: 초안 후 승인</a></h3>\n<ol>\n<li><code>kmsg_read</code> 또는 watch 이벤트로 문맥을 가져옵니다.</li>\n<li>에이전트가 답장을 초안으로 만듭니다.</li>\n<li>사람 또는 정책 엔진이 대상과 내용을 승인합니다.</li>\n<li>승인된 호출만 <code>confirm=false</code>로 전송합니다.</li>\n</ol>\n<p>개인 채팅은 오발송 비용이 크므로 이 흐름을 기본값으로 권장합니다.</p>\n<h3 id=\"고급-완전-자동-응답\"><a class=\"heading-anchor\" href=\"#고급-완전-자동-응답\">고급: 완전 자동 응답</a></h3>\n<p>완전 자동화는 허용된 채팅, 전송 빈도, 재시도 횟수, 최대 메시지 길이, 금지어, 긴급 중단 스위치를 supervisor에서 제한한 경우에만 사용하세요.</p>\n<h2 id=\"문제-해결\"><a class=\"heading-anchor\" href=\"#문제-해결\">문제 해결</a></h2>\n<h3 id=\"서버가-시작되지-않습니다\"><a class=\"heading-anchor\" href=\"#서버가-시작되지-않습니다\">서버가 시작되지 않습니다</a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">kmsg mcp-server\nkmsg status --verbose\n</code></pre>\n<p>클라이언트의 <code>command</code> 경로와 실행 권한, 손쉬운 사용 권한을 확인합니다.</p>\n<h3 id=\"읽기가-실패합니다\"><a class=\"heading-anchor\" href=\"#읽기가-실패합니다\">읽기가 실패합니다</a></h3>\n<p>background-safe 모드라면 대상 채팅 창을 먼저 열어 두거나, 포그라운드 조작이 허용될 때만 해당 옵션을 끄세요.</p>\n<h3 id=\"프레이밍-오류가-발생합니다\"><a class=\"heading-anchor\" href=\"#프레이밍-오류가-발생합니다\">프레이밍 오류가 발생합니다</a></h3>\n<p>서버는 <code>Content-Length</code> 기반 MCP 프레임과 줄 단위 JSON-RPC를 지원합니다. 한 연결 안에서는 한 프레이밍 방식을 일관되게 사용하세요.</p>\n<p>전체 필드와 응답 예시는 <a href=\"https://github.com/channprj/kmsg/blob/main/docs/openclaw.md\" target=\"_blank\" rel=\"noopener noreferrer\">영문 OpenClaw 문서</a>를 참고하세요.</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "핵심-모델",
+        "label": "핵심 모델"
+      },
+      {
+        "level": 2,
+        "id": "권장-구조",
+        "label": "권장 구조"
+      },
+      {
+        "level": 2,
+        "id": "준비-사항",
+        "label": "준비 사항"
+      },
+      {
+        "level": 2,
+        "id": "mcp-설정",
+        "label": "MCP 설정"
+      },
+      {
+        "level": 2,
+        "id": "실시간-감시",
+        "label": "실시간 감시"
+      },
+      {
+        "level": 2,
+        "id": "도구-계약",
+        "label": "도구 계약"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-read",
+        "label": "kmsg_read"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-send",
+        "label": "kmsg_send"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-send-image",
+        "label": "kmsg_send_image"
+      },
+      {
+        "level": 2,
+        "id": "운영-모드",
+        "label": "운영 모드"
+      },
+      {
+        "level": 3,
+        "id": "권장-초안-후-승인",
+        "label": "권장: 초안 후 승인"
+      },
+      {
+        "level": 3,
+        "id": "고급-완전-자동-응답",
+        "label": "고급: 완전 자동 응답"
+      },
+      {
+        "level": 2,
+        "id": "문제-해결",
+        "label": "문제 해결"
+      },
+      {
+        "level": 3,
+        "id": "서버가-시작되지-않습니다",
+        "label": "서버가 시작되지 않습니다"
+      },
+      {
+        "level": 3,
+        "id": "읽기가-실패합니다",
+        "label": "읽기가 실패합니다"
+      },
+      {
+        "level": 3,
+        "id": "프레이밍-오류가-발생합니다",
+        "label": "프레이밍 오류가 발생합니다"
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "pageKey": "mcp",
+    "title": "OpenClaw Integration Guide",
+    "source": "docs/openclaw.md",
+    "sourceLabel": "docs/openclaw.md",
+    "lastModified": "2026-05-26T04:12:35+09:00",
+    "html": "<p>This guide explains the current <code>kmsg</code> + OpenClaw integration model.</p>\n<h2 id=\"core-model\"><a class=\"heading-anchor\" href=\"#core-model\">Core Model</a></h2>\n<p>There are two different interfaces:</p>\n<ul>\n<li>MCP, via <code>kmsg mcp-server</code></li>\n<li>real-time streaming, via <code>kmsg watch \"&lt;chat&gt;\" --json</code></li>\n</ul>\n<p>Today, MCP is still request/response only. It exposes:</p>\n<ul>\n<li><code>kmsg_read</code></li>\n<li><code>kmsg_send</code></li>\n<li><code>kmsg_send_image</code></li>\n</ul>\n<p><code>watch</code> is not an MCP tool. If you want real-time auto-reply, run <code>watch --json</code> as a separate process and feed each event into OpenClaw or a small wrapper around it.</p>\n<h2 id=\"recommended-architecture\"><a class=\"heading-anchor\" href=\"#recommended-architecture\">Recommended Architecture</a></h2>\n<p>Use two processes:</p>\n<ol>\n<li><code>kmsg mcp-server</code></li>\n<li><code>kmsg watch \"채팅방 이름\" --json</code></li>\n</ol>\n<p>The flow is:</p>\n<ol>\n<li><code>watch --json</code> emits a new KakaoTalk event</li>\n<li>your supervisor passes that event to OpenClaw</li>\n<li>OpenClaw drafts a reply</li>\n<li>the reply is sent with <code>kmsg_send</code> through MCP, or <code>kmsg send</code> directly</li>\n</ol>\n<p>This separation matters:</p>\n<ul>\n<li>MCP handles tool calls cleanly</li>\n<li><code>watch</code> handles low-latency inbound detection</li>\n<li>you do not need a streaming MCP extension to operate today</li>\n</ul>\n<h2 id=\"prerequisites\"><a class=\"heading-anchor\" href=\"#prerequisites\">Prerequisites</a></h2>\n<ul>\n<li>macOS with KakaoTalk installed</li>\n<li>Accessibility permission granted for <code>kmsg</code></li>\n<li><code>kmsg</code> installed and working</li>\n</ul>\n<p>Check first:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg --version\nkmsg status\n</code></pre>\n<h2 id=\"mcp-setup\"><a class=\"heading-anchor\" href=\"#mcp-setup\">MCP Setup</a></h2>\n<p>Run the MCP server:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg mcp-server\n</code></pre>\n<p>The stdio server accepts both MCP <code>Content-Length</code> framing and newline-delimited JSON-RPC input. It replies with the same framing style as the current request, so older OpenClaw-style clients and simpler NDJSON supervisors can use the same binary.</p>\n<p>Config example:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"mcpServers\": {\n    \"kmsg\": {\n      \"command\": \"kmsg\",\n      \"args\": [\"mcp-server\"],\n      \"env\": {\n        \"KMSG_DEFAULT_DEEP_RECOVERY\": \"false\",\n        \"KMSG_TRACE_DEFAULT\": \"false\"\n      }\n    }\n  }\n}\n</code></pre>\n<p>You can copy:</p>\n<ul>\n<li><code>docs/openclaw.mcp.example.json</code></li>\n</ul>\n<h2 id=\"real-time-watch-setup\"><a class=\"heading-anchor\" href=\"#real-time-watch-setup\">Real-Time Watch Setup</a></h2>\n<p>Run a dedicated watch process for the chat you want to automate:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg watch \"채팅방 이름\" --json\n</code></pre>\n<p><code>watch --json</code> emits one JSON object per detected event on <code>stdout</code>.</p>\n<p>Example:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"chat\": \"홍길동\",\n  \"detected_at\": \"2026-03-25T10:20:30.123Z\",\n  \"event\": \"message\",\n  \"message\": {\n    \"author\": \"홍길동\",\n    \"time_raw\": \"10:20\",\n    \"body\": \"새 메시지\"\n  }\n}\n</code></pre>\n<p>Notes:</p>\n<ul>\n<li><code>watch</code> now defaults to 200ms polling</li>\n<li>startup uses a short warm-up to avoid backfill</li>\n<li>messages earlier than the watch start cutoff are suppressed</li>\n<li><code>--trace-ax</code> logs stay on <code>stderr</code></li>\n</ul>\n<h2 id=\"tool-contracts\"><a class=\"heading-anchor\" href=\"#tool-contracts\">Tool Contracts</a></h2>\n<h2 id=\"kmsg-read\"><a class=\"heading-anchor\" href=\"#kmsg-read\"><code>kmsg_read</code></a></h2>\n<p>Input:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"chat\": \"채팅방 이름\",\n  \"limit\": 20,\n  \"deep_recovery\": false,\n  \"keep_window\": false,\n  \"trace_ax\": false\n}\n</code></pre>\n<p>Success shape:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"ok\": true,\n  \"chat\": \"채팅방 이름\",\n  \"fetched_at\": \"2026-02-26T03:10:10.123Z\",\n  \"count\": 20,\n  \"messages\": [\n    {\n      \"author\": \"홍길동\",\n      \"time_raw\": \"00:27\",\n      \"body\": \"밤이 깊었네\"\n    }\n  ],\n  \"meta\": {\n    \"latency_ms\": 1820\n  }\n}\n</code></pre>\n<h2 id=\"kmsg-send\"><a class=\"heading-anchor\" href=\"#kmsg-send\"><code>kmsg_send</code></a></h2>\n<p>Input:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"chat\": \"채팅방 이름\",\n  \"message\": \"테스트 메시지\",\n  \"confirm\": false,\n  \"deep_recovery\": false,\n  \"keep_window\": false,\n  \"trace_ax\": false\n}\n</code></pre>\n<p>Notes:</p>\n<ul>\n<li><code>confirm=false</code> or omitted sends immediately</li>\n<li><code>confirm=true</code> does not send and returns <code>CONFIRMATION_REQUIRED</code></li>\n</ul>\n<h2 id=\"kmsg-send-image\"><a class=\"heading-anchor\" href=\"#kmsg-send-image\"><code>kmsg_send_image</code></a></h2>\n<p>Input:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"chat\": \"채팅방 이름\",\n  \"image_path\": \"/path/to/image.png\",\n  \"confirm\": false,\n  \"deep_recovery\": false,\n  \"keep_window\": false,\n  \"trace_ax\": false\n}\n</code></pre>\n<h2 id=\"operating-modes\"><a class=\"heading-anchor\" href=\"#operating-modes\">Operating Modes</a></h2>\n<h3 id=\"recommended-draft-then-approve\"><a class=\"heading-anchor\" href=\"#recommended-draft-then-approve\">Recommended: Draft Then Approve</a></h3>\n<ol>\n<li><code>watch --json</code> emits a message</li>\n<li>OpenClaw drafts a reply</li>\n<li>user approves</li>\n<li>send with <code>kmsg_send</code></li>\n</ol>\n<p>This is the safest default because KakaoTalk is a personal chat surface and mistakes are expensive.</p>\n<p>Minimal send call:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send\",\n  \"arguments\": {\n    \"chat\": \"홍길동\",\n    \"message\": \"검토 후 전송합니다.\",\n    \"confirm\": false\n  }\n}\n</code></pre>\n<h3 id=\"advanced-full-auto-reply\"><a class=\"heading-anchor\" href=\"#advanced-full-auto-reply\">Advanced: Full Auto-Reply</a></h3>\n<ol>\n<li><code>watch --json</code> emits a message</li>\n<li>OpenClaw generates a reply automatically</li>\n<li>your supervisor immediately calls <code>kmsg_send</code></li>\n</ol>\n<p>Use this only with guardrails. At minimum:</p>\n<ul>\n<li>ignore your own messages</li>\n<li>restrict to specific chat rooms</li>\n<li>add cooldown / loop protection</li>\n<li>log every outbound message</li>\n</ul>\n<h2 id=\"quick-start\"><a class=\"heading-anchor\" href=\"#quick-start\">Quick Start</a></h2>\n<p>Minimal manual setup:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg mcp-server\n</code></pre>\n<p>In another process:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">kmsg watch \"채팅방 이름\" --json\n</code></pre>\n<p>Then wire the watch events into OpenClaw and send replies through MCP <code>kmsg_send</code>.</p>\n<h2 id=\"troubleshooting\"><a class=\"heading-anchor\" href=\"#troubleshooting\">Troubleshooting</a></h2>\n<p>If watch fails:</p>\n<ul>\n<li><code>kmsg watch \"채팅방 이름\" --json --trace-ax</code></li>\n<li><code>kmsg inspect --window 0 --depth 20</code></li>\n</ul>\n<p>If MCP fails:</p>\n<ul>\n<li><code>kmsg mcp-server</code></li>\n<li><code>kmsg status</code></li>\n<li>confirm Accessibility permission and KakaoTalk readiness</li>\n<li>if a client sends JSON lines instead of <code>Content-Length</code> frames, keep one JSON-RPC request per line</li>\n</ul>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "core-model",
+        "label": "Core Model"
+      },
+      {
+        "level": 2,
+        "id": "recommended-architecture",
+        "label": "Recommended Architecture"
+      },
+      {
+        "level": 2,
+        "id": "prerequisites",
+        "label": "Prerequisites"
+      },
+      {
+        "level": 2,
+        "id": "mcp-setup",
+        "label": "MCP Setup"
+      },
+      {
+        "level": 2,
+        "id": "real-time-watch-setup",
+        "label": "Real-Time Watch Setup"
+      },
+      {
+        "level": 2,
+        "id": "tool-contracts",
+        "label": "Tool Contracts"
+      },
+      {
+        "level": 2,
+        "id": "kmsg-read",
+        "label": "kmsg_read"
+      },
+      {
+        "level": 2,
+        "id": "kmsg-send",
+        "label": "kmsg_send"
+      },
+      {
+        "level": 2,
+        "id": "kmsg-send-image",
+        "label": "kmsg_send_image"
+      },
+      {
+        "level": 2,
+        "id": "operating-modes",
+        "label": "Operating Modes"
+      },
+      {
+        "level": 3,
+        "id": "recommended-draft-then-approve",
+        "label": "Recommended: Draft Then Approve"
+      },
+      {
+        "level": 3,
+        "id": "advanced-full-auto-reply",
+        "label": "Advanced: Full Auto-Reply"
+      },
+      {
+        "level": 2,
+        "id": "quick-start",
+        "label": "Quick Start"
+      },
+      {
+        "level": 2,
+        "id": "troubleshooting",
+        "label": "Troubleshooting"
+      }
+    ]
+  },
+  {
+    "locale": "jp",
+    "pageKey": "mcp",
+    "title": "OpenClaw連携ガイド",
+    "source": "site/content/jp/openclaw.md",
+    "sourceLabel": "site/content/jp/openclaw.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<p><code>kmsg</code>をOpenClawや他のMCPクライアントへ安全に接続する基本構成を説明します。</p>\n<h2 id=\"基本モデル\"><a class=\"heading-anchor\" href=\"#基本モデル\">基本モデル</a></h2>\n<p>連携には2つの独立したインターフェースがあります。</p>\n<ul>\n<li>リクエスト／レスポンス: <code>kmsg mcp-server</code></li>\n<li>リアルタイムイベント: <code>kmsg watch --json</code></li>\n</ul>\n<p>MCPサーバーは<code>kmsg_read</code>、<code>kmsg_send</code>、<code>kmsg_send_image</code>を提供します。<code>watch</code>はMCPツールではないため、リアルタイム自動応答にはイベントをOpenClawへ渡すsupervisorが必要です。</p>\n<h2 id=\"推奨構成\"><a class=\"heading-anchor\" href=\"#推奨構成\">推奨構成</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-text\">kmsg watch --json\n    ↓ one JSON object per event\nsupervisor / OpenClaw\n    ↓ reasoning and approval\nkmsg_send through MCP\n</code></pre>\n<p>長時間の監視ストリームと短いMCP呼び出しを分けることで、再起動やエラー処理を独立して管理できます。</p>\n<h2 id=\"事前確認\"><a class=\"heading-anchor\" href=\"#事前確認\">事前確認</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg status --verbose\nkmsg chats --limit 20\nkmsg send \"チャット名\" \"接続テスト\" --dry-run\n</code></pre>\n<h2 id=\"mcp設定\"><a class=\"heading-anchor\" href=\"#mcp設定\">MCP設定</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg mcp-server\n</code></pre>\n<p>クライアント設定例:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-json\">{\n  \"mcpServers\": {\n    \"kmsg\": {\n      \"command\": \"/absolute/path/to/kmsg\",\n      \"args\": [\"mcp-server\"],\n      \"env\": {\n        \"KMSG_MCP_TIMEOUT_SECONDS\": \"30\",\n        \"KMSG_DEFAULT_LAYOUT\": \"preserve\",\n        \"KMSG_DEFAULT_BACKGROUND_SAFE\": \"true\"\n      }\n    }\n  }\n}\n</code></pre>\n<h2 id=\"リアルタイム監視\"><a class=\"heading-anchor\" href=\"#リアルタイム監視\">リアルタイム監視</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">kmsg watch \"チャット名\" --json\n</code></pre>\n<p>イベントごとに1つのJSONを<code>stdout</code>へ出力し、診断ログは<code>stderr</code>へ分離します。supervisorは重複排除、再起動、承認ルールを担当します。</p>\n<h2 id=\"ツール契約\"><a class=\"heading-anchor\" href=\"#ツール契約\">ツール契約</a></h2>\n<h3 id=\"kmsg-read\"><a class=\"heading-anchor\" href=\"#kmsg-read\"><code>kmsg_read</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_read\",\n  \"arguments\": {\n    \"chat\": \"チャット名\",\n    \"limit\": 20,\n    \"background_safe\": true\n  }\n}\n</code></pre>\n<p><code>background_safe=true</code>は、すでに表示されている一致ウィンドウだけを読みます。KakaoTalkの起動、アクティブ化、ログイン、検索、ウィンドウ操作は行いません。</p>\n<h3 id=\"kmsg-send\"><a class=\"heading-anchor\" href=\"#kmsg-send\"><code>kmsg_send</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send\",\n  \"arguments\": {\n    \"chat\": \"チャット名\",\n    \"message\": \"こんにちは\",\n    \"confirm\": true\n  }\n}\n</code></pre>\n<ul>\n<li><code>confirm=true</code>: 送信せず<code>CONFIRMATION_REQUIRED</code>を返す</li>\n<li><code>confirm=false</code>または省略: 即時送信</li>\n<li><code>dry_run=true</code>: UIを操作せず対象と内容を確認</li>\n</ul>\n<h3 id=\"kmsg-send-image\"><a class=\"heading-anchor\" href=\"#kmsg-send-image\"><code>kmsg_send_image</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send_image\",\n  \"arguments\": {\n    \"chat\": \"チャット名\",\n    \"image_path\": \"/absolute/path/image.png\",\n    \"confirm\": true\n  }\n}\n</code></pre>\n<h2 id=\"運用モード\"><a class=\"heading-anchor\" href=\"#運用モード\">運用モード</a></h2>\n<h3 id=\"推奨-下書き後に承認\"><a class=\"heading-anchor\" href=\"#推奨-下書き後に承認\">推奨: 下書き後に承認</a></h3>\n<ol>\n<li><code>kmsg_read</code>またはwatchイベントで文脈を取得</li>\n<li>AIエージェントが返信案を作成</li>\n<li>人またはポリシーエンジンが宛先と内容を確認</li>\n<li>承認済みの呼び出しだけを<code>confirm=false</code>で送信</li>\n</ol>\n<p>個人チャットでは誤送信の影響が大きいため、この流れを推奨します。</p>\n<h3 id=\"完全自動応答\"><a class=\"heading-anchor\" href=\"#完全自動応答\">完全自動応答</a></h3>\n<p>許可するチャット、送信頻度、再試行回数、最大文字数、禁止語、緊急停止をsupervisor側で制限した場合だけ使用してください。</p>\n<h2 id=\"トラブルシューティング\"><a class=\"heading-anchor\" href=\"#トラブルシューティング\">トラブルシューティング</a></h2>\n<ul>\n<li><code>command</code>には実行可能な<code>kmsg</code>の絶対パスを指定</li>\n<li><code>kmsg status --verbose</code>で権限とKakaoTalk状態を確認</li>\n<li>background-safeで失敗する場合は対象チャットを先に表示</li>\n<li>1つの接続内ではMCPフレーム方式を混在させない</li>\n</ul>\n<p>全フィールドと応答例は<a href=\"https://github.com/channprj/kmsg/blob/main/docs/openclaw.md\" target=\"_blank\" rel=\"noopener noreferrer\">英語版OpenClawガイド</a>を参照してください。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "基本モデル",
+        "label": "基本モデル"
+      },
+      {
+        "level": 2,
+        "id": "推奨構成",
+        "label": "推奨構成"
+      },
+      {
+        "level": 2,
+        "id": "事前確認",
+        "label": "事前確認"
+      },
+      {
+        "level": 2,
+        "id": "mcp設定",
+        "label": "MCP設定"
+      },
+      {
+        "level": 2,
+        "id": "リアルタイム監視",
+        "label": "リアルタイム監視"
+      },
+      {
+        "level": 2,
+        "id": "ツール契約",
+        "label": "ツール契約"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-read",
+        "label": "kmsg_read"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-send",
+        "label": "kmsg_send"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-send-image",
+        "label": "kmsg_send_image"
+      },
+      {
+        "level": 2,
+        "id": "運用モード",
+        "label": "運用モード"
+      },
+      {
+        "level": 3,
+        "id": "推奨-下書き後に承認",
+        "label": "推奨: 下書き後に承認"
+      },
+      {
+        "level": 3,
+        "id": "完全自動応答",
+        "label": "完全自動応答"
+      },
+      {
+        "level": 2,
+        "id": "トラブルシューティング",
+        "label": "トラブルシューティング"
+      }
+    ]
+  },
+  {
+    "locale": "cn",
+    "pageKey": "mcp",
+    "title": "OpenClaw集成指南",
+    "source": "site/content/cn/openclaw.md",
+    "sourceLabel": "site/content/cn/openclaw.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<p>本页说明如何将<code>kmsg</code>安全地接入OpenClaw或其他MCP客户端。</p>\n<h2 id=\"基本模型\"><a class=\"heading-anchor\" href=\"#基本模型\">基本模型</a></h2>\n<p>集成包含两个独立接口。</p>\n<ul>\n<li>请求与响应: <code>kmsg mcp-server</code></li>\n<li>实时事件: <code>kmsg watch --json</code></li>\n</ul>\n<p>MCP服务器提供<code>kmsg_read</code>、<code>kmsg_send</code>和<code>kmsg_send_image</code>。<code>watch</code>并非MCP工具；若要实时自动回复，需要一个supervisor把事件转交给OpenClaw。</p>\n<h2 id=\"推荐架构\"><a class=\"heading-anchor\" href=\"#推荐架构\">推荐架构</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-text\">kmsg watch --json\n    ↓ one JSON object per event\nsupervisor / OpenClaw\n    ↓ reasoning and approval\nkmsg_send through MCP\n</code></pre>\n<p>将长时间运行的监控流与短时MCP调用分开，便于独立处理重启、去重和审批。</p>\n<h2 id=\"使用前检查\"><a class=\"heading-anchor\" href=\"#使用前检查\">使用前检查</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg status --verbose\nkmsg chats --limit 20\nkmsg send \"聊天名称\" \"连接测试\" --dry-run\n</code></pre>\n<h2 id=\"mcp配置\"><a class=\"heading-anchor\" href=\"#mcp配置\">MCP配置</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg mcp-server\n</code></pre>\n<p>客户端配置示例:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-json\">{\n  \"mcpServers\": {\n    \"kmsg\": {\n      \"command\": \"/absolute/path/to/kmsg\",\n      \"args\": [\"mcp-server\"],\n      \"env\": {\n        \"KMSG_MCP_TIMEOUT_SECONDS\": \"30\",\n        \"KMSG_DEFAULT_LAYOUT\": \"preserve\",\n        \"KMSG_DEFAULT_BACKGROUND_SAFE\": \"true\"\n      }\n    }\n  }\n}\n</code></pre>\n<h2 id=\"实时监控\"><a class=\"heading-anchor\" href=\"#实时监控\">实时监控</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">kmsg watch \"聊天名称\" --json\n</code></pre>\n<p>每个事件向<code>stdout</code>写入一个JSON对象，诊断日志写入<code>stderr</code>。supervisor应负责重启、去重、速率限制和审批策略。</p>\n<h2 id=\"工具契约\"><a class=\"heading-anchor\" href=\"#工具契约\">工具契约</a></h2>\n<h3 id=\"kmsg-read\"><a class=\"heading-anchor\" href=\"#kmsg-read\"><code>kmsg_read</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_read\",\n  \"arguments\": {\n    \"chat\": \"聊天名称\",\n    \"limit\": 20,\n    \"background_safe\": true\n  }\n}\n</code></pre>\n<p><code>background_safe=true</code>只读取已经显示的匹配窗口，不会启动、激活、登录、搜索或调整KakaoTalk窗口。</p>\n<h3 id=\"kmsg-send\"><a class=\"heading-anchor\" href=\"#kmsg-send\"><code>kmsg_send</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send\",\n  \"arguments\": {\n    \"chat\": \"聊天名称\",\n    \"message\": \"你好\",\n    \"confirm\": true\n  }\n}\n</code></pre>\n<ul>\n<li><code>confirm=true</code>: 不发送，返回<code>CONFIRMATION_REQUIRED</code></li>\n<li><code>confirm=false</code>或省略: 立即发送</li>\n<li><code>dry_run=true</code>: 不操作UI，只检查目标与内容</li>\n</ul>\n<h3 id=\"kmsg-send-image\"><a class=\"heading-anchor\" href=\"#kmsg-send-image\"><code>kmsg_send_image</code></a></h3>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-json\">{\n  \"name\": \"kmsg_send_image\",\n  \"arguments\": {\n    \"chat\": \"聊天名称\",\n    \"image_path\": \"/absolute/path/image.png\",\n    \"confirm\": true\n  }\n}\n</code></pre>\n<h2 id=\"运行模式\"><a class=\"heading-anchor\" href=\"#运行模式\">运行模式</a></h2>\n<h3 id=\"推荐-先生成草稿-再审批\"><a class=\"heading-anchor\" href=\"#推荐-先生成草稿-再审批\">推荐: 先生成草稿，再审批</a></h3>\n<ol>\n<li>通过<code>kmsg_read</code>或watch事件获取上下文。</li>\n<li>AI智能体生成回复草稿。</li>\n<li>人或策略引擎检查收件目标与内容。</li>\n<li>仅将获批请求以<code>confirm=false</code>发送。</li>\n</ol>\n<p>个人聊天中的误发成本较高，因此推荐把此流程作为默认模式。</p>\n<h3 id=\"完全自动回复\"><a class=\"heading-anchor\" href=\"#完全自动回复\">完全自动回复</a></h3>\n<p>仅在supervisor限制了允许的聊天、发送频率、重试次数、最大长度、禁用词和紧急停止开关时启用。</p>\n<h2 id=\"故障排除\"><a class=\"heading-anchor\" href=\"#故障排除\">故障排除</a></h2>\n<ul>\n<li>在<code>command</code>中使用可执行<code>kmsg</code>的绝对路径</li>\n<li>运行<code>kmsg status --verbose</code>检查权限和KakaoTalk状态</li>\n<li>background-safe失败时，先显示目标聊天窗口</li>\n<li>同一连接内不要混用不同MCP帧格式</li>\n</ul>\n<p>完整字段与响应示例请参阅<a href=\"https://github.com/channprj/kmsg/blob/main/docs/openclaw.md\" target=\"_blank\" rel=\"noopener noreferrer\">英文OpenClaw指南</a>。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "基本模型",
+        "label": "基本模型"
+      },
+      {
+        "level": 2,
+        "id": "推荐架构",
+        "label": "推荐架构"
+      },
+      {
+        "level": 2,
+        "id": "使用前检查",
+        "label": "使用前检查"
+      },
+      {
+        "level": 2,
+        "id": "mcp配置",
+        "label": "MCP配置"
+      },
+      {
+        "level": 2,
+        "id": "实时监控",
+        "label": "实时监控"
+      },
+      {
+        "level": 2,
+        "id": "工具契约",
+        "label": "工具契约"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-read",
+        "label": "kmsg_read"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-send",
+        "label": "kmsg_send"
+      },
+      {
+        "level": 3,
+        "id": "kmsg-send-image",
+        "label": "kmsg_send_image"
+      },
+      {
+        "level": 2,
+        "id": "运行模式",
+        "label": "运行模式"
+      },
+      {
+        "level": 3,
+        "id": "推荐-先生成草稿-再审批",
+        "label": "推荐: 先生成草稿，再审批"
+      },
+      {
+        "level": 3,
+        "id": "完全自动回复",
+        "label": "完全自动回复"
+      },
+      {
+        "level": 2,
+        "id": "故障排除",
+        "label": "故障排除"
+      }
+    ]
+  },
+  {
+    "locale": "ko",
+    "pageKey": "skill",
+    "title": "kmsg 코딩 에이전트 Skill",
+    "source": "site/content/ko/skill.md",
+    "sourceLabel": "site/content/ko/skill.md",
+    "lastModified": "2026-07-29T03:07:08+09:00",
+    "html": "<p><code>kmsg</code> Skill은 Claude Code와 Codex가 macOS용 KakaoTalk을 같은 안전한 절차로\n탐색하고 읽고 전송하도록 안내합니다.</p>\n<h2 id=\"준비-사항\"><a class=\"heading-anchor\" href=\"#준비-사항\">준비 사항</a></h2>\n<ul>\n<li>macOS 13 이상</li>\n<li>로그인된 macOS용 KakaoTalk</li>\n<li>설치된 <code>kmsg</code> 바이너리에 대한 손쉬운 사용 권한</li>\n</ul>\n<h2 id=\"skill-설치\"><a class=\"heading-anchor\" href=\"#skill-설치\">Skill 설치</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y\n</code></pre>\n<h2 id=\"에이전트에서-호출\"><a class=\"heading-anchor\" href=\"#에이전트에서-호출\">에이전트에서 호출</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"스크롤 가능한 표\"><table>\n<thead>\n<tr>\n<th>에이전트</th>\n<th>호출</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Claude Code</td>\n<td><code>/kmsg</code></td>\n</tr>\n<tr>\n<td>Codex</td>\n<td><code>$kmsg</code></td>\n</tr>\n</tbody></table></div>\n<h2 id=\"안전한-기본-흐름\"><a class=\"heading-anchor\" href=\"#안전한-기본-흐름\">안전한 기본 흐름</a></h2>\n<ol>\n<li><code>kmsg status --verbose</code>로 권한과 로그인 상태를 확인합니다.</li>\n<li><code>kmsg chats --limit 20</code>으로 실제 채팅 이름을 확인합니다.</li>\n<li><code>kmsg read \"채팅 이름\" --limit 20</code>으로 최근 메시지를 읽습니다.</li>\n<li>전송 전 <code>kmsg send \"채팅 이름\" \"메시지\" --dry-run</code>을 실행합니다.</li>\n</ol>\n<h2 id=\"mcp와-함께-사용\"><a class=\"heading-anchor\" href=\"#mcp와-함께-사용\">MCP와 함께 사용</a></h2>\n<p>장기 실행 이벤트에는 <code>kmsg watch --json</code>, 요청·응답 도구에는\n<code>kmsg mcp-server</code>를 사용합니다. 자세한 구성은 <a href=\"https://github.com/channprj/kmsg/blob/main/site/content/mcp/\" target=\"_blank\" rel=\"noopener noreferrer\">MCP 문서</a>에서\n확인합니다.</p>\n<h2 id=\"문제-해결\"><a class=\"heading-anchor\" href=\"#문제-해결\">문제 해결</a></h2>\n<p>명령이 실패하면 <code>kmsg status --verbose</code>와 <code>kmsg inspect --depth 5</code>를 먼저\n확인하고, 전체 옵션은 <a href=\"/kmsg/usage/\">사용법</a>을 참고합니다.</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "준비-사항",
+        "label": "준비 사항"
+      },
+      {
+        "level": 2,
+        "id": "skill-설치",
+        "label": "Skill 설치"
+      },
+      {
+        "level": 2,
+        "id": "에이전트에서-호출",
+        "label": "에이전트에서 호출"
+      },
+      {
+        "level": 2,
+        "id": "안전한-기본-흐름",
+        "label": "안전한 기본 흐름"
+      },
+      {
+        "level": 2,
+        "id": "mcp와-함께-사용",
+        "label": "MCP와 함께 사용"
+      },
+      {
+        "level": 2,
+        "id": "문제-해결",
+        "label": "문제 해결"
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "pageKey": "skill",
+    "title": "kmsg coding agent Skill",
+    "source": "site/content/en/skill.md",
+    "sourceLabel": "site/content/en/skill.md",
+    "lastModified": "2026-07-29T03:07:08+09:00",
+    "html": "<p>The <code>kmsg</code> Skill guides Claude Code and Codex through the same safe workflow for\nfinding, reading, and sending KakaoTalk messages on macOS.</p>\n<h2 id=\"requirements\"><a class=\"heading-anchor\" href=\"#requirements\">Requirements</a></h2>\n<ul>\n<li>macOS 13 or later</li>\n<li>KakaoTalk for macOS, signed in</li>\n<li>Accessibility permission for the installed <code>kmsg</code> binary</li>\n</ul>\n<h2 id=\"install-the-skill\"><a class=\"heading-anchor\" href=\"#install-the-skill\">Install the Skill</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y\n</code></pre>\n<h2 id=\"invoke-it-from-an-agent\"><a class=\"heading-anchor\" href=\"#invoke-it-from-an-agent\">Invoke it from an agent</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"Scrollable table\"><table>\n<thead>\n<tr>\n<th>Agent</th>\n<th>Invocation</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Claude Code</td>\n<td><code>/kmsg</code></td>\n</tr>\n<tr>\n<td>Codex</td>\n<td><code>$kmsg</code></td>\n</tr>\n</tbody></table></div>\n<h2 id=\"safe-default-workflow\"><a class=\"heading-anchor\" href=\"#safe-default-workflow\">Safe default workflow</a></h2>\n<ol>\n<li>Check permissions and sign-in status with <code>kmsg status --verbose</code>.</li>\n<li>Confirm the exact chat name with <code>kmsg chats --limit 20</code>.</li>\n<li>Read recent messages with <code>kmsg read \"Chat name\" --limit 20</code>.</li>\n<li>Before sending, run <code>kmsg send \"Chat name\" \"Message\" --dry-run</code>.</li>\n</ol>\n<h2 id=\"use-it-with-mcp\"><a class=\"heading-anchor\" href=\"#use-it-with-mcp\">Use it with MCP</a></h2>\n<p>Use <code>kmsg watch --json</code> for long-running events and <code>kmsg mcp-server</code> for\nrequest-and-response tools. See the <a href=\"https://github.com/channprj/kmsg/blob/main/site/content/mcp/\" target=\"_blank\" rel=\"noopener noreferrer\">MCP guide</a> for configuration\ndetails.</p>\n<h2 id=\"troubleshooting\"><a class=\"heading-anchor\" href=\"#troubleshooting\">Troubleshooting</a></h2>\n<p>If a command fails, check <code>kmsg status --verbose</code> and\n<code>kmsg inspect --depth 5</code> first. See <a href=\"/kmsg/en/usage/\">Usage</a> for all options.</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "requirements",
+        "label": "Requirements"
+      },
+      {
+        "level": 2,
+        "id": "install-the-skill",
+        "label": "Install the Skill"
+      },
+      {
+        "level": 2,
+        "id": "invoke-it-from-an-agent",
+        "label": "Invoke it from an agent"
+      },
+      {
+        "level": 2,
+        "id": "safe-default-workflow",
+        "label": "Safe default workflow"
+      },
+      {
+        "level": 2,
+        "id": "use-it-with-mcp",
+        "label": "Use it with MCP"
+      },
+      {
+        "level": 2,
+        "id": "troubleshooting",
+        "label": "Troubleshooting"
+      }
+    ]
+  },
+  {
+    "locale": "jp",
+    "pageKey": "skill",
+    "title": "kmsgコーディングエージェントSkill",
+    "source": "site/content/jp/skill.md",
+    "sourceLabel": "site/content/jp/skill.md",
+    "lastModified": "2026-07-29T03:07:08+09:00",
+    "html": "<p><code>kmsg</code> Skillは、Claude CodeとCodexがmacOS版KakaoTalkを同じ安全な手順で\n探し、読み取り、送信できるように案内します。</p>\n<h2 id=\"必要な環境\"><a class=\"heading-anchor\" href=\"#必要な環境\">必要な環境</a></h2>\n<ul>\n<li>macOS 13以降</li>\n<li>ログイン済みのmacOS版KakaoTalk</li>\n<li>インストール済みの<code>kmsg</code>バイナリに対するアクセシビリティ権限</li>\n</ul>\n<h2 id=\"skillのインストール\"><a class=\"heading-anchor\" href=\"#skillのインストール\">Skillのインストール</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y\n</code></pre>\n<h2 id=\"エージェントから呼び出す\"><a class=\"heading-anchor\" href=\"#エージェントから呼び出す\">エージェントから呼び出す</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"横にスクロールできる表\"><table>\n<thead>\n<tr>\n<th>エージェント</th>\n<th>呼び出し</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Claude Code</td>\n<td><code>/kmsg</code></td>\n</tr>\n<tr>\n<td>Codex</td>\n<td><code>$kmsg</code></td>\n</tr>\n</tbody></table></div>\n<h2 id=\"安全な基本フロー\"><a class=\"heading-anchor\" href=\"#安全な基本フロー\">安全な基本フロー</a></h2>\n<ol>\n<li><code>kmsg status --verbose</code>で権限とログイン状態を確認します。</li>\n<li><code>kmsg chats --limit 20</code>で正確なチャット名を確認します。</li>\n<li><code>kmsg read \"チャット名\" --limit 20</code>で最近のメッセージを読み取ります。</li>\n<li>送信前に<code>kmsg send \"チャット名\" \"メッセージ\" --dry-run</code>を実行します。</li>\n</ol>\n<h2 id=\"mcpと組み合わせる\"><a class=\"heading-anchor\" href=\"#mcpと組み合わせる\">MCPと組み合わせる</a></h2>\n<p>長時間のイベントには<code>kmsg watch --json</code>、リクエスト・レスポンス型の\nツールには<code>kmsg mcp-server</code>を使います。設定方法は\n<a href=\"https://github.com/channprj/kmsg/blob/main/site/content/mcp/\" target=\"_blank\" rel=\"noopener noreferrer\">MCPドキュメント</a>を参照してください。</p>\n<h2 id=\"トラブルシューティング\"><a class=\"heading-anchor\" href=\"#トラブルシューティング\">トラブルシューティング</a></h2>\n<p>コマンドが失敗したら、まず<code>kmsg status --verbose</code>と\n<code>kmsg inspect --depth 5</code>を確認してください。全オプションは\n<a href=\"/kmsg/jp/usage/\">使い方</a>を参照してください。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "必要な環境",
+        "label": "必要な環境"
+      },
+      {
+        "level": 2,
+        "id": "skillのインストール",
+        "label": "Skillのインストール"
+      },
+      {
+        "level": 2,
+        "id": "エージェントから呼び出す",
+        "label": "エージェントから呼び出す"
+      },
+      {
+        "level": 2,
+        "id": "安全な基本フロー",
+        "label": "安全な基本フロー"
+      },
+      {
+        "level": 2,
+        "id": "mcpと組み合わせる",
+        "label": "MCPと組み合わせる"
+      },
+      {
+        "level": 2,
+        "id": "トラブルシューティング",
+        "label": "トラブルシューティング"
+      }
+    ]
+  },
+  {
+    "locale": "cn",
+    "pageKey": "skill",
+    "title": "kmsg编程智能体Skill",
+    "source": "site/content/cn/skill.md",
+    "sourceLabel": "site/content/cn/skill.md",
+    "lastModified": "2026-07-29T03:07:08+09:00",
+    "html": "<p><code>kmsg</code> Skill帮助Claude Code和Codex按照同一套安全流程，在macOS版\nKakaoTalk中查找聊天、读取消息并发送消息。</p>\n<h2 id=\"使用条件\"><a class=\"heading-anchor\" href=\"#使用条件\">使用条件</a></h2>\n<ul>\n<li>macOS 13或更高版本</li>\n<li>已登录的macOS版KakaoTalk</li>\n<li>已为安装的<code>kmsg</code>二进制文件授予辅助功能权限</li>\n</ul>\n<h2 id=\"安装skill\"><a class=\"heading-anchor\" href=\"#安装skill\">安装Skill</a></h2>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y\n</code></pre>\n<h2 id=\"在智能体中调用\"><a class=\"heading-anchor\" href=\"#在智能体中调用\">在智能体中调用</a></h2>\n<div class=\"table-scroll\" tabindex=\"0\" role=\"region\" aria-label=\"可横向滚动的表格\"><table>\n<thead>\n<tr>\n<th>智能体</th>\n<th>调用方式</th>\n</tr>\n</thead>\n<tbody><tr>\n<td>Claude Code</td>\n<td><code>/kmsg</code></td>\n</tr>\n<tr>\n<td>Codex</td>\n<td><code>$kmsg</code></td>\n</tr>\n</tbody></table></div>\n<h2 id=\"安全的默认流程\"><a class=\"heading-anchor\" href=\"#安全的默认流程\">安全的默认流程</a></h2>\n<ol>\n<li>使用<code>kmsg status --verbose</code>检查权限和登录状态。</li>\n<li>使用<code>kmsg chats --limit 20</code>确认准确的聊天名称。</li>\n<li>使用<code>kmsg read \"聊天名称\" --limit 20</code>读取最近消息。</li>\n<li>发送前运行<code>kmsg send \"聊天名称\" \"消息\" --dry-run</code>。</li>\n</ol>\n<h2 id=\"与mcp配合使用\"><a class=\"heading-anchor\" href=\"#与mcp配合使用\">与MCP配合使用</a></h2>\n<p>长时间运行的事件使用<code>kmsg watch --json</code>，请求与响应工具使用\n<code>kmsg mcp-server</code>。配置详情请参阅<a href=\"https://github.com/channprj/kmsg/blob/main/site/content/mcp/\" target=\"_blank\" rel=\"noopener noreferrer\">MCP文档</a>。</p>\n<h2 id=\"故障排除\"><a class=\"heading-anchor\" href=\"#故障排除\">故障排除</a></h2>\n<p>如果命令失败，请先检查<code>kmsg status --verbose</code>和\n<code>kmsg inspect --depth 5</code>。全部选项请参阅<a href=\"/kmsg/cn/usage/\">使用指南</a>。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "使用条件",
+        "label": "使用条件"
+      },
+      {
+        "level": 2,
+        "id": "安装skill",
+        "label": "安装Skill"
+      },
+      {
+        "level": 2,
+        "id": "在智能体中调用",
+        "label": "在智能体中调用"
+      },
+      {
+        "level": 2,
+        "id": "安全的默认流程",
+        "label": "安全的默认流程"
+      },
+      {
+        "level": 2,
+        "id": "与mcp配合使用",
+        "label": "与MCP配合使用"
+      },
+      {
+        "level": 2,
+        "id": "故障排除",
+        "label": "故障排除"
+      }
+    ]
+  },
+  {
+    "locale": "ko",
+    "pageKey": "versioning",
+    "title": "kmsg 버전 관리",
+    "source": "site/content/ko/versioning.md",
+    "sourceLabel": "site/content/ko/versioning.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<p><code>kmsg</code>는 날짜를 포함한 버전을 사용합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">MAJOR.YYMMDD.PATCH_COUNT\n</code></pre>\n<p>예시:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">1.260727.0\n</code></pre>\n<h2 id=\"기준-파일\"><a class=\"heading-anchor\" href=\"#기준-파일\">기준 파일</a></h2>\n<p>저장소 루트의 <code>VERSION</code>이 유일한 기준입니다. 파일에는 선행 <code>v</code> 없이 버전만 기록합니다.</p>\n<p>빌드 시 SwiftPM 플러그인이 형식을 검증하고 <code>BuildVersion</code> 소스를 생성합니다. 따라서 다음 출력은 모두 같은 값을 사용합니다.</p>\n<ul>\n<li><code>kmsg --version</code></li>\n<li><code>kmsg -v</code></li>\n<li><code>kmsg status</code></li>\n<li>빌드·릴리스 산출물</li>\n</ul>\n<h2 id=\"형식\"><a class=\"heading-anchor\" href=\"#형식\">형식</a></h2>\n<ul>\n<li><code>MAJOR</code>: 호환성을 깨는 변화나 주요 이정표에서 수동 증가</li>\n<li><code>YYMMDD</code>: 릴리스 날짜</li>\n<li><code>PATCH_COUNT</code>: 해당 날짜의 첫 릴리스는 <code>0</code>, 추가 릴리스마다 1 증가</li>\n</ul>\n<p>태그에는 <code>v</code>를 붙입니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-text\">v1.260727.0\n</code></pre>\n<h2 id=\"운영-규칙\"><a class=\"heading-anchor\" href=\"#운영-규칙\">운영 규칙</a></h2>\n<ul>\n<li>릴리스 태그를 만들기 전에 <code>VERSION</code>을 갱신합니다.</li>\n<li>새 날짜의 첫 릴리스는 <code>PATCH_COUNT=0</code>입니다.</li>\n<li>같은 날 추가 릴리스는 patch count만 증가합니다.</li>\n<li>날짜가 바뀌면 patch count를 다시 <code>0</code>으로 설정합니다.</li>\n<li>바이너리가 보고하는 버전과 태그가 다르면 릴리스 워크플로가 실패해야 합니다.</li>\n</ul>\n<h2 id=\"버전-올리기\"><a class=\"heading-anchor\" href=\"#버전-올리기\">버전 올리기</a></h2>\n<p><code>VERSION</code>을 직접 편집하지 말고 제공된 명령을 사용합니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">make release-patch\nmake release-major\n</code></pre>\n<p>실제 변경 전에 dry run으로 확인할 수 있습니다.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"복사\" aria-live=\"polite\" data-code-copy data-copied-label=\"복사됨\" data-copy-failed-label=\"복사 실패\"><span data-copy-label>복사</span></button><code class=\"language-bash\">scripts/headatever.sh patch --dry-run\n</code></pre>\n<p>릴리스 자동화는 다음을 하나의 흐름으로 처리합니다.</p>\n<ol>\n<li>다음 버전 계산과 검증</li>\n<li><code>VERSION</code> 갱신</li>\n<li><code>chore(release): v&lt;version&gt;</code> 커밋</li>\n<li>주석이 있는 <code>v&lt;version&gt;</code> 태그 생성</li>\n</ol>\n<h2 id=\"호환성\"><a class=\"heading-anchor\" href=\"#호환성\">호환성</a></h2>\n<p>Swift Package Manager가 인식하는 공개 패키지 버전은 이 형식을 사용합니다. Homebrew tap 동기화는 현재 형식과 이전 semver 태그를 함께 읽어 마이그레이션 중의 과거 릴리스를 보존합니다.</p>\n<p>전체 릴리스 절차는 <a href=\"https://github.com/channprj/kmsg/blob/main/VERSIONING.md\" target=\"_blank\" rel=\"noopener noreferrer\">영문 버전 관리 문서</a>를 참고하세요.</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "기준-파일",
+        "label": "기준 파일"
+      },
+      {
+        "level": 2,
+        "id": "형식",
+        "label": "형식"
+      },
+      {
+        "level": 2,
+        "id": "운영-규칙",
+        "label": "운영 규칙"
+      },
+      {
+        "level": 2,
+        "id": "버전-올리기",
+        "label": "버전 올리기"
+      },
+      {
+        "level": 2,
+        "id": "호환성",
+        "label": "호환성"
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "pageKey": "versioning",
+    "title": "VERSIONING",
+    "source": "VERSIONING.md",
+    "sourceLabel": "VERSIONING.md",
+    "lastModified": "2026-06-07T01:07:10+09:00",
+    "html": "<p><code>kmsg</code> uses a major-plus-date release version.</p>\n<h2 id=\"source-of-truth\"><a class=\"heading-anchor\" href=\"#source-of-truth\">Source of truth</a></h2>\n<ul>\n<li>The canonical version lives in the repo-root <code>VERSION</code> file.</li>\n<li><code>VERSION</code> stores the version <strong>without</strong> the leading <code>v</code>.</li>\n<li>Git release tags use <code>v{VERSION}</code>.</li>\n</ul>\n<p>Example:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">VERSION      -&gt; 1.260424.0\nGit tag      -&gt; v1.260424.0\nCLI version  -&gt; 1.260424.0\n</code></pre>\n<h2 id=\"format\"><a class=\"heading-anchor\" href=\"#format\">Format</a></h2>\n<p>Version format:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">MAJOR.YYMMDD.PATCH_COUNT\n</code></pre>\n<p>Tag format:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-text\">vMAJOR.YYMMDD.PATCH_COUNT\n</code></pre>\n<p>Field rules:</p>\n<ul>\n<li><code>MAJOR</code>: major release line, incremented manually when you want to signal a breaking or milestone release</li>\n<li><code>YYMMDD</code>: 2-digit year suffix + 2-digit month + 2-digit day</li>\n<li><code>PATCH_COUNT</code>: zero-based daily release counter; starts at <code>0</code> for the first release of a given <code>YYMMDD</code> and increments by <code>1</code> for each additional release that day</li>\n</ul>\n<p>Examples:</p>\n<ul>\n<li><code>1.260424.0</code></li>\n<li><code>1.260424.9</code></li>\n<li><code>2.261231.0</code></li>\n</ul>\n<p>Invalid examples:</p>\n<ul>\n<li><code>1.26042.0</code></li>\n<li><code>1.261399.0</code></li>\n<li><code>0.260424.0</code></li>\n<li><code>v1.260424.0</code> in <code>VERSION</code> file</li>\n</ul>\n<h2 id=\"operational-rules\"><a class=\"heading-anchor\" href=\"#operational-rules\">Operational rules</a></h2>\n<ul>\n<li>Update <code>VERSION</code> before creating a release tag.</li>\n<li>Keep <code>PATCH_COUNT</code> at <code>0</code> for the first release on a new <code>YYMMDD</code>.</li>\n<li>For additional releases on the same day, increment <code>PATCH_COUNT</code> by <code>1</code>.</li>\n<li>Reset <code>PATCH_COUNT</code> back to <code>0</code> when <code>YYMMDD</code> changes.</li>\n<li>Manual release tags and workflow inputs must match <code>vMAJOR.YYMMDD.PATCH_COUNT</code>.</li>\n<li><code>YY</code> is interpreted as the year suffix in the 2000s for validation, so <code>260424</code> means <code>2026-04-24</code>.</li>\n</ul>\n<h2 id=\"bumping-the-version\"><a class=\"heading-anchor\" href=\"#bumping-the-version\">Bumping the version</a></h2>\n<p>Do <strong>not</strong> hand-edit <code>VERSION</code>. Bump it with the <code>make</code> targets below — they\nwrap <code>scripts/headatever.sh</code>, which validates the next version, writes\n<code>VERSION</code>, commits it as <code>chore(release): v&lt;version&gt;</code>, and creates the\nannotated <code>v&lt;version&gt;</code> tag.</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">make version          # print the current version (read-only)\nmake release          # patch release: same day -&gt; patch+1, new day -&gt; date=today, patch=0\nmake release-major    # head release: head+1, date=today, patch=0\nmake release-push     # patch release, then `git push --follow-tags` (triggers the release workflow)\n</code></pre>\n<p>For the less common operations the <code>make</code> targets don't cover, call the script\ndirectly:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"Copy\" aria-live=\"polite\" data-code-copy data-copied-label=\"Copied\" data-copy-failed-label=\"Copy failed\"><span data-copy-label>Copy</span></button><code class=\"language-bash\">scripts/headatever.sh patch --dry-run   # preview without writing\nscripts/headatever.sh patch --push      # bump, then push commit + tag\nscripts/headatever.sh date              # force a fresh release day (errors if already today)\nscripts/headatever.sh set 2.260101.0    # set an explicit version\n</code></pre>\n<p>The script refuses to recreate an existing tag or move the date backwards, so a\nbump always produces a unique, spec-valid version. Pushing the <code>v&lt;version&gt;</code> tag\ntriggers <code>release.yml</code> (universal binary build + GitHub release + Homebrew tap\nsync). The script is vendored from the\n<a href=\"https://github.com/channprj/headatever\" target=\"_blank\" rel=\"noopener noreferrer\">Headatever</a> spec.</p>\n<h2 id=\"compatibility-notes\"><a class=\"heading-anchor\" href=\"#compatibility-notes\">Compatibility notes</a></h2>\n<ul>\n<li>Build-time version generation validates the <code>MAJOR.YYMMDD.PATCH_COUNT</code> format directly from <code>VERSION</code>.</li>\n<li>Release automation resolves the Git tag from <code>VERSION</code> as <code>v{VERSION}</code>.</li>\n<li>Homebrew tap sync supports the current format and still reads legacy semver tags during migration, so older exact-version formulas are not dropped immediately after the format switch.</li>\n</ul>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "source-of-truth",
+        "label": "Source of truth"
+      },
+      {
+        "level": 2,
+        "id": "format",
+        "label": "Format"
+      },
+      {
+        "level": 2,
+        "id": "operational-rules",
+        "label": "Operational rules"
+      },
+      {
+        "level": 2,
+        "id": "bumping-the-version",
+        "label": "Bumping the version"
+      },
+      {
+        "level": 2,
+        "id": "compatibility-notes",
+        "label": "Compatibility notes"
+      }
+    ]
+  },
+  {
+    "locale": "jp",
+    "pageKey": "versioning",
+    "title": "kmsgのバージョン管理",
+    "source": "site/content/jp/versioning.md",
+    "sourceLabel": "site/content/jp/versioning.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<p><code>kmsg</code>は日付を含むバージョン形式を採用します。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-text\">MAJOR.YYMMDD.PATCH_COUNT\n</code></pre>\n<p>例:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-text\">1.260727.0\n</code></pre>\n<h2 id=\"正式な値\"><a class=\"heading-anchor\" href=\"#正式な値\">正式な値</a></h2>\n<p>リポジトリ直下の<code>VERSION</code>が唯一の正式な値です。ファイル内には先頭の<code>v</code>を付けません。</p>\n<p>ビルド時にSwiftPMプラグインが形式を検証し、<code>BuildVersion</code>を生成します。<code>kmsg --version</code>、<code>kmsg status</code>、リリース成果物は同じ値を使います。</p>\n<h2 id=\"各フィールド\"><a class=\"heading-anchor\" href=\"#各フィールド\">各フィールド</a></h2>\n<ul>\n<li><code>MAJOR</code>: 破壊的変更または大きな節目で増加</li>\n<li><code>YYMMDD</code>: リリース日</li>\n<li><code>PATCH_COUNT</code>: その日の最初は<code>0</code>、追加リリースごとに増加</li>\n</ul>\n<p>Gitタグには<code>v</code>を付けます。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-text\">v1.260727.0\n</code></pre>\n<h2 id=\"運用ルール\"><a class=\"heading-anchor\" href=\"#運用ルール\">運用ルール</a></h2>\n<ul>\n<li>タグ作成前に<code>VERSION</code>を更新</li>\n<li>新しい日付の最初のリリースは<code>PATCH_COUNT=0</code></li>\n<li>同日の追加リリースはpatch countだけを増加</li>\n<li>日付が変わればpatch countを<code>0</code>へ戻す</li>\n<li>バイナリの報告値とタグが異なる場合、リリースを失敗させる</li>\n</ul>\n<h2 id=\"バージョン更新\"><a class=\"heading-anchor\" href=\"#バージョン更新\">バージョン更新</a></h2>\n<p><code>VERSION</code>を手作業で編集せず、プロジェクトのコマンドを使います。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">make release-patch\nmake release-major\n</code></pre>\n<p>変更前の確認:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"コピー\" aria-live=\"polite\" data-code-copy data-copied-label=\"コピーしました\" data-copy-failed-label=\"コピーできませんでした\"><span data-copy-label>コピー</span></button><code class=\"language-bash\">scripts/headatever.sh patch --dry-run\n</code></pre>\n<p>自動化は、次のバージョン検証、<code>VERSION</code>更新、<code>chore(release): v&lt;version&gt;</code>コミット、注釈付きタグ作成を一つの流れとして実行します。</p>\n<p>完全な手順は<a href=\"https://github.com/channprj/kmsg/blob/main/VERSIONING.md\" target=\"_blank\" rel=\"noopener noreferrer\">英語版バージョン管理</a>を参照してください。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "正式な値",
+        "label": "正式な値"
+      },
+      {
+        "level": 2,
+        "id": "各フィールド",
+        "label": "各フィールド"
+      },
+      {
+        "level": 2,
+        "id": "運用ルール",
+        "label": "運用ルール"
+      },
+      {
+        "level": 2,
+        "id": "バージョン更新",
+        "label": "バージョン更新"
+      }
+    ]
+  },
+  {
+    "locale": "cn",
+    "pageKey": "versioning",
+    "title": "kmsg版本管理",
+    "source": "site/content/cn/versioning.md",
+    "sourceLabel": "site/content/cn/versioning.md",
+    "lastModified": "2026-07-27T03:28:05+09:00",
+    "html": "<p><code>kmsg</code>使用包含日期的版本格式。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-text\">MAJOR.YYMMDD.PATCH_COUNT\n</code></pre>\n<p>示例:</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-text\">1.260727.0\n</code></pre>\n<h2 id=\"唯一来源\"><a class=\"heading-anchor\" href=\"#唯一来源\">唯一来源</a></h2>\n<p>仓库根目录的<code>VERSION</code>是唯一版本来源，文件内容不包含开头的<code>v</code>。</p>\n<p>构建时，SwiftPM插件会验证格式并生成<code>BuildVersion</code>。<code>kmsg --version</code>、<code>kmsg status</code>与发布产物均使用同一数值。</p>\n<h2 id=\"字段含义\"><a class=\"heading-anchor\" href=\"#字段含义\">字段含义</a></h2>\n<ul>\n<li><code>MAJOR</code>: 在破坏性变更或重大里程碑时递增</li>\n<li><code>YYMMDD</code>: 发布日期</li>\n<li><code>PATCH_COUNT</code>: 当天首个版本为<code>0</code>，追加发布时依次递增</li>\n</ul>\n<p>Git标签使用<code>v</code>前缀。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-text\">v1.260727.0\n</code></pre>\n<h2 id=\"操作规则\"><a class=\"heading-anchor\" href=\"#操作规则\">操作规则</a></h2>\n<ul>\n<li>创建发布标签前更新<code>VERSION</code></li>\n<li>新日期的首次发布使用<code>PATCH_COUNT=0</code></li>\n<li>同日追加发布只增加patch count</li>\n<li>日期变化时把patch count重置为<code>0</code></li>\n<li>二进制报告的版本与标签不一致时，发布流程必须失败</li>\n</ul>\n<h2 id=\"提升版本\"><a class=\"heading-anchor\" href=\"#提升版本\">提升版本</a></h2>\n<p>不要手工编辑<code>VERSION</code>，请使用项目提供的命令。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">make release-patch\nmake release-major\n</code></pre>\n<p>修改前可先执行dry run。</p>\n<pre><button class=\"markdown-copy-button\" type=\"button\" aria-label=\"复制\" aria-live=\"polite\" data-code-copy data-copied-label=\"已复制\" data-copy-failed-label=\"复制失败\"><span data-copy-label>复制</span></button><code class=\"language-bash\">scripts/headatever.sh patch --dry-run\n</code></pre>\n<p>自动化会依次完成下一版本验证、<code>VERSION</code>更新、<code>chore(release): v&lt;version&gt;</code>提交以及带注释的标签创建。</p>\n<p>完整流程请参阅<a href=\"https://github.com/channprj/kmsg/blob/main/VERSIONING.md\" target=\"_blank\" rel=\"noopener noreferrer\">英文版本管理文档</a>。</p>\n",
+    "headings": [
+      {
+        "level": 2,
+        "id": "唯一来源",
+        "label": "唯一来源"
+      },
+      {
+        "level": 2,
+        "id": "字段含义",
+        "label": "字段含义"
+      },
+      {
+        "level": 2,
+        "id": "操作规则",
+        "label": "操作规则"
+      },
+      {
+        "level": 2,
+        "id": "提升版本",
+        "label": "提升版本"
+      }
+    ]
+  }
+]

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { LOCALE_IDS, PAGE_KEYS, publicRouteFor } from "~/content/routes"
 import { metadataFor } from "~/lib/metadata"
+import { meta } from "~/routes/page"
 
 describe("localized metadata", () => {
   it("covers every canonical route from the legacy source copy", () => {
@@ -27,5 +28,21 @@ describe("localized metadata", () => {
       "x-default": "https://channprj.github.io/kmsg/architecture/",
     })
     expect(metadata.ogLocale).toBe("ja_JP")
+  })
+
+  it("derives route metadata from the actual prerender location", () => {
+    const descriptors = meta({
+      location: { pathname: "/cn/architecture/" },
+    } as Parameters<typeof meta>[0])
+
+    expect(descriptors).toContainEqual({
+      tagName: "link",
+      rel: "canonical",
+      href: "https://channprj.github.io/kmsg/cn/architecture/",
+    })
+    expect(descriptors).toContainEqual({
+      property: "og:locale",
+      content: "zh_CN",
+    })
   })
 })
