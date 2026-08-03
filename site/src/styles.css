@@ -3332,6 +3332,45 @@ html[lang="ko"] .hero h1 em {
   white-space: pre;
 }
 
+.tagline-section {
+  display: grid;
+  justify-items: start;
+}
+
+.tagline-text {
+  max-width: 1000px;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(36px, 4vw, 48px);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.16;
+  text-wrap: balance;
+}
+
+.tagline-line {
+  display: block;
+}
+
+.tagline-word {
+  transition: color 700ms var(--ease);
+}
+
+.tagline-armed .tagline-word {
+  color: color-mix(in srgb, var(--ink) 30%, transparent);
+}
+
+.tagline-armed .tagline-word.is-lit {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tagline-armed .tagline-word {
+    color: var(--ink);
+    transition: none;
+  }
+}
+
 .agent-skill-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);

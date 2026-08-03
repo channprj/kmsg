@@ -343,3 +343,37 @@ if ("IntersectionObserver" in window && terminalElements.length > 0) {
     }
   });
 }
+
+const taglineWords = [
+  ...document.querySelectorAll("[data-tagline] .tagline-word"),
+];
+
+if (
+  "IntersectionObserver" in window &&
+  taglineWords.length > 0 &&
+  !replayMotionPreference.matches
+) {
+  document.querySelector("[data-tagline]")?.classList.add("tagline-armed");
+
+  const taglineObserver = new IntersectionObserver(
+    (entries) => {
+      const crossed = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort(
+          (a, b) =>
+            taglineWords.indexOf(a.target) - taglineWords.indexOf(b.target),
+        );
+
+      crossed.forEach((entry, index) => {
+        entry.target.style.transitionDelay = `${index * 70}ms`;
+        entry.target.classList.add("is-lit");
+        taglineObserver.unobserve(entry.target);
+      });
+    },
+    { rootMargin: "0px 0px -30% 0px" },
+  );
+
+  for (const word of taglineWords) {
+    taglineObserver.observe(word);
+  }
+}

@@ -191,6 +191,7 @@ const homeContent = {
     principlesTitle: "로컬 자동화에 필요한 것만 담았습니다.",
     capabilitiesLabel: "주요 기능",
     capabilitiesTitle: "읽기부터 전송까지, 하나의 명령 체계로.",
+    tagline: "모든 대화를 명령 한 줄로.\n자동화는 내 Mac을 벗어나지 않습니다.",
     storiesLabel: "실사용 후기",
     storiesTitle: "실제 자동화 워크플로우에서\n널리 사용되고 있습니다",
     storiesDescription:
@@ -286,6 +287,7 @@ const homeContent = {
     principlesTitle: "Only what local automation needs.",
     capabilitiesLabel: "Core capabilities",
     capabilitiesTitle: "One command model, from reading to sending.",
+    tagline: "Every chat, one command away.\nAutomation that never leaves your Mac.",
     storiesLabel: "In use",
     storiesTitle: "Used in real automation workflows.",
     storiesDescription:
@@ -380,6 +382,7 @@ const homeContent = {
     principlesTitle: "ローカル自動化に必要な機能だけ。",
     capabilitiesLabel: "主な機能",
     capabilitiesTitle: "読み取りから送信まで、一つのコマンド体系で。",
+    tagline: "すべての会話を、コマンド一つで。\n自動化はMacの外に出ません。",
     storiesLabel: "活用事例",
     storiesTitle: "実際の自動化ワークフローで使われています。",
     storiesDescription:
@@ -476,6 +479,7 @@ const homeContent = {
     principlesTitle: "只保留本地自动化所需的功能。",
     capabilitiesLabel: "核心功能",
     capabilitiesTitle: "从读取到发送，使用同一套命令体系。",
+    tagline: "每一段对话，只差一条命令。\n自动化从不离开你的Mac。",
     storiesLabel: "实际案例",
     storiesTitle: "已用于真实的自动化工作流。",
     storiesDescription:
@@ -1401,6 +1405,48 @@ const renderCapabilities = (copy) => `
     </div>
   </section>`;
 
+const taglineLocaleTags = { ko: "ko", en: "en", jp: "ja", cn: "zh-CN" };
+
+// Segment per locale so CJK copy still reveals word by word, then glue
+// trailing punctuation onto the word before it.
+const renderTaglineLine = (line, locale) => {
+  const segmenter = new Intl.Segmenter(taglineLocaleTags[locale], {
+    granularity: "word",
+  });
+  const tokens = [];
+
+  for (const { segment, isWordLike } of segmenter.segment(line)) {
+    if (/^\s+$/.test(segment)) {
+      tokens.push(null);
+    } else if (isWordLike || tokens.length === 0 || tokens.at(-1) === null) {
+      tokens.push(segment);
+    } else {
+      tokens[tokens.length - 1] += segment;
+    }
+  }
+
+  return tokens
+    .map((token) =>
+      token === null
+        ? " "
+        : `<span class="tagline-word">${escapeHtml(token)}</span>`,
+    )
+    .join("");
+};
+
+const renderHomeTagline = (copy, locale) => `
+  <section class="product-section tagline-section" id="tagline" data-tagline aria-labelledby="tagline-text">
+    <p class="tagline-text" id="tagline-text">
+      ${copy.tagline
+        .split("\n")
+        .map(
+          (line) =>
+            `<span class="tagline-line">${renderTaglineLine(line, locale)}</span>`,
+        )
+        .join("\n      ")}
+    </p>
+  </section>`;
+
 const agentSkillInstallCommand =
   "npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y";
 
@@ -1605,6 +1651,7 @@ const renderProductHome = (page, faqs) => {
     ${renderHomeWorkflow(page, copy)}
     ${renderPrinciples(copy)}
     ${renderCapabilities(copy)}
+    ${renderHomeTagline(copy, page.locale)}
     ${renderAgentSkill(page, copy)}
     ${renderHomeStories(copy, page.locale)}
     ${renderHomeFaq(copy, faqs)}

@@ -280,6 +280,42 @@ test("home hero pairs its actions with a proof and risk reversal line", async ()
   );
 });
 
+test("home routes stage the tagline reveal word by word", async () => {
+  const [styles, app] = await Promise.all([
+    readOutput("assets/styles.css"),
+    readOutput("assets/app.js"),
+  ]);
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    const section = html.match(
+      /<section class="product-section tagline-section" id="tagline" data-tagline[\s\S]*?<\/section>/,
+    )?.[0];
+
+    assert.ok(section, `${localeId}: missing tagline section`);
+    assert.equal(
+      (section.match(/class="tagline-line"/g) || []).length,
+      2,
+      localeId,
+    );
+    assert.ok(
+      (section.match(/class="tagline-word"/g) || []).length >= 6,
+      `${localeId}: expected word-level reveal spans`,
+    );
+  }
+
+  assert.match(app, /data-tagline/);
+  assert.doesNotMatch(app, /addEventListener\("scroll"/);
+  assert.match(
+    styles,
+    /\.tagline-word\s*\{[^}]*transition:\s*color 700ms var\(--ease\);/s,
+  );
+  assert.match(
+    styles,
+    /@media \(prefers-reduced-motion: reduce\)\s*\{\s*\.tagline-armed \.tagline-word\s*\{[^}]*color:\s*var\(--ink\);/s,
+  );
+});
+
 test("home routes document cross-agent skill installation and use", async () => {
   const localizedCopy = {
     ko: {
