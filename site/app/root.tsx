@@ -12,6 +12,7 @@ import {
 import type { Route } from "./+types/root"
 import { LOCALES } from "./content/locales"
 import { routeFromPath } from "./content/routes"
+import { THEME_BOOTSTRAP } from "./lib/theme"
 import "./app.css"
 
 export const links: Route.LinksFunction = () => [
@@ -23,14 +24,13 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: ReactNode }) {
   const route = routeFromPath(useLocation().pathname)
   const lang = LOCALES[route?.locale ?? "ko"].lang
-  const themeBootstrap = `(() => { try { const saved = localStorage.getItem("kmsg-theme"); const theme = saved === "paper" ? "paper" : "dark"; document.documentElement.dataset.theme = theme; document.documentElement.classList.toggle("dark", theme === "dark"); } catch { document.documentElement.dataset.theme = "dark"; document.documentElement.classList.add("dark"); } })();`
   return (
     <html lang={lang} className="dark" data-theme="dark" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#131209" />
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
         <Meta />
         <Links />
       </head>

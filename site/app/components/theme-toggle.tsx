@@ -9,29 +9,28 @@ import {
 } from "~/components/ui/tooltip"
 import { LOCALES } from "~/content/locales"
 import type { LocaleId } from "~/content/routes"
+import {
+  applyThemeToDocument,
+  readThemeFromDocument,
+  THEME_STORAGE_KEY,
+  type SiteTheme,
+} from "~/lib/theme"
 
 export function ThemeToggle({ locale }: { locale: LocaleId }) {
-  const [theme, setTheme] = useState<"dark" | "paper">("dark")
+  const [theme, setTheme] = useState<SiteTheme>("dark")
   const ui = LOCALES[locale].ui
 
   useEffect(() => {
-    setTheme(
-      document.documentElement.dataset.theme === "paper" ? "paper" : "dark",
-    )
+    setTheme(readThemeFromDocument())
   }, [])
 
   const label = theme === "dark" ? ui.lightTheme : ui.darkTheme
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "paper" : "dark"
-    const root = document.documentElement
-    root.classList.toggle("dark", nextTheme === "dark")
-    root.dataset.theme = nextTheme
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute("content", nextTheme === "dark" ? "#131209" : "#f7f5ed")
+    applyThemeToDocument(nextTheme)
     try {
-      window.localStorage.setItem("kmsg-theme", nextTheme)
+      window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
     } catch {
       // A storage failure must not prevent changing the current page.
     }

@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest"
 import { SiteHeader } from "~/components/site-header"
 import { ThemeToggle } from "~/components/theme-toggle"
 import { TooltipProvider } from "~/components/ui/tooltip"
+import { THEME_BOOTSTRAP } from "~/lib/theme"
 
 afterEach(() => {
   cleanup()
@@ -48,6 +49,20 @@ describe("shared Shadcn shell", () => {
     expect(document.documentElement).toHaveAttribute("data-theme", "paper")
     expect(localStorage.getItem("kmsg-theme")).toBe("paper")
     expect(screen.getByRole("button", { name: "어두운 테마로 전환" })).toBeVisible()
+  })
+
+  it("restores the stored theme before a new page paints", () => {
+    document.head.innerHTML = '<meta name="theme-color" content="#131209">'
+    localStorage.setItem("kmsg-theme", "paper")
+
+    window.eval(THEME_BOOTSTRAP)
+
+    expect(document.documentElement).not.toHaveClass("dark")
+    expect(document.documentElement).toHaveAttribute("data-theme", "paper")
+    expect(document.querySelector('meta[name="theme-color"]')).toHaveAttribute(
+      "content",
+      "#f7f5ed",
+    )
   })
 
   it("changes theme even when storage is disabled", async () => {
