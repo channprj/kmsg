@@ -105,7 +105,7 @@ test("Korean is canonical at root and on every default documentation route", asy
 test("all four locales render localized home and documentation content", async () => {
   const homeCopy = {
     ko: "하게 사용하세요\\.",
-    en: "KakaoTalk, from your terminal.",
+    en: "from your terminal\\.",
     jp: "KakaoTalkをターミナルから。",
     cn: "在终端中使用KakaoTalk。",
   };

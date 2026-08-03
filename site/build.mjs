@@ -261,7 +261,7 @@ const homeContent = {
   },
   en: {
     kicker: "KakaoTalk CLI · MCP server for macOS",
-    headline: "KakaoTalk, from your terminal.",
+    headline: "KakaoTalk,\nfrom your terminal.",
     description:
       "An unofficial CLI built on the macOS Accessibility API. Use the same commands in local automation and MCP clients.",
     heroImageAlt:
@@ -1617,7 +1617,12 @@ const renderHomeInstall = (page, copy) => {
 
 const renderHomeHeadline = (copy) => {
   if (!copy.headlineHighlight) {
-    return escapeHtml(copy.headline);
+    return copy.headline
+      .split("\n")
+      .map(
+        (line) => `<span class="hero-title-line">${escapeHtml(line)}</span>`,
+      )
+      .join("\n");
   }
 
   return copy.headline
