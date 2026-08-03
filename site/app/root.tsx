@@ -56,7 +56,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <h1 className="mt-3 text-4xl font-semibold tracking-tight">
         {notFound ? "페이지를 찾을 수 없습니다." : "예상하지 못한 오류가 발생했습니다."}
       </h1>
-      <a className="mt-8 text-primary underline-offset-4 hover:underline" href="/kmsg/">
+      <a className="mt-8 text-primary-readable underline-offset-4 hover:underline" href="/kmsg/">
         kmsg 홈으로 이동
       </a>
     </main>

@@ -74,6 +74,8 @@ function DocumentShell({
     month: "short",
     day: "numeric",
   }).format(new Date(content.lastModified))
+  const documentationNavigationLabel = `${ui.navigation}: ${content.title}`
+  const tableOfContentsLabel = `${ui.toc}: ${content.title}`
 
   const copyCode = async (event: ReactMouseEvent<HTMLElement>) => {
     const target = event.target as HTMLElement
@@ -97,11 +99,11 @@ function DocumentShell({
     <>
       <SiteHeader locale={locale} pageKey={pageKey} />
       <main className="mx-auto grid min-h-[75svh] max-w-7xl gap-10 px-4 pb-24 pt-32 sm:px-6 lg:grid-cols-[13rem_minmax(0,1fr)_13rem] lg:gap-8">
-        <aside className="hidden lg:block">
+        <aside aria-label={documentationNavigationLabel} className="hidden lg:block">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
             {ui.navigation}
           </p>
-          <nav aria-label={ui.navigation} className="sticky top-28 flex flex-col gap-1">
+          <nav aria-label={documentationNavigationLabel} className="sticky top-28 flex flex-col gap-1">
             {documentation.map((key) => (
               <a
                 aria-current={key === pageKey ? "page" : undefined}
@@ -140,8 +142,8 @@ function DocumentShell({
             onClick={copyCode}
           />
         </article>
-        <aside className="hidden xl:block">
-          <nav aria-label={ui.toc} className="sticky top-28">
+        <aside aria-label={tableOfContentsLabel} className="hidden xl:block">
+          <nav aria-label={tableOfContentsLabel} className="sticky top-28">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               {ui.toc}
             </p>

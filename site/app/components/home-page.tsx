@@ -40,7 +40,7 @@ function SectionHeading({
 }) {
   return (
     <div className="mb-10 max-w-3xl">
-      <p className="text-sm font-semibold text-primary">{label}</p>
+      <p className="text-sm font-semibold text-primary-readable">{label}</p>
       <h2 className="mt-3 whitespace-pre-line text-3xl font-semibold tracking-tight sm:text-5xl">
         {title}
       </h2>
@@ -96,7 +96,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
       <main id="content">
         <section className="mx-auto grid min-h-[92svh] max-w-6xl items-center gap-14 px-6 pb-20 pt-32 lg:grid-cols-[.92fr_1.08fr]">
           <div>
-            <p className="text-sm font-semibold text-primary">{copy.kicker}</p>
+            <p className="text-sm font-semibold text-primary-readable">{copy.kicker}</p>
             <h1 className="mt-5 whitespace-pre-line text-5xl font-semibold leading-[.98] tracking-[-.055em] sm:text-7xl">
               {copy.headline}
             </h1>
@@ -167,7 +167,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
         <section className="mx-auto max-w-6xl px-6 py-24">
           <Card className="overflow-hidden border-primary/25 bg-primary/[.04]">
             <CardHeader>
-              <p className="text-sm font-semibold text-primary">{copy.agentSkillLabel}</p>
+              <p className="text-sm font-semibold text-primary-readable">{copy.agentSkillLabel}</p>
               <CardTitle className="text-3xl sm:text-4xl">{copy.agentSkillTitle}</CardTitle>
               <CardDescription className="max-w-3xl text-base">{copy.agentSkillDescription}</CardDescription>
             </CardHeader>
@@ -262,7 +262,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
         <section className="mx-auto max-w-5xl px-6 py-24" id="install">
           <Card className="border-primary/35 bg-primary/[.05]">
             <CardHeader>
-              <p className="text-sm font-semibold text-primary">{copy.installLabel}</p>
+              <p className="text-sm font-semibold text-primary-readable">{copy.installLabel}</p>
               <CardTitle className="text-3xl sm:text-5xl">{copy.installTitle}</CardTitle>
               <CardDescription className="text-base">{copy.installDescription}</CardDescription>
             </CardHeader>

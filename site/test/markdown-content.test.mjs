@@ -28,4 +28,15 @@ test("synced Markdown stays safe and keeps accessible rich content", async () =>
   assert.match(architecture.html, /role="region"/)
   assert.match(usage.html, /data-code-copy/)
   assert.doesNotMatch(entries.map(({ html }) => html).join("\n"), /<script\b/i)
+
+  for (const entry of entries) {
+    const regionNames = [
+      ...entry.html.matchAll(/role="region" aria-label="([^"]+)"/g),
+    ].map(([, label]) => label)
+    assert.equal(
+      regionNames.length,
+      new Set(regionNames).size,
+      `${entry.locale}/${entry.pageKey} must give every table region a unique name`,
+    )
+  }
 })

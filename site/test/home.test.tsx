@@ -34,6 +34,18 @@ describe("localized React home", () => {
     expect(screen.getAllByText('kmsg send "AI 프로젝트" "확인했어요." --dry-run').length).toBeGreaterThan(0)
     expect(container.querySelector("select")).toBeNull()
     expect(container.querySelector("[data-footer-wordmark]")).toBeInTheDocument()
+    for (const label of [
+      "macOS용 KakaoTalk CLI · MCP 서버",
+      "메시지 워크플로우",
+      "왜 kmsg인가",
+      "코딩 에이전트",
+      "주요 기능",
+      "실사용 후기",
+      "자주 묻는 질문",
+      "설치",
+    ]) {
+      expect(screen.getByText(label)).toHaveClass("text-primary-readable")
+    }
   })
 
   it("renders source-accurate localized FAQ counts", () => {

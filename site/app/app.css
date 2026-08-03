@@ -14,6 +14,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-readable: var(--primary-readable);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -40,6 +41,7 @@
   --popover: #20201c;
   --popover-foreground: #f7f7f2;
   --primary: #fee500;
+  --primary-readable: #fee500;
   --primary-foreground: #18170d;
   --secondary: #252520;
   --secondary-foreground: #f7f7f2;
@@ -64,6 +66,7 @@
   --popover: #fffdf5;
   --popover-foreground: #171713;
   --primary: #f2d500;
+  --primary-readable: #756600;
   --primary-foreground: #171713;
   --secondary: #ebe8dc;
   --secondary-foreground: #171713;
@@ -202,13 +205,9 @@
 .markdown-body li + li { margin-top: .35rem; }
 
 .markdown-body a:not(.heading-anchor) {
-  color: var(--primary);
+  color: var(--primary-readable);
   text-decoration: underline;
   text-underline-offset: .2em;
-}
-
-:root[data-theme="paper"] .markdown-body a:not(.heading-anchor) {
-  color: #756600;
 }
 
 .markdown-body code:not(pre code) {

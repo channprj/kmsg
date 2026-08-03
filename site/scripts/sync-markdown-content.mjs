@@ -129,6 +129,7 @@ const sanitizeOptions = {
 function enhanceMarkdown(html, page) {
   const headingCounts = new Map()
   const headings = []
+  let tableIndex = 0
   let enhanced = html.replace(
     /<h([2-4])>([\s\S]*?)<\/h\1>/g,
     (match, level, content) => {
@@ -144,7 +145,10 @@ function enhanceMarkdown(html, page) {
   enhanced = enhanced
     .replace(
       /<table>/g,
-      `<div class="table-scroll" tabindex="0" role="region" aria-label="${page.localeConfig.ui.table}"><table>`,
+      () => {
+        tableIndex += 1
+        return `<div class="table-scroll" tabindex="0" role="region" aria-label="${page.localeConfig.ui.table} ${tableIndex}"><table>`
+      },
     )
     .replace(/<\/table>/g, "</table></div>")
     .replace(

@@ -48,5 +48,10 @@ test("the generated Shadcn button and KMSG document shell are present", async ()
   assert.match(root, /import "\.\/app\.css"/);
   assert.match(styles, /@import "tailwindcss"/);
   assert.match(styles, /--primary:\s*#fee500/);
+  assert.match(styles, /--primary-readable:\s*#fee500/);
+  assert.match(
+    styles,
+    /:root\[data-theme="paper"\]\s*\{[^}]*--primary-readable:\s*#756600/s,
+  );
   assert.match(styles, /--terminal:\s*#282c34/);
 });

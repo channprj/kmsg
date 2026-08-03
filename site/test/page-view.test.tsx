@@ -34,7 +34,18 @@ describe("PageView", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "kmsg架构" }),
     ).toBeVisible()
-    expect(screen.getByRole("navigation", { name: "本页内容" })).toBeVisible()
+    expect(
+      screen.getByRole("navigation", { name: "本页内容: kmsg架构" }),
+    ).toBeVisible()
+    expect(
+      screen.getByRole("navigation", { name: "主导航: kmsg架构" }),
+    ).toBeVisible()
+    expect(
+      screen.getByRole("complementary", { name: "本页内容: kmsg架构" }),
+    ).toBeVisible()
+    expect(
+      screen.getByRole("complementary", { name: "主导航: kmsg架构" }),
+    ).toBeVisible()
     expect(screen.getByRole("heading", { level: 2, name: "设计决策" })).toBeVisible()
     expect(screen.getByRole("link", { name: "查看Markdown原文" })).toHaveAttribute(
       "href",
