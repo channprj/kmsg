@@ -19,6 +19,19 @@ import {
   type PageKey,
 } from "~/content/routes"
 
+export function formatDocumentDate(
+  locale: LocaleId,
+  lastModified: string,
+) {
+  const calendarDate = lastModified.slice(0, 10)
+  return new Intl.DateTimeFormat(LOCALES[locale].dateLocale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${calendarDate}T00:00:00Z`))
+}
+
 function LegalPage({
   locale,
   pageKey,
@@ -69,11 +82,7 @@ function DocumentShell({
       !["home", "privacy", "terms"].includes(key),
   )
   const sourceUrl = `https://github.com/channprj/kmsg/blob/main/${content.source}`
-  const updated = new Intl.DateTimeFormat(LOCALES[locale].dateLocale, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(content.lastModified))
+  const updated = formatDocumentDate(locale, content.lastModified)
   const documentationNavigationLabel = `${ui.navigation}: ${content.title}`
   const tableOfContentsLabel = `${ui.toc}: ${content.title}`
 

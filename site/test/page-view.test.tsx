@@ -5,7 +5,10 @@ import "@testing-library/jest-dom/vitest"
 import { cleanup, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
-import { PageView } from "~/components/page-view"
+import {
+  formatDocumentDate,
+  PageView,
+} from "~/components/page-view"
 
 afterEach(() => {
   cleanup()
@@ -13,6 +16,12 @@ afterEach(() => {
 })
 
 describe("PageView", () => {
+  it("preserves the source calendar date across runtime time zones", () => {
+    expect(
+      formatDocumentDate("ko", "2026-08-04T02:33:08+09:00"),
+    ).toBe("2026년 8월 4일")
+  })
+
   it("selects the localized home route", () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })))
     render(<PageView locale="en" pageKey="home" />)
