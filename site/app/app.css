@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * .6);
+  --radius-md: calc(var(--radius) * .8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  color-scheme: dark;
+  --background: #11110f;
+  --foreground: #f7f7f2;
+  --card: #191916;
+  --card-foreground: #f7f7f2;
+  --popover: #20201c;
+  --popover-foreground: #f7f7f2;
+  --primary: #fee500;
+  --primary-foreground: #18170d;
+  --secondary: #252520;
+  --secondary-foreground: #f7f7f2;
+  --muted: #252520;
+  --muted-foreground: #aaa99f;
+  --accent: #302f25;
+  --accent-foreground: #fee500;
+  --destructive: #ff6b6b;
+  --border: #35352e;
+  --input: #3b3b33;
+  --ring: #fee500;
+  --terminal: #282c34;
+  --radius: .75rem;
+}
+
+:root[data-theme="paper"] {
+  color-scheme: light;
+  --background: #f7f5ed;
+  --foreground: #171713;
+  --card: #fffdf5;
+  --card-foreground: #171713;
+  --popover: #fffdf5;
+  --popover-foreground: #171713;
+  --primary: #f2d500;
+  --primary-foreground: #171713;
+  --secondary: #ebe8dc;
+  --secondary-foreground: #171713;
+  --muted: #ebe8dc;
+  --muted-foreground: #67665e;
+  --accent: #e5e0ce;
+  --accent-foreground: #171713;
+  --border: #d7d2c3;
+  --input: #cbc6b8;
+  --ring: #bda700;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}

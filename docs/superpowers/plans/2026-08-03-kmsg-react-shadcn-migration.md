@@ -6,7 +6,7 @@
 
 **Architecture:** React Router Framework Mode owns the document and route modules with `ssr: false` and an explicit 32-route prerender list. Typed locale and route records drive route matching, links, metadata, language switching, sitemap output, and artifact verification. Shadcn CLI-owned components live under `site/app/components/ui`; KMSG components compose them without duplicating primitive behavior. A post-build script copies the client output to `site/dist` and generates compatibility/discovery artifacts.
 
-**Tech Stack:** Node.js 22, React 19, TypeScript 6, React Router 7, Vite 8, Tailwind CSS 4, Shadcn `nova` style with Radix primitives, Lucide icons, `marked`, `sanitize-html`, Vitest, Testing Library, Playwright, axe-core, GitHub Pages.
+**Tech Stack:** Node.js 22.22+, React 19, TypeScript 6, React Router 8.3, Vite 8, Tailwind CSS 4, Shadcn `nova` style with Radix primitives, Lucide icons, `marked`, `sanitize-html`, Vitest, Testing Library, Playwright, axe-core, GitHub Pages. React Router 8.3 is the first patched release for the RSC CSRF advisory published during implementation; KMSG does not use RSC, but the build stays on the patched line.
 
 ## Global constraints
 
