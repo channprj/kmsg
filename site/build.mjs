@@ -170,6 +170,11 @@ const homeContent = {
       "채팅방을 찾고, 맥락을 읽고, 터미널에서 바로 답장합니다.",
     installAction: "설치하기",
     docsAction: "사용법",
+    heroProof: [
+      "MIT 오픈소스",
+      "내 Mac에서만 로컬 실행",
+      "전송 전 dry-run 확인",
+    ],
     agentSkillLabel: "코딩 에이전트",
     agentSkillTitle: "코딩 에이전트에서 바로 사용하세요.",
     agentSkillDescription:
@@ -260,6 +265,11 @@ const homeContent = {
       "Find the room, read its context, and reply without leaving the terminal.",
     installAction: "Install",
     docsAction: "Usage",
+    heroProof: [
+      "MIT open source",
+      "Runs locally on your Mac",
+      "Dry-run before every send",
+    ],
     agentSkillLabel: "Coding agents",
     agentSkillTitle: "Use kmsg directly from your coding agent.",
     agentSkillDescription:
@@ -349,6 +359,11 @@ const homeContent = {
       "チャットを探し、文脈を読み、ターミナルからそのまま返信します。",
     installAction: "インストール",
     docsAction: "使い方",
+    heroProof: [
+      "MITオープンソース",
+      "Macの中だけでローカル実行",
+      "送信前にdry-runで確認",
+    ],
     agentSkillLabel: "コーディングエージェント",
     agentSkillTitle: "コーディングエージェントからすぐに利用。",
     agentSkillDescription:
@@ -440,6 +455,11 @@ const homeContent = {
       "查找聊天、读取上下文，然后直接在终端中回复。",
     installAction: "安装",
     docsAction: "使用指南",
+    heroProof: [
+      "MIT开源",
+      "仅在你的Mac上本地运行",
+      "发送前先dry-run确认",
+    ],
     agentSkillLabel: "编程智能体",
     agentSkillTitle: "直接在编程智能体中使用kmsg。",
     agentSkillDescription:
@@ -1574,6 +1594,9 @@ const renderProductHome = (page, faqs) => {
           <a class="button button-primary" href="#install">${escapeHtml(copy.installAction)}</a>
           <a class="hero-docs-link" href="${docsLink}">${escapeHtml(copy.docsAction)} ${renderIcon("arrow-right", 18)}</a>
         </div>
+        <ul class="hero-proof">
+          ${copy.heroProof.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n          ")}
+        </ul>
       </div>
       <figure class="hero-media">
         <img src="${relativeAsset(page.output, site.heroImagePath)}" alt="${escapeHtml(copy.heroImageAlt)}" width="1536" height="1024" fetchpriority="high" decoding="async">

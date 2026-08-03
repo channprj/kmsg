@@ -255,6 +255,31 @@ test("curated home keeps product proof, stories, and install actions", async () 
   }
 });
 
+test("home hero pairs its actions with a proof and risk reversal line", async () => {
+  const heroProofLead = {
+    ko: "MIT 오픈소스",
+    en: "MIT open source",
+    jp: "MITオープンソース",
+    cn: "MIT开源",
+  };
+  const styles = await readOutput("assets/styles.css");
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    const proof = html.match(/<ul class="hero-proof">[\s\S]*?<\/ul>/)?.[0];
+
+    assert.ok(proof, `${localeId}: missing hero proof line`);
+    assert.equal((proof.match(/<li>/g) || []).length, 3, localeId);
+    assert.ok(proof.includes(heroProofLead[localeId]), localeId);
+    assert.match(proof, /dry-run/i);
+  }
+
+  assert.match(
+    styles,
+    /\.product-hero \.hero-copy > :nth-child\(6\)\s*\{[^}]*animation-delay:\s*260ms;/s,
+  );
+});
+
 test("home routes document cross-agent skill installation and use", async () => {
   const localizedCopy = {
     ko: {

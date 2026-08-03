@@ -3027,6 +3027,35 @@ html[lang="ko"] .hero h1 em {
   color: var(--ink);
 }
 
+.hero-proof {
+  display: flex;
+  margin: 24px 0 0;
+  padding: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  list-style: none;
+  color: var(--ink-faint);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.hero-proof li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-proof li::before {
+  width: 4px;
+  height: 4px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent-text);
+  content: "";
+}
+
 .hero-media {
   position: relative;
   min-width: 0;
@@ -3483,6 +3512,10 @@ html[lang="ko"] .hero h1 em {
   .product-hero .hero-copy > :nth-child(5),
   .product-hero .hero-media {
     animation-delay: 210ms;
+  }
+
+  .product-hero .hero-copy > :nth-child(6) {
+    animation-delay: 260ms;
   }
 
   .product-section > .section-heading,
