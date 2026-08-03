@@ -176,6 +176,24 @@ const homeContent = {
     workflowTitle: "세 명령으로 대화를 이어갑니다.",
     workflowDescription:
       "채팅방을 찾고, 맥락을 읽고, 터미널에서 바로 답장합니다.",
+    workflowStepsLabel: "메시지 워크플로우",
+    workflowSteps: [
+      {
+        label: "01",
+        title: "채팅방 찾기",
+        description: "채팅 목록에서 대상과 재사용 가능한 chat_id를 찾습니다.",
+      },
+      {
+        label: "02",
+        title: "맥락 읽기",
+        description: "최근 메시지를 읽고 답장에 필요한 맥락을 확인합니다.",
+      },
+      {
+        label: "03",
+        title: "확인하고 전송",
+        description: "대상을 확인한 뒤 실제 KakaoTalk 창으로 답장합니다.",
+      },
+    ],
     installAction: "설치하기",
     docsAction: "사용법",
     heroProof: [
@@ -277,6 +295,27 @@ const homeContent = {
     workflowTitle: "One thread, three commands.",
     workflowDescription:
       "Find the room, read its context, and reply without leaving the terminal.",
+    workflowStepsLabel: "Message workflow",
+    workflowSteps: [
+      {
+        label: "01",
+        title: "Find the chat",
+        description:
+          "Locate the target and its reusable chat_id from the chat list.",
+      },
+      {
+        label: "02",
+        title: "Read the context",
+        description:
+          "Read recent messages and confirm the context needed for a reply.",
+      },
+      {
+        label: "03",
+        title: "Confirm and send",
+        description:
+          "Confirm the target, then reply through the visible KakaoTalk window.",
+      },
+    ],
     installAction: "Install",
     docsAction: "Usage",
     heroProof: [
@@ -377,6 +416,25 @@ const homeContent = {
     workflowTitle: "3つのコマンドで会話を続ける。",
     workflowDescription:
       "チャットを探し、文脈を読み、ターミナルからそのまま返信します。",
+    workflowStepsLabel: "メッセージの流れ",
+    workflowSteps: [
+      {
+        label: "01",
+        title: "チャットを探す",
+        description: "一覧から対象と再利用できるchat_idを探します。",
+      },
+      {
+        label: "02",
+        title: "文脈を読む",
+        description: "最近のメッセージを読み、返信に必要な文脈を確認します。",
+      },
+      {
+        label: "03",
+        title: "確認して送信",
+        description:
+          "対象を確認し、表示中のKakaoTalkウィンドウから返信します。",
+      },
+    ],
     installAction: "インストール",
     docsAction: "使い方",
     heroProof: [
@@ -479,6 +537,24 @@ const homeContent = {
     workflowTitle: "三条命令，完成一次对话。",
     workflowDescription:
       "查找聊天、读取上下文，然后直接在终端中回复。",
+    workflowStepsLabel: "消息工作流",
+    workflowSteps: [
+      {
+        label: "01",
+        title: "查找聊天",
+        description: "从聊天列表中找到目标及可复用的chat_id。",
+      },
+      {
+        label: "02",
+        title: "读取上下文",
+        description: "读取最近消息，确认回复所需的上下文。",
+      },
+      {
+        label: "03",
+        title: "确认并发送",
+        description: "确认目标后，通过可见的KakaoTalk窗口回复。",
+      },
+    ],
     installAction: "安装",
     docsAction: "使用指南",
     heroProof: [
@@ -1408,10 +1484,26 @@ const renderCommandPanel = (command, output) => `
   </figure>`;
 
 const renderHomeWorkflow = (page, copy) => `
-  <section class="product-workflow" id="workflow" data-replay-scope>
-    <div class="workflow-intro">
-      <h2>${escapeHtml(copy.workflowTitle)}</h2>
-      <p>${escapeHtml(copy.workflowDescription)}</p>
+  <section class="product-workflow" id="workflow" data-replay-scope data-reveal>
+    <div class="workflow-copy">
+      <div class="workflow-intro">
+        <h2>${escapeHtml(copy.workflowTitle)}</h2>
+        <p>${escapeHtml(copy.workflowDescription)}</p>
+      </div>
+      <ol class="workflow-steps" aria-label="${escapeHtml(copy.workflowStepsLabel)}">
+        ${copy.workflowSteps
+          .map(
+            (step, index) => `
+          <li class="workflow-step" data-workflow-step="${index + 1}">
+            <span aria-hidden="true">${escapeHtml(step.label)}</span>
+            <div>
+              <h3>${escapeHtml(step.title)}</h3>
+              <p>${escapeHtml(step.description)}</p>
+            </div>
+          </li>`,
+          )
+          .join("")}
+      </ol>
     </div>
     <div class="workflow-frame" role="img" aria-label="${escapeHtml(page.previewLabel)}">
       ${renderWorkflowTerminal(page)}

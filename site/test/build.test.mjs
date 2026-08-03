@@ -937,6 +937,66 @@ test("terminal replay is cancellable, motion-aware, and locale-safe", async () =
   );
 });
 
+test("workflow theater renders three localized semantic steps", async () => {
+  const expected = {
+    ko: ["채팅방 찾기", "맥락 읽기", "확인하고 전송"],
+    en: ["Find the chat", "Read the context", "Confirm and send"],
+    jp: ["チャットを探す", "文脈を読む", "確認して送信"],
+    cn: ["查找聊天", "读取上下文", "确认并发送"],
+  };
+
+  for (const [localeId, labels] of Object.entries(expected)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    assert.equal((html.match(/data-workflow-step=/g) || []).length, 3, localeId);
+    assert.match(html, /<ol class="workflow-steps"/);
+    labels.forEach((label) =>
+      assert.ok(html.includes(label), `${localeId}: ${label}`),
+    );
+  }
+});
+
+test("terminal replay synchronizes workflow steps without changing transcript", async () => {
+  const [html, app] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/app.js"),
+  ]);
+  assert.match(app, /setActiveStage\(stage\)/);
+  assert.match(app, /this\.setActiveStage\(stage\)/);
+  assert.match(app, /data-workflow-step/);
+  assert.match(html, /kmsg chats --limit 2/);
+  assert.match(
+    html,
+    /kmsg read &quot;AI 프로젝트&quot; --limit 2 --keep-window/,
+  );
+  assert.ok(
+    html.includes(
+      "kmsg send &quot;AI 프로젝트&quot; &quot;확인했어요.&quot;",
+    ),
+  );
+});
+
+test("workflow theater keeps the approved Ghostty contract", async () => {
+  const styles = await readOutput("assets/styles.css");
+  assert.match(
+    styles,
+    /\.workflow-frame\s*{[^}]*position:\s*sticky;[^}]*top:\s*112px;/s,
+  );
+  assert.match(styles, /\.terminal-window\s*{[^}]*background:\s*#282c34;/s);
+  assert.match(styles, /\.terminal-bar\s*{[^}]*height:\s*36px;/s);
+  assert.match(
+    styles,
+    /\.traffic-lights i\s*{[^}]*width:\s*10px;[^}]*height:\s*10px;/s,
+  );
+  assert.match(
+    styles,
+    /\.terminal-body\s*{[^}]*font-family:\s*"JetBrains Mono"[^}]*font-size:\s*13px;[^}]*line-height:\s*1\.18;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.workflow-frame\s*{[^}]*position:\s*static;/s,
+  );
+});
+
 test("copy controls fall back when the Clipboard API rejects", async () => {
   const app = await readOutput("assets/app.js");
 
@@ -968,7 +1028,7 @@ test("home workflow uses the compact Ghostty visual contract", async () => {
   );
   assert.match(
     styles,
-    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.2;/,
+    /\.terminal-body\s*{[\s\S]*background:\s*#282c34;[\s\S]*font-family:\s*"JetBrains Mono"[\s\S]*font-size:\s*13px;[\s\S]*line-height:\s*1\.18;/,
   );
   assert.match(
     styles,
@@ -1013,7 +1073,7 @@ test("homepage replay uses shell prompts and relaxed terminal rhythm", async () 
   assert.ok(
     (html.match(/class="terminal-prompt">\$<\/span>/g) || []).length >= 4,
   );
-  assert.match(styles, /\.terminal-body\s*{[^}]*line-height:\s*1\.2;/s);
+  assert.match(styles, /\.terminal-body\s*{[^}]*line-height:\s*1\.18;/s);
 });
 
 test("homepage left-aligns hero actions and varies story geometry", async () => {

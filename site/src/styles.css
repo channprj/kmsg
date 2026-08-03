@@ -13,6 +13,7 @@
   --ink-faint: #8c8b84;
   --canvas: #0c0d0b;
   --canvas-raised: #151612;
+  --canvas-soft: #1b1c16;
   --panel: rgba(21, 22, 18, 0.92);
   --panel-solid: #151612;
   --line: #292a24;
@@ -62,6 +63,7 @@ html[lang="ko"] {
   --ink-faint: #6d6e67;
   --canvas: #f2f2ed;
   --canvas-raised: #fcfcf8;
+  --canvas-soft: #f7f7f1;
   --panel: rgba(252, 252, 248, 0.92);
   --panel-solid: #fcfcf8;
   --line: #d8d8d0;
@@ -755,7 +757,7 @@ html[lang="ko"] .hero h1 em {
   font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Monaco, Consolas,
     monospace;
   font-size: 13px;
-  line-height: 1.2;
+  line-height: 1.18;
 }
 
 .terminal-transcript {
@@ -4155,6 +4157,121 @@ html[lang="ko"] .product-hero .hero-title-line:last-child {
 
   html[lang="ko"] .product-hero .hero-title-line:last-child {
     font-size: 36px;
+  }
+}
+
+/* Workflow theater: authored steps synchronized with the preserved replay. */
+.product-workflow {
+  display: grid;
+  width: var(--page);
+  margin: 0 auto;
+  padding: 96px 0;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: 32px;
+}
+
+.workflow-copy {
+  grid-column: 1 / span 4;
+}
+
+.workflow-intro {
+  position: static;
+}
+
+.workflow-frame {
+  position: sticky;
+  top: 112px;
+  min-width: 0;
+  grid-column: 6 / -1;
+  align-self: start;
+}
+
+.workflow-steps {
+  display: grid;
+  margin: 48px 0 0;
+  padding: 0;
+  gap: 16px;
+  list-style: none;
+}
+
+.workflow-step {
+  display: grid;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  background: var(--canvas-raised);
+  color: var(--ink-muted);
+  transform: translateX(0);
+  transition:
+    color 700ms var(--motion-fluid),
+    background-color 700ms var(--motion-fluid),
+    border-color 700ms var(--motion-fluid),
+    transform 700ms var(--motion-fluid);
+}
+
+.workflow-step > span {
+  color: var(--accent-text);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.workflow-step.is-active {
+  border-color: var(--accent);
+  background: var(--canvas-soft);
+  color: var(--ink);
+  transform: translateX(8px);
+}
+
+.workflow-step h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.workflow-step p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  text-wrap: pretty;
+}
+
+@media (max-width: 960px) {
+  .product-workflow {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .workflow-copy,
+  .workflow-frame {
+    grid-column: 1;
+  }
+
+  .workflow-copy {
+    max-width: 680px;
+  }
+
+  .workflow-frame {
+    position: static;
+  }
+}
+
+@media (max-width: 759px) {
+  .product-workflow {
+    padding: 64px 0;
+    gap: 40px;
+  }
+
+  .workflow-frame {
+    position: static;
+  }
+
+  .workflow-step.is-active {
+    transform: translateX(0);
   }
 }
 

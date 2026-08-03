@@ -256,6 +256,10 @@ class TerminalReplay {
     this.motionPreference = motionPreference;
     this.viewport = element.querySelector("[data-replay-viewport]");
     this.lines = [...element.querySelectorAll("[data-replay-line]")];
+    this.scope = element.closest("[data-replay-scope]");
+    this.steps = [
+      ...(this.scope?.querySelectorAll("[data-workflow-step]") || []),
+    ];
     this.abortController = null;
     this.isIntersecting = false;
 
@@ -268,8 +272,15 @@ class TerminalReplay {
     }
   }
 
+  setActiveStage(stage) {
+    for (const step of this.steps) {
+      step.classList.toggle("is-active", step.dataset.workflowStep === stage);
+    }
+  }
+
   showComplete() {
     this.element.classList.remove("is-replaying", "is-resetting");
+    this.setActiveStage(null);
     for (const line of this.lines) {
       line.classList.remove("is-visible", "is-current");
       const command = line.querySelector("[data-replay-command]");
@@ -281,6 +292,7 @@ class TerminalReplay {
   reset() {
     this.element.classList.add("is-replaying");
     this.element.classList.remove("is-resetting");
+    this.setActiveStage(null);
     for (const line of this.lines) {
       line.classList.remove("is-visible", "is-current");
       const command = line.querySelector("[data-replay-command]");
@@ -320,6 +332,7 @@ class TerminalReplay {
       await replaySleep(550, signal);
 
       for (const stage of ["1", "2", "3"]) {
+        this.setActiveStage(stage);
         const stageLines = this.lines.filter(
           (line) => line.dataset.replayStage === stage,
         );
