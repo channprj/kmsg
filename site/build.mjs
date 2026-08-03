@@ -58,6 +58,8 @@ const locales = {
       pipeline: "현지화 문서",
       footerTagline: "macOS용 KakaoTalk CLI",
       footerDisclaimer: "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
+      privacy: "개인정보",
+      terms: "이용 조건",
     },
   },
   en: {
@@ -92,6 +94,8 @@ const locales = {
       pipeline: "Canonical docs",
       footerTagline: "KakaoTalk CLI for macOS",
       footerDisclaimer: "Independent open source. Not affiliated with Kakao Corp.",
+      privacy: "Privacy",
+      terms: "Terms",
     },
   },
   jp: {
@@ -126,6 +130,8 @@ const locales = {
       pipeline: "日本語ドキュメント",
       footerTagline: "macOS向けKakaoTalk CLI",
       footerDisclaimer: "Kakao Corp.とは無関係の独立したオープンソースです。",
+      privacy: "プライバシー",
+      terms: "利用条件",
     },
   },
   cn: {
@@ -160,6 +166,8 @@ const locales = {
       pipeline: "简体中文文档",
       footerTagline: "面向macOS的KakaoTalk CLI",
       footerDisclaimer: "独立开源项目，与Kakao Corp.无隶属关系。",
+      privacy: "隐私",
+      terms: "使用条款",
     },
   },
 };
@@ -647,6 +655,194 @@ const homeContent = {
   },
 };
 
+const legalContent = {
+  ko: {
+    privacy: {
+      title: "개인정보 처리 안내 - kmsg",
+      description:
+        "kmsg 정적 웹사이트의 데이터 처리와 외부 서비스 이용 범위를 안내합니다.",
+      eyebrow: "법적 안내",
+      heading: "개인정보 처리 안내",
+      intro:
+        "kmsg 웹사이트는 계정, 입력 폼, 분석 도구 없이 정적으로 제공됩니다.",
+      sections: [
+        {
+          title: "웹사이트가 수집하는 정보",
+          body: "이 웹사이트는 방문자의 계정, 메시지, 연락처 또는 입력 내용을 서버에 수집하지 않습니다.",
+        },
+        {
+          title: "외부 서비스",
+          body: "GitHub와 YouTube 링크를 열면 해당 서비스의 개인정보 처리방침과 이용 조건이 적용됩니다.",
+        },
+        {
+          title: "KakaoTalk 메시지",
+          body: "kmsg CLI가 사용자의 Mac에서 처리하는 KakaoTalk 내용은 이 웹사이트로 전송되지 않습니다.",
+        },
+      ],
+    },
+    terms: {
+      title: "이용 조건 - kmsg",
+      description: "kmsg 웹사이트와 오픈소스 소프트웨어의 이용 조건을 안내합니다.",
+      eyebrow: "법적 안내",
+      heading: "이용 조건",
+      intro: "kmsg는 MIT License로 제공되는 독립 오픈소스 프로젝트입니다.",
+      sections: [
+        {
+          title: "오픈소스 라이선스",
+          body: "소프트웨어 사용, 복제, 수정, 배포 조건은 저장소의 MIT License를 따릅니다.",
+        },
+        {
+          title: "비공식 프로젝트",
+          body: "kmsg는 Kakao Corp.와 제휴하거나 승인받은 공식 도구가 아닙니다.",
+        },
+        {
+          title: "사용자 책임",
+          body: "사용자는 자동화 대상, 손쉬운 사용 권한, 메시지 전송 결과를 직접 확인하고 관련 정책과 법률을 준수해야 합니다.",
+        },
+      ],
+    },
+  },
+  en: {
+    privacy: {
+      title: "Privacy - kmsg",
+      description:
+        "How the static kmsg website handles data and links to external services.",
+      eyebrow: "Legal",
+      heading: "Privacy",
+      intro:
+        "The kmsg website is static and has no account, input form, or analytics service.",
+      sections: [
+        {
+          title: "Information collected by this website",
+          body: "This website does not collect visitor accounts, messages, contacts, or submitted content on a server.",
+        },
+        {
+          title: "External services",
+          body: "GitHub and YouTube apply their own privacy policies and terms when you open their links.",
+        },
+        {
+          title: "KakaoTalk messages",
+          body: "KakaoTalk content processed by the kmsg CLI on your Mac is not sent to this website.",
+        },
+      ],
+    },
+    terms: {
+      title: "Terms - kmsg",
+      description: "Terms for the kmsg website and open source software.",
+      eyebrow: "Legal",
+      heading: "Terms",
+      intro:
+        "kmsg is an independent open source project provided under the MIT License.",
+      sections: [
+        {
+          title: "Open source license",
+          body: "The repository MIT License governs use, copying, modification, and distribution of the software.",
+        },
+        {
+          title: "Unofficial project",
+          body: "kmsg is not affiliated with, endorsed by, or an official tool of Kakao Corp.",
+        },
+        {
+          title: "Your responsibility",
+          body: "You must verify automation targets, Accessibility permissions, and message results, and follow applicable policies and laws.",
+        },
+      ],
+    },
+  },
+  jp: {
+    privacy: {
+      title: "プライバシー - kmsg",
+      description:
+        "kmsgの静的ウェブサイトにおけるデータ処理と外部サービスの範囲を説明します。",
+      eyebrow: "法的情報",
+      heading: "プライバシー",
+      intro:
+        "kmsgのウェブサイトは、アカウント、入力フォーム、解析サービスを持たない静的サイトです。",
+      sections: [
+        {
+          title: "このサイトが収集する情報",
+          body: "このサイトは訪問者のアカウント、メッセージ、連絡先、入力内容をサーバーに収集しません。",
+        },
+        {
+          title: "外部サービス",
+          body: "GitHubやYouTubeのリンクを開くと、各サービスのプライバシーポリシーと利用条件が適用されます。",
+        },
+        {
+          title: "KakaoTalkメッセージ",
+          body: "Mac上のkmsg CLIが処理するKakaoTalkの内容は、このウェブサイトへ送信されません。",
+        },
+      ],
+    },
+    terms: {
+      title: "利用条件 - kmsg",
+      description:
+        "kmsgのウェブサイトとオープンソースソフトウェアの利用条件を説明します。",
+      eyebrow: "法的情報",
+      heading: "利用条件",
+      intro:
+        "kmsgはMIT Licenseで提供される独立したオープンソースプロジェクトです。",
+      sections: [
+        {
+          title: "オープンソースライセンス",
+          body: "ソフトウェアの利用、複製、変更、配布にはリポジトリのMIT Licenseが適用されます。",
+        },
+        {
+          title: "非公式プロジェクト",
+          body: "kmsgはKakao Corp.と提携、承認された公式ツールではありません。",
+        },
+        {
+          title: "利用者の責任",
+          body: "自動化対象、アクセシビリティ権限、送信結果を確認し、関連する方針と法律を遵守してください。",
+        },
+      ],
+    },
+  },
+  cn: {
+    privacy: {
+      title: "隐私说明 - kmsg",
+      description: "说明kmsg静态网站的数据处理方式与外部服务范围。",
+      eyebrow: "法律信息",
+      heading: "隐私说明",
+      intro: "kmsg网站为静态网站，不提供账户、输入表单或分析服务。",
+      sections: [
+        {
+          title: "本网站收集的信息",
+          body: "本网站不会在服务器上收集访客账户、消息、联系人或提交内容。",
+        },
+        {
+          title: "外部服务",
+          body: "打开GitHub或YouTube链接后，将适用相应服务的隐私政策与使用条款。",
+        },
+        {
+          title: "KakaoTalk消息",
+          body: "kmsg CLI在您的Mac上处理的KakaoTalk内容不会发送到本网站。",
+        },
+      ],
+    },
+    terms: {
+      title: "使用条款 - kmsg",
+      description: "说明kmsg网站与开源软件的使用条款。",
+      eyebrow: "法律信息",
+      heading: "使用条款",
+      intro: "kmsg是依据MIT License提供的独立开源项目。",
+      sections: [
+        {
+          title: "开源许可证",
+          body: "软件的使用、复制、修改与分发遵循仓库中的MIT License。",
+        },
+        {
+          title: "非官方项目",
+          body: "kmsg并非Kakao Corp.的关联、认可或官方工具。",
+        },
+        {
+          title: "用户责任",
+          body: "用户应自行确认自动化目标、辅助功能权限与消息发送结果，并遵守适用政策和法律。",
+        },
+      ],
+    },
+  },
+};
+
 const homeStories = [
   {
     publisher: "Builder Josh",
@@ -685,9 +881,9 @@ const pageDefinitions = [
     },
     translations: {
       ko: {
-        title: "kmsg — macOS용 카카오톡 CLI 및 MCP 서버",
+        title: "kmsg - macOS용 카카오톡 CLI 및 MCP 서버",
         description:
-          "macOS용 비공식 카카오톡 CLI 및 네이티브 MCP 서버입니다. 손쉬운 사용 자동화로 메시지를 읽고, 감시하고, 전송합니다.",
+          "터미널과 AI 코딩 에이전트에서 KakaoTalk 채팅을 찾고 읽고 안전하게 보내는 macOS용 오픈소스 CLI와 MCP 서버입니다.",
         eyebrow: "카카오톡 자동화 · macOS 13 이상",
         sourceLabel: "README.md에서 자동 생성",
         faqHeading: "자주 묻는 질문",
@@ -705,7 +901,7 @@ const pageDefinitions = [
       en: {
         title: "kmsg — KakaoTalk CLI & MCP server for macOS",
         description:
-          "Unofficial KakaoTalk CLI and native MCP server for macOS. Read, watch, and send messages through Accessibility automation for scripts and AI agents.",
+          "Open source macOS CLI and MCP server for finding, reading, and safely sending KakaoTalk chats from terminals and AI coding agents.",
         eyebrow: "KakaoTalk automation · macOS 13+",
         sourceLabel: "Generated from README.en.md",
         faqHeading: "Frequently asked questions",
@@ -723,7 +919,7 @@ const pageDefinitions = [
       jp: {
         title: "kmsg — macOS向けKakaoTalk CLI / MCPサーバー",
         description:
-          "KakaoTalkをmacOSのアクセシビリティAPIで読み取り、監視、送信できる非公式CLI兼ネイティブMCPサーバーです。",
+          "ターミナルやAIコーディングエージェントからKakaoTalkのチャットを検索、閲覧、安全に送信できるmacOS向けオープンソースCLI・MCPサーバーです。",
         eyebrow: "KakaoTalk自動化 · macOS 13以降",
         sourceLabel: "日本語ドキュメント",
         faqHeading: "よくある質問",
@@ -741,7 +937,7 @@ const pageDefinitions = [
       cn: {
         title: "kmsg — 面向macOS的KakaoTalk CLI与MCP服务器",
         description:
-          "通过macOS辅助功能API读取、监控和发送KakaoTalk消息的非官方CLI与原生MCP服务器。",
+          "面向macOS的开源CLI和MCP服务器，可在终端与AI编程智能体中查找、读取并安全发送KakaoTalk聊天消息。",
         eyebrow: "KakaoTalk自动化 · macOS 13+",
         sourceLabel: "简体中文文档",
         faqHeading: "常见问题",
@@ -944,6 +1140,27 @@ const pageDefinitions = [
       },
     },
   },
+  ...["privacy", "terms"].map((pageKey) => ({
+    key: pageKey,
+    slug: pageKey,
+    type: "legal",
+    sources: Object.fromEntries(
+      localeOrder.map((localeId) => [localeId, "site/build.mjs"]),
+    ),
+    translations: Object.fromEntries(
+      localeOrder.map((localeId) => {
+        const copy = legalContent[localeId][pageKey];
+        return [
+          localeId,
+          {
+            title: copy.title,
+            description: copy.description,
+            eyebrow: copy.eyebrow,
+          },
+        ];
+      }),
+    ),
+  })),
 ];
 
 const routePathFor = (localeId, slug) => {
@@ -1511,7 +1728,7 @@ const renderHomeWorkflow = (page, copy) => `
   </section>`;
 
 const renderPrinciples = (copy) => `
-  <section class="product-section principles-section" id="principles">
+  <section class="product-section principles-section" id="principles" data-reveal>
     ${renderSectionHeading(copy.principlesLabel, copy.principlesTitle)}
     <div class="principle-grid">
       ${copy.principles
@@ -1528,7 +1745,7 @@ const renderPrinciples = (copy) => `
   </section>`;
 
 const renderCapabilities = (copy) => `
-  <section class="product-section capabilities-section" id="capabilities">
+  <section class="product-section capabilities-section" id="capabilities" data-reveal>
     ${renderSectionHeading(copy.capabilitiesLabel, copy.capabilitiesTitle)}
     <div class="capability-list">
       ${copy.capabilities
@@ -1595,7 +1812,7 @@ const agentSkillInstallCommand =
   "npx skills add channprj/kmsg --skill kmsg --agent claude-code codex -g -y";
 
 const renderAgentSkill = (page, copy) => `
-  <section class="product-section agent-skill-section" id="agent-skill" data-agent-skill>
+  <section class="product-section agent-skill-section" id="agent-skill" data-agent-skill data-reveal>
     ${renderSectionHeading(
       copy.agentSkillLabel,
       copy.agentSkillTitle,
@@ -1643,7 +1860,7 @@ const moreStoriesUrl =
   "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22";
 
 const renderHomeStories = (copy, locale) => `
-  <section class="product-section stories-section" id="stories">
+  <section class="product-section stories-section" id="stories" data-reveal>
     ${renderSectionHeading(
       copy.storiesLabel,
       copy.storiesTitle,
@@ -1686,7 +1903,7 @@ const renderHomeStories = (copy, locale) => `
   </section>`;
 
 const renderHomeFaq = (copy, faqs) => `
-  <section class="product-section faq-section" id="faq">
+  <section class="product-section faq-section" id="faq" data-reveal>
     ${renderSectionHeading(
       copy.faqLabel,
       copy.faqTitle,
@@ -1712,7 +1929,7 @@ const renderHomeInstall = (page, copy) => {
   );
 
   return `
-    <section class="product-section install-section" id="install">
+    <section class="product-section install-section" id="install" data-reveal>
       <div class="install-panel">
         <p class="section-label">${escapeHtml(copy.installLabel)}</p>
         <h2>${escapeHtml(copy.installTitle)}</h2>
@@ -1780,7 +1997,7 @@ const renderProductHome = (page, faqs) => {
   }
 
   return `
-    <section class="product-hero" aria-labelledby="hero-title">
+    <section class="product-hero" aria-labelledby="hero-title" data-reveal>
       <div class="hero-copy">
         <div class="product-mark">
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="64" height="64" fetchpriority="high" decoding="async">
@@ -1840,6 +2057,41 @@ const renderDocsHero = (page, markdown, lastModified) => {
     </section>`;
 };
 
+const legalMarkdown = (page) => {
+  const copy = legalContent[page.locale][page.pageKey];
+  return [
+    `# ${copy.heading}`,
+    copy.intro,
+    ...copy.sections.flatMap((section) => [
+      `## ${section.title}`,
+      section.body,
+    ]),
+  ].join("\n\n");
+};
+
+const renderLegalPage = (page) => {
+  const copy = legalContent[page.locale][page.pageKey];
+  return `
+    <article class="legal-page" data-reveal>
+      <header class="legal-hero">
+        <p class="eyebrow"><span></span>${escapeHtml(copy.eyebrow)}</p>
+        <h1>${escapeHtml(copy.heading)}</h1>
+        <p>${escapeHtml(copy.intro)}</p>
+      </header>
+      <div class="legal-sections">
+        ${copy.sections
+          .map(
+            (section) => `
+          <section>
+            <h2>${escapeHtml(section.title)}</h2>
+            <p>${escapeHtml(section.body)}</p>
+          </section>`,
+          )
+          .join("")}
+      </div>
+    </article>`;
+};
+
 const renderFooter = (page, version) => {
   const architectureLink = relativeAsset(
     page.output,
@@ -1850,6 +2102,14 @@ const renderFooter = (page, version) => {
     localizedPage(page.locale, "versioning").output,
   );
   const llmLink = relativeAsset(page.output, "llm.txt");
+  const privacyLink = relativeAsset(
+    page.output,
+    localizedPage(page.locale, "privacy").output,
+  );
+  const termsLink = relativeAsset(
+    page.output,
+    localizedPage(page.locale, "terms").output,
+  );
   const versioningFooterLink =
     page.type === "home"
       ? ""
@@ -1864,6 +2124,8 @@ const renderFooter = (page, version) => {
       <div class="footer-links">
         <a href="${architectureLink}">${page.localeConfig.ui.architecture}</a>
         ${versioningFooterLink}
+        <a class="footer-privacy-link" href="${privacyLink}">${page.localeConfig.ui.privacy}</a>
+        <a class="footer-terms-link" href="${termsLink}">${page.localeConfig.ui.terms}</a>
         <a class="footer-llm-link" href="${llmLink}" type="text/plain">LLM.txt</a>
         <a href="${site.licenseUrl}" target="_blank" rel="noopener noreferrer">MIT License</a>
       </div>
@@ -2056,6 +2318,8 @@ const renderDocument = ({
       ? `<div class="product-home" data-product-home>
           ${renderProductHome(page, faqs)}
         </div>`
+      : page.type === "legal"
+        ? renderLegalPage(page)
       : `${renderDocsHero(page, markdown, lastModified)}
         <div class="content-layout">
           ${renderToc(rendered.headings, page)}
@@ -2065,6 +2329,10 @@ const renderDocument = ({
     page.type === "home"
       ? `<link rel="preload" as="image" href="${rootAsset(site.heroImagePath)}" type="image/webp" fetchpriority="high">`
       : "";
+  const rawMarkdownAlternate =
+    page.type === "legal"
+      ? ""
+      : `<link rel="alternate" type="text/markdown" href="${site.repositoryUrl}/raw/main/${page.source}" title="${escapeHtml(page.source)}">`;
 
   const html = `<!doctype html>
 <html lang="${page.lang}" data-locale="${page.locale}" data-page-key="${page.pageKey}" data-theme="dark">
@@ -2078,11 +2346,11 @@ const renderDocument = ({
     <meta name="generator" content="kmsg README site generator">
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
     <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
-    <meta name="theme-color" content="#0c0d0b">
+    <meta name="theme-color" content="#131209">
     <link rel="canonical" href="${canonical}">
     ${alternateLinks}
     <link rel="alternate" hreflang="x-default" href="${xDefault}">
-    <link rel="alternate" type="text/markdown" href="${site.repositoryUrl}/raw/main/${page.source}" title="${escapeHtml(page.source)}">
+    ${rawMarkdownAlternate}
     <link rel="alternate" type="text/plain" href="${pageUrl("llm.txt")}" title="LLM-readable site index">
     <link rel="manifest" href="${rootAsset("site.webmanifest")}">
     <link rel="icon" href="${rootAsset("assets/favicon.svg")}" type="image/svg+xml">
@@ -2133,7 +2401,7 @@ const renderDocument = ({
       } catch {}
     </script>
   </head>
-  <body class="${page.type === "home" ? "is-home" : "is-docs"}" data-source="${escapeHtml(page.source)}" data-locale="${page.locale}" data-copy-label="${page.localeConfig.ui.copy}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
+  <body class="${page.type === "home" ? "is-home" : page.type === "legal" ? "is-legal" : "is-docs"}" data-source="${escapeHtml(page.source)}" data-locale="${page.locale}" data-copy-label="${page.localeConfig.ui.copy}" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
     <a class="skip-link" href="#content">${page.localeConfig.ui.skip}</a>
     <div class="site-shell">
       ${renderHeader(page)}
@@ -2236,18 +2504,52 @@ const buildRedirect = (target, lang = "ko") =>
   `<meta name="robots" content="noindex,follow"></head>` +
   `<body><p><a href="${target}">kmsg 문서로 이동</a></p></body></html>`;
 
+const renderNotFound = () => `<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Page not found - kmsg</title>
+    <meta name="robots" content="noindex,follow">
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./assets/styles.css">
+  </head>
+  <body class="is-not-found">
+    <main class="not-found-page">
+      <img src="./assets/kmsg-logo.jpg" alt="" width="64" height="64">
+      <p class="eyebrow"><span></span>404</p>
+      <h1>Page not found</h1>
+      <p>The requested page does not exist. Choose a language to return to kmsg.</p>
+      <nav aria-label="Choose a kmsg homepage">
+        ${localeOrder
+          .map((localeId) => {
+            const locale = locales[localeId];
+            return `<a class="not-found-locale" href="${pageUrl(localizedPage(localeId, "home").path)}">${locale.label} · ${locale.name}</a>`;
+          })
+          .join("")}
+      </nav>
+    </main>
+  </body>
+</html>`;
+
 const main = async () => {
   const version = (await readFile(join(repoDir, "VERSION"), "utf8")).trim();
   const documents = await Promise.all(
     pages.map(async (page) => {
-      const markdown = await readFile(join(repoDir, page.source), "utf8");
+      const markdown =
+        page.type === "legal"
+          ? legalMarkdown(page)
+          : await readFile(join(repoDir, page.source), "utf8");
       return {
         page,
         markdown,
         rendered: renderMarkdown(markdown, page),
         intro: extractIntro(markdown),
         faqs: extractFaqs(markdown, page),
-        lastModified: gitLastModified(page.source, page.canonicalSource),
+        lastModified:
+          page.type === "legal"
+            ? gitLastModified("site/build.mjs")
+            : gitLastModified(page.source, page.canonicalSource),
       };
     }),
   );
@@ -2277,6 +2579,8 @@ const main = async () => {
     "openclaw",
     "skill",
     "versioning",
+    "privacy",
+    "terms",
   ]) {
     const koreanPage = localizedPage("ko", pageKey);
     const legacyOutput = join(outputDir, "ko", koreanPage.output);
@@ -2348,7 +2652,7 @@ const main = async () => {
           description: pages[0].description,
           start_url: "/kmsg/",
           display: "standalone",
-          background_color: "#0c0d0b",
+          background_color: "#131209",
           theme_color: "#fee500",
           icons: [
             {
@@ -2366,7 +2670,7 @@ const main = async () => {
     ),
     writeFile(
       join(outputDir, "404.html"),
-      `<!doctype html><meta charset="utf-8"><title>kmsg</title><meta http-equiv="refresh" content="0; url=${site.baseUrl}"><link rel="canonical" href="${site.baseUrl}"><p><a href="${site.baseUrl}">Continue to kmsg</a></p>`,
+      renderNotFound(),
       "utf8",
     ),
   ]);

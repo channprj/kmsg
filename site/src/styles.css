@@ -11,7 +11,7 @@
   --ink: #f2f2ed;
   --ink-muted: #aaa9a2;
   --ink-faint: #8c8b84;
-  --canvas: #0c0d0b;
+  --canvas: #131209;
   --canvas-raised: #151612;
   --canvas-soft: #1b1c16;
   --panel: rgba(21, 22, 18, 0.92);
@@ -192,9 +192,7 @@ h3 {
   z-index: -1;
   inset: 0;
   opacity: 0.24;
-  background-image:
-    linear-gradient(var(--line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background: none;
   background-size: 64px 64px;
   mask-image: linear-gradient(to bottom, black, transparent 58%);
   pointer-events: none;
@@ -205,9 +203,7 @@ h3 {
   min-height: 100vh;
   margin: 0 auto;
   border-inline: 1px solid var(--line);
-  background:
-    linear-gradient(90deg, transparent 0 31px, color-mix(in srgb, var(--line) 24%, transparent) 32px, transparent 33px),
-    var(--canvas);
+  background: var(--canvas);
   box-shadow: 0 0 100px rgba(0, 0, 0, 0.18);
 }
 
@@ -947,9 +943,7 @@ html[lang="ko"] .hero h1 em {
   grid-column: 1 / span 2;
   grid-row: 1 / span 3;
   place-items: center;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 52%),
-    #0d0d0c;
+  background: #0d0d0c;
   box-shadow:
     0 28px 54px rgba(0, 0, 0, 0.3),
     0 1px 0 rgba(255, 255, 255, 0.08) inset;
@@ -1622,8 +1616,7 @@ html[lang="ko"] .hero h1 em {
   grid-template-rows: auto auto auto auto;
   align-items: start;
   column-gap: clamp(44px, 7vw, 88px);
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--canvas-raised) 88%, transparent), var(--canvas-raised));
+  background: var(--canvas-raised);
   text-align: left;
 }
 
@@ -1995,9 +1988,7 @@ html[lang="ko"] .hero h1 em {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
   border-radius: var(--radius-md);
-  background:
-    linear-gradient(115deg, color-mix(in srgb, var(--accent) 7%, transparent), transparent 55%),
-    var(--canvas-raised);
+  background: var(--canvas-raised);
 }
 
 .markdown-body blockquote::before {
@@ -2040,11 +2031,7 @@ html[lang="ko"] .hero h1 em {
   display: block;
   height: 34px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  background:
-    radial-gradient(circle at 15px 17px, #e2635f 0 4px, transparent 4.5px),
-    radial-gradient(circle at 29px 17px, #dfb44b 0 4px, transparent 4.5px),
-    radial-gradient(circle at 43px 17px, #4caf6b 0 4px, transparent 4.5px),
-    #282c34;
+  background: #282c34;
   content: "";
 }
 
@@ -3386,7 +3373,7 @@ html[lang="ko"] .hero h1 em {
 }
 
 .tagline-armed .tagline-word {
-  color: color-mix(in srgb, var(--ink) 30%, transparent);
+  color: color-mix(in srgb, var(--ink) 50%, transparent);
 }
 
 .tagline-armed .tagline-word.is-lit {
@@ -4272,6 +4259,170 @@ html[lang="ko"] .product-hero .hero-title-line:last-child {
 
   .workflow-step.is-active {
     transform: translateX(0);
+  }
+}
+
+/* Complete surfaces, observer reveals, and recovery pages. */
+.capability-copy {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.product-home a,
+.product-home button,
+.principle-card,
+.workflow-step,
+.faq-item summary,
+.story-media,
+.language-control,
+.theme-toggle,
+.menu-toggle,
+.not-found-locale {
+  transition-timing-function: var(--motion-fluid);
+}
+
+.product-home a:active,
+.product-home button:active,
+.faq-item summary:active,
+.not-found-locale:active {
+  transform: scale(0.98);
+}
+
+html.js [data-reveal] {
+  transform: translateY(64px);
+  filter: blur(12px);
+  opacity: 0;
+  transition:
+    filter 800ms var(--motion-fluid),
+    opacity 800ms var(--motion-fluid),
+    transform 800ms var(--motion-fluid);
+}
+
+html.js [data-reveal].is-revealed {
+  transform: translateY(0);
+  filter: blur(0);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal],
+  html.js [data-reveal].is-revealed {
+    filter: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+.legal-page,
+.not-found-page {
+  width: var(--page);
+  margin: 0 auto;
+}
+
+.legal-page {
+  padding: 96px 0;
+}
+
+.legal-hero {
+  max-width: 680px;
+}
+
+.legal-hero h1,
+.not-found-page h1 {
+  margin: 16px 0 0;
+  font-size: 60px;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.legal-hero > p:last-child,
+.not-found-page > p {
+  margin: 24px 0 0;
+  color: var(--ink-muted);
+  font-size: 18px;
+  line-height: 28px;
+  text-wrap: pretty;
+}
+
+.legal-sections {
+  display: grid;
+  max-width: 760px;
+  margin-top: 64px;
+  gap: 32px;
+}
+
+.legal-sections section {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--canvas-raised);
+}
+
+.legal-sections h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.legal-sections p {
+  margin: 12px 0 0;
+  color: var(--ink-muted);
+  line-height: 1.7;
+}
+
+.is-not-found {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+}
+
+.not-found-page {
+  padding: 64px 0;
+}
+
+.not-found-page > img {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md);
+}
+
+.not-found-page .eyebrow {
+  margin-top: 32px;
+}
+
+.not-found-page nav {
+  display: flex;
+  margin-top: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.not-found-locale {
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: var(--canvas-raised);
+  text-decoration: none;
+}
+
+.not-found-locale:hover {
+  border-color: var(--accent);
+}
+
+@media (max-width: 759px) {
+  .legal-page {
+    padding: 64px 0;
+  }
+
+  .legal-hero h1,
+  .not-found-page h1 {
+    font-size: 48px;
+  }
+
+  .legal-sections {
+    margin-top: 48px;
+    gap: 20px;
   }
 }
 

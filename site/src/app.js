@@ -81,7 +81,7 @@ const copyFailedLabel =
 
 const setTheme = (theme) => {
   root.dataset.theme = theme;
-  themeColor?.setAttribute("content", theme === "paper" ? "#f2f2ed" : "#0c0d0b");
+  themeColor?.setAttribute("content", theme === "paper" ? "#f2f2ed" : "#131209");
   const label =
     theme === "dark"
       ? themeToggle?.dataset.lightLabel
@@ -462,4 +462,27 @@ if (
   for (const word of taglineWords) {
     taglineObserver.observe(word);
   }
+}
+
+const revealElements = [...document.querySelectorAll("[data-reveal]")];
+
+if (
+  "IntersectionObserver" in window &&
+  revealElements.length > 0 &&
+  !replayMotionPreference.matches
+) {
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("is-revealed");
+        revealObserver.unobserve(entry.target);
+      }
+    },
+    { rootMargin: "0px 0px -12% 0px", threshold: 0.12 },
+  );
+
+  revealElements.forEach((element) => revealObserver.observe(element));
+} else {
+  revealElements.forEach((element) => element.classList.add("is-revealed"));
 }

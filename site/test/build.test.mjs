@@ -21,6 +21,8 @@ const pages = {
   openclaw: "mcp/",
   skill: "skill/",
   versioning: "versioning/",
+  privacy: "privacy/",
+  terms: "terms/",
 };
 
 const localizedPath = (localeId, pageKey) =>
@@ -41,6 +43,8 @@ const expectedFiles = [
   "ko/mcp/index.html",
   "ko/skill/index.html",
   "ko/versioning/index.html",
+  "ko/privacy/index.html",
+  "ko/terms/index.html",
   "openclaw/index.html",
   "en/openclaw/index.html",
   "jp/openclaw/index.html",
@@ -54,6 +58,7 @@ const expectedFiles = [
   "assets/demo-captions.vtt",
   "assets/geist-latin-wght-normal.woff2",
   "assets/geist-OFL.txt",
+  "404.html",
   "robots.txt",
   "sitemap.xml",
   "llm.txt",
@@ -140,6 +145,99 @@ test("mobile menu overlay paints above landing content", async () => {
   );
 });
 
+test("legal routes are localized, canonical, and linked from every footer", async () => {
+  const labels = {
+    ko: ["개인정보 처리 안내", "이용 조건"],
+    en: ["Privacy", "Terms"],
+    jp: ["プライバシー", "利用条件"],
+    cn: ["隐私说明", "使用条款"],
+  };
+
+  for (const [localeId, expectedLabels] of Object.entries(labels)) {
+    const [privacy, terms] = await Promise.all([
+      readOutput(localizedPath(localeId, "privacy")),
+      readOutput(localizedPath(localeId, "terms")),
+    ]);
+    assert.match(privacy, /<body class="is-legal"/);
+    assert.match(terms, /<body class="is-legal"/);
+    assert.ok(privacy.includes(expectedLabels[0]), localeId);
+    assert.ok(terms.includes(expectedLabels[1]), localeId);
+
+    for (const pageKey of Object.keys(pages)) {
+      const html = await readOutput(localizedPath(localeId, pageKey));
+      assert.match(html, /class="footer-privacy-link"/);
+      assert.match(html, /class="footer-terms-link"/);
+    }
+  }
+});
+
+test("branded 404 remains useful without script", async () => {
+  const html = await readOutput("404.html");
+  assert.match(html, /<meta name="robots" content="noindex,follow">/);
+  assert.match(html, /<body class="is-not-found"/);
+  assert.match(html, /<h1>Page not found<\/h1>/);
+  assert.equal((html.match(/class="not-found-locale"/g) || []).length, 4);
+  assert.doesNotMatch(html, /http-equiv="refresh"/);
+});
+
+test("homepage metadata states the terminal and coding-agent outcome", async () => {
+  const html = await readOutput("index.html");
+  const description =
+    "터미널과 AI 코딩 에이전트에서 KakaoTalk 채팅을 찾고 읽고 안전하게 보내는 macOS용 오픈소스 CLI와 MCP 서버입니다.";
+  assert.match(
+    html,
+    /<title>kmsg - macOS용 카카오톡 CLI 및 MCP 서버<\/title>/,
+  );
+  assert.ok(html.includes(`<meta name="description" content="${description}">`));
+  assert.ok(
+    html.includes(`<meta property="og:description" content="${description}">`),
+  );
+});
+
+test("landing sections use observer-driven reveal states", async () => {
+  const [html, app, styles] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("assets/app.js"),
+    readOutput("assets/styles.css"),
+  ]);
+  assert.ok((html.match(/data-reveal/g) || []).length >= 7);
+  assert.match(app, /document\.querySelectorAll\("\[data-reveal\]"\)/);
+  assert.match(app, /revealObserver/);
+  assert.doesNotMatch(app, /window\.addEventListener\("scroll"/);
+  assert.match(
+    styles,
+    /html\.js \[data-reveal\][^\{]*{[^}]*translateY\(64px\)[^}]*blur\(12px\)[^}]*opacity:\s*0;/s,
+  );
+  assert.match(
+    styles,
+    /\[data-reveal\]\.is-revealed[^\{]*{[^}]*translateY\(0\)[^}]*blur\(0\)[^}]*opacity:\s*1;/s,
+  );
+});
+
+test("landing backgrounds are flat and primary colors remain unchanged", async () => {
+  const [styles, app] = await Promise.all([
+    readOutput("assets/styles.css"),
+    readOutput("assets/app.js"),
+  ]);
+  const backgroundGradients =
+    styles.match(
+      /background(?:-image)?\s*:\s*[^;]*(?:linear|radial)-gradient[^;]*;/gs,
+    ) || [];
+  assert.deepEqual(
+    backgroundGradients.map((value) => value.trim()),
+    [
+      "background-image: linear-gradient(90deg, #ffffff 0%, #9b9b9b 100%);",
+      "background-image: linear-gradient(90deg, #000000 0%, #666666 100%);",
+    ],
+  );
+  assert.match(app, /theme === "paper" \? "#f2f2ed" : "#131209"/);
+  assert.match(styles, /:root\s*{[^}]*--accent:\s*#fee500;/s);
+  assert.match(
+    styles,
+    /:root\[data-theme="paper"\]\s*{[^}]*--accent:\s*#f2d500;/s,
+  );
+});
+
 test("Korean is canonical at root and on every default documentation route", async () => {
   const sources = {
     home: "README.md",
@@ -148,6 +246,8 @@ test("Korean is canonical at root and on every default documentation route", asy
     openclaw: "site/content/ko/openclaw.md",
     skill: "site/content/ko/skill.md",
     versioning: "site/content/ko/versioning.md",
+    privacy: "site/build.mjs",
+    terms: "site/build.mjs",
   };
   const visibleCopy = {
     home: "하게 사용하세요\\.",
@@ -156,6 +256,8 @@ test("Korean is canonical at root and on every default documentation route", asy
     openclaw: "OpenClaw 연동 가이드",
     skill: "kmsg 코딩 에이전트 Skill",
     versioning: "kmsg 버전 관리",
+    privacy: "개인정보 처리 안내",
+    terms: "이용 조건",
   };
 
   for (const pageKey of Object.keys(pages)) {
@@ -164,7 +266,7 @@ test("Korean is canonical at root and on every default documentation route", asy
     assert.match(
       html,
       new RegExp(
-        `<body class="is-${pageKey === "home" ? "home" : "docs"}" data-source="${sources[pageKey].replaceAll(".", "\\.")}" data-locale="ko"`,
+        `<body class="is-${pageKey === "home" ? "home" : ["privacy", "terms"].includes(pageKey) ? "legal" : "docs"}" data-source="${sources[pageKey].replaceAll(".", "\\.")}" data-locale="ko"`,
       ),
     );
     assert.match(html, new RegExp(visibleCopy[pageKey]));
@@ -440,6 +542,14 @@ test("home routes stage the tagline reveal word by word", async () => {
   );
 });
 
+test("animated tagline keeps an accessible pre-reveal contrast", async () => {
+  const styles = await readOutput("assets/styles.css");
+  assert.match(
+    styles,
+    /\.tagline-armed \.tagline-word\s*{[^}]*color:\s*color-mix\(in srgb, var\(--ink\) 50%, transparent\);/s,
+  );
+});
+
 test("home routes document cross-agent skill installation and use", async () => {
   const localizedCopy = {
     ko: {
@@ -467,7 +577,7 @@ test("home routes document cross-agent skill installation and use", async () => 
 
     assert.match(
       html,
-      /<section class="product-section agent-skill-section" id="agent-skill" data-agent-skill>/,
+      /<section class="product-section agent-skill-section" id="agent-skill" data-agent-skill data-reveal>/,
     );
     assert.ok(html.includes(copy.title));
     assert.ok(html.includes(copy.prompt));
@@ -1136,7 +1246,7 @@ test("homepage renders every FAQ represented by structured data", async () => {
     const faq = data["@graph"].find((node) => node["@type"] === "FAQPage");
     assert.match(
       html,
-      /<section class="product-section faq-section" id="faq">/,
+      /<section class="product-section faq-section" id="faq" data-reveal>/,
     );
     assert.equal(
       (html.match(/<details class="faq-item">/g) || []).length,
@@ -1216,7 +1326,7 @@ test("every canonical page exposes the same ordered primary navigation", async (
       );
       assert.equal(
         (nav.match(/aria-current="page"/g) || []).length,
-        pageKey === "home" || pageKey === "versioning" ? 0 : 1,
+        ["home", "versioning", "privacy", "terms"].includes(pageKey) ? 0 : 1,
         path,
       );
     }
@@ -1367,7 +1477,7 @@ test("home interface metadata follows the installed web design guidelines", asyn
     html,
     /<footer[\s\S]*?<img[^>]*width="56"[^>]*height="56"[^>]*loading="lazy"[^>]*decoding="async"/,
   );
-  assert.match(html, /<meta name="theme-color" content="#0c0d0b">/);
+  assert.match(html, /<meta name="theme-color" content="#131209">/);
   assert.match(
     styles,
     /button,\s*a,\s*select\s*{[^}]*touch-action:\s*manipulation;/s,
@@ -1390,7 +1500,7 @@ test("home interface metadata follows the installed web design guidelines", asyn
   );
   assert.match(
     app,
-    /themeColor\?\.setAttribute\("content", theme === "paper" \? "#f2f2ed" : "#0c0d0b"\)/,
+    /themeColor\?\.setAttribute\("content", theme === "paper" \? "#f2f2ed" : "#131209"\)/,
   );
 });
 
