@@ -131,7 +131,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer-wordmark span {
+  .footer-wordmark[data-state] span {
     opacity: 1;
     transform: none;
     transition: none;

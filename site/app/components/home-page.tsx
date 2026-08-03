@@ -66,7 +66,7 @@ function TerminalPreview({ locale }: { locale: LocaleId }) {
         <span className="size-2.5 rounded-full bg-[#ff5f57]" />
         <span className="size-2.5 rounded-full bg-[#febc2e]" />
         <span className="size-2.5 rounded-full bg-[#28c840]" />
-        <span className="ml-auto font-mono text-[11px] text-white/45">kmsg — zsh</span>
+        <span className="ml-auto font-mono text-[11px] text-white/60">kmsg — zsh</span>
       </div>
       <div className="space-y-4 overflow-x-auto p-5 font-mono text-[13px] leading-[1.65] sm:p-6">
         <div>

@@ -21,6 +21,6 @@ test("footer wordmark keeps the reference crop and stagger timing", () => {
   assert.match(styles, /cubic-bezier\(\.16,\s*1,\s*\.3,\s*1\)/);
   assert.match(
     styles,
-    /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.footer-wordmark span\s*\{[^}]*transition:\s*none;/,
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.footer-wordmark\[data-state] span\s*\{[^}]*transition:\s*none;/,
   );
 });
