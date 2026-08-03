@@ -1,0 +1,90 @@
+{
+  "ko": [
+    {
+      "question": "kmsg는 무엇인가요?",
+      "answer": "kmsg는 macOS용 비공식 오픈소스 카카오톡 CLI이자 네이티브 MCP 서버입니다. 사용자, 스크립트, AI 에이전트가 명령줄에서 카카오톡 메시지를 읽고, 감시하고, 전송할 수 있게 해줍니다."
+    },
+    {
+      "question": "kmsg는 카카오톡 공식 도구인가요?",
+      "answer": "아닙니다. kmsg는 Kakao Corp.와 제휴하거나 Kakao Corp.의 보증을 받은 도구가 아니며, 독립적으로 관리되는 오픈소스 프로젝트입니다."
+    },
+    {
+      "question": "어떤 운영체제를 지원하나요?",
+      "answer": "kmsg는 macOS 13 이상과 macOS용 KakaoTalk을 필요로 합니다. Windows, Linux, Android, iOS는 지원하지 않습니다."
+    },
+    {
+      "question": "kmsg는 카카오톡에 어떻게 접근하나요?",
+      "answer": "Apple의 macOS 손쉬운 사용 API를 통해 화면에 표시되는 KakaoTalk 애플리케이션을 제어합니다. KakaoTalk의 비공개 LOCO 프로토콜은 구현하지 않습니다."
+    },
+    {
+      "question": "MCP 서버가 포함되어 있나요?",
+      "answer": "네. 네이티브 kmsg mcp-server 명령은 MCP 호환 클라이언트와 AI 에이전트에 읽기, 텍스트 전송, 이미지 전송 도구를 stdio로 제공합니다."
+    },
+    {
+      "question": "kmsg는 어떻게 설치하나요?",
+      "answer": "brew install channprj/tap/kmsg를 실행해 Homebrew로 설치할 수 있습니다. 직접 다운로드와 소스 빌드 방법은 사용법에서 확인할 수 있습니다."
+    }
+  ],
+  "en": [
+    {
+      "question": "What is kmsg?",
+      "answer": "kmsg is an unofficial, open-source KakaoTalk CLI and native MCP server for macOS. It lets people, scripts, and AI agents read, watch, and send KakaoTalk messages from the command line."
+    },
+    {
+      "question": "Is kmsg an official KakaoTalk tool?",
+      "answer": "No. kmsg is an independent open-source project and is not affiliated with, endorsed by, or maintained by Kakao Corp."
+    },
+    {
+      "question": "Which operating systems does kmsg support?",
+      "answer": "kmsg supports macOS 13 or later and requires KakaoTalk for macOS. It does not support Windows, Linux, Android, or iOS."
+    },
+    {
+      "question": "How does kmsg access KakaoTalk?",
+      "answer": "kmsg controls the visible KakaoTalk macOS application through Apple's Accessibility API. It does not implement KakaoTalk's private LOCO protocol."
+    },
+    {
+      "question": "Does kmsg include an MCP server?",
+      "answer": "Yes. The native kmsg mcp-server command exposes read, text-send, and image-send tools over stdio for MCP-compatible clients and AI agents."
+    },
+    {
+      "question": "How do I install kmsg?",
+      "answer": "Install it with Homebrew by running brew install channprj/tap/kmsg. Direct downloads and source-build instructions are available in Usage."
+    }
+  ],
+  "jp": [
+    {
+      "question": "公式のKakaoTalkツールですか？",
+      "answer": "いいえ。kmsgは独立して運営されるオープンソースプロジェクトであり、Kakao Corp.との提携、承認、保守関係はありません。"
+    },
+    {
+      "question": "KakaoTalkにはどのようにアクセスしますか？",
+      "answer": "AppleのmacOSアクセシビリティAPIを通じて、ユーザーが実行しているKakaoTalkアプリのUIを操作します。非公開のLOCOプロトコルは実装しません。"
+    },
+    {
+      "question": "MCPサーバーは含まれていますか？",
+      "answer": "はい。kmsg mcp-serverは、MCP対応クライアントやAIエージェントに読み取り・テキスト送信・画像送信ツールを提供します。"
+    },
+    {
+      "question": "対応OSは？",
+      "answer": "macOS 13以降のみです。Windows、Linux、Android、iOSには対応していません。"
+    }
+  ],
+  "cn": [
+    {
+      "question": "这是KakaoTalk官方工具吗？",
+      "answer": "不是。kmsg是独立维护的开源项目，与Kakao Corp.没有隶属、认可或维护关系。"
+    },
+    {
+      "question": "kmsg如何访问KakaoTalk？",
+      "answer": "它通过Apple的macOS辅助功能API操作用户正在运行的KakaoTalk应用界面，不实现私有LOCO协议。"
+    },
+    {
+      "question": "是否包含MCP服务器？",
+      "answer": "是。kmsg mcp-server可为MCP客户端和AI智能体提供读取、文本发送及图片发送工具。"
+    },
+    {
+      "question": "支持哪些操作系统？",
+      "answer": "仅支持macOS 13及更高版本，不支持Windows、Linux、Android或iOS。"
+    }
+  ]
+}
