@@ -5,6 +5,7 @@
     "test/**/*.tsx",
     ".react-router/types/**/*",
     "vite.config.ts",
+    "vitest.config.ts",
     "react-router.config.ts"
   ],
   "compilerOptions": {
