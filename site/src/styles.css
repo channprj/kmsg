@@ -3584,6 +3584,23 @@ html[lang="ko"] .hero h1 em {
   min-height: 160px;
 }
 
+.hero-lead,
+.workflow-intro p,
+.section-heading p,
+.principle-card p,
+.capability-copy p,
+.agent-skill-card > p,
+.install-description,
+.faq-item p {
+  text-wrap: pretty;
+}
+
+.principle-card h3,
+.capability-copy h3,
+.agent-skill-card h3 {
+  text-wrap: balance;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .product-hero .hero-copy > *,
   .product-hero .hero-media {

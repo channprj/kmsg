@@ -297,6 +297,19 @@ test("home hero pairs its actions with a proof and risk reversal line", async ()
   );
 });
 
+test("landing copy avoids orphaned words", async () => {
+  const styles = await readOutput("assets/styles.css");
+
+  assert.match(
+    styles,
+    /\.hero-lead,[\s\S]*?\.faq-item p\s*\{[^}]*text-wrap:\s*pretty;/s,
+  );
+  assert.match(
+    styles,
+    /\.principle-card h3,[\s\S]*?\.agent-skill-card h3\s*\{[^}]*text-wrap:\s*balance;/s,
+  );
+});
+
 test("install panel walks through the three step setup path", async () => {
   const stepLead = {
     ko: "Homebrew로 kmsg 설치",
