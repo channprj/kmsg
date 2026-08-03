@@ -1,4 +1,77 @@
 const root = document.documentElement;
+root.classList.add("js");
+
+const header = document.querySelector("[data-header]");
+const menuPanel = document.querySelector("[data-menu-panel]");
+const menuToggle = document.querySelector("[data-menu-toggle]");
+const mobileMenu = window.matchMedia("(max-width: 759px)");
+let menuRestoreFocus = null;
+
+const menuFocusable = () => {
+  if (!menuPanel) return [];
+  return [
+    ...menuPanel.querySelectorAll(
+      'a[href], button:not([disabled]), select:not([disabled])',
+    ),
+    document.querySelector("[data-language-select]"),
+    menuToggle,
+  ].filter(Boolean);
+};
+
+const setMenuOpen = (open) => {
+  if (!header || !menuPanel || !menuToggle) return;
+  const nextOpen = Boolean(open && mobileMenu.matches);
+  header.classList.toggle("is-menu-open", nextOpen);
+  document.body.classList.toggle("is-menu-open", nextOpen);
+  menuToggle.setAttribute("aria-expanded", String(nextOpen));
+  menuToggle.setAttribute(
+    "aria-label",
+    nextOpen ? menuToggle.dataset.closeLabel : menuToggle.dataset.openLabel,
+  );
+  menuPanel.setAttribute("aria-hidden", String(mobileMenu.matches && !nextOpen));
+
+  if (nextOpen) {
+    menuRestoreFocus = document.activeElement;
+    menuPanel.querySelector('a[href], button:not([disabled])')?.focus();
+  } else if (menuRestoreFocus) {
+    menuRestoreFocus?.focus();
+    menuRestoreFocus = null;
+  }
+};
+
+menuToggle?.addEventListener("click", () => {
+  setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+});
+
+menuPanel?.querySelectorAll("a[href]").forEach((link) => {
+  link.addEventListener("click", () => setMenuOpen(false));
+});
+
+document.addEventListener("keydown", (event) => {
+  if (menuToggle?.getAttribute("aria-expanded") !== "true") return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    setMenuOpen(false);
+    return;
+  }
+  if (event.key !== "Tab") return;
+
+  const focusable = menuFocusable();
+  const first = focusable[0];
+  const last = focusable.at(-1);
+  if (!first || !last) return;
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+mobileMenu.addEventListener("change", () => setMenuOpen(false));
+menuPanel?.setAttribute("aria-hidden", String(mobileMenu.matches));
+
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const themeColor = document.querySelector('meta[name="theme-color"]');
 const languageSelect = document.querySelector("[data-language-select]");

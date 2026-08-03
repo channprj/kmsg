@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Geist Variable";
+  src: url("./geist-latin-wght-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   --ink: #f2f2ed;
@@ -37,6 +45,7 @@
   --heading-md: clamp(44px, 5vw, 60px);
   --heading-lg: clamp(52px, 5.8vw, 72px);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-fluid: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 html[lang="ko"] {
@@ -82,7 +91,8 @@ body {
   overflow-x: hidden;
   background: var(--canvas);
   color: var(--ink);
-  font-family: var(--body);
+  font-family: "Geist Variable", -apple-system, system-ui, "Apple SD Gothic Neo",
+    sans-serif;
   font-size: var(--text-md);
   line-height: 1.7;
   overflow-wrap: break-word;
@@ -3884,6 +3894,267 @@ html[lang="ko"] .hero h1 em {
   .command-panel figcaption,
   .command-panel pre {
     min-width: 420px;
+  }
+}
+
+/* Balanced landing shell: Comfort density with SEED-style spatial rhythm. */
+.site-header {
+  position: sticky;
+  z-index: 30;
+  top: 24px;
+  width: min(1120px, calc(100% - 48px));
+  margin: 24px auto 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--canvas-raised) 88%, transparent);
+  box-shadow: 0 16px 48px color-mix(in srgb, #000000 24%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition:
+    background-color 700ms var(--motion-fluid),
+    border-color 700ms var(--motion-fluid),
+    box-shadow 700ms var(--motion-fluid);
+}
+
+.site-header.is-scrolled {
+  background: color-mix(in srgb, var(--canvas-raised) 94%, transparent);
+}
+
+.header-inner {
+  display: grid;
+  width: auto;
+  min-height: 64px;
+  margin: 0;
+  padding: 0 16px;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-menu,
+.primary-nav,
+.header-tools {
+  display: flex;
+  align-items: center;
+}
+
+.header-menu {
+  gap: 24px;
+}
+
+.primary-nav {
+  gap: 24px;
+}
+
+.header-tools {
+  gap: 12px;
+}
+
+.menu-toggle {
+  display: none;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  background: var(--canvas-raised);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.product-hero h1 {
+  max-width: 680px;
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+html[lang="ko"] .product-hero .hero-title-line:last-child {
+  font-size: 48px;
+}
+
+.product-hero .hero-lead {
+  max-width: 680px;
+  font-size: 18px;
+  line-height: 28px;
+  text-wrap: pretty;
+}
+
+.product-hero .button {
+  min-height: 0;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@media (min-width: 760px) and (max-width: 1024px) {
+  .product-hero h1 {
+    font-size: 60px;
+  }
+
+  html[lang="ko"] .product-hero .hero-title-line:last-child {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 759px) {
+  html {
+    scroll-padding-top: 96px;
+  }
+
+  .site-header {
+    top: 16px;
+    width: calc(100% - 32px);
+    margin-top: 16px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .header-inner {
+    min-height: 56px;
+    padding: 0 12px;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  .header-tools {
+    justify-self: end;
+  }
+
+  .brand,
+  .header-tools {
+    position: relative;
+    z-index: 1;
+  }
+
+  html.js .menu-toggle {
+    display: inline-grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+  }
+
+  html.js .header-menu {
+    position: fixed;
+    z-index: 0;
+    inset: -16px;
+    display: flex;
+    padding: 112px 32px 48px;
+    visibility: hidden;
+    flex-direction: column;
+    align-items: stretch;
+    background: color-mix(in srgb, var(--canvas) 80%, transparent);
+    opacity: 0;
+    backdrop-filter: blur(48px);
+    -webkit-backdrop-filter: blur(48px);
+    transform: translateY(-16px);
+    transition:
+      opacity 700ms var(--motion-fluid),
+      transform 700ms var(--motion-fluid),
+      visibility 700ms var(--motion-fluid);
+  }
+
+  html.js .site-header.is-menu-open .header-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  html.js .primary-nav {
+    width: auto;
+    padding: 0;
+    overflow: visible;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  html.js .primary-nav a {
+    min-height: 48px;
+    font-family: "Geist Variable", -apple-system, system-ui, sans-serif;
+    font-size: 24px;
+    line-height: 32px;
+    opacity: 0;
+    transform: translateY(48px);
+    transition:
+      color 700ms var(--motion-fluid),
+      opacity 700ms var(--motion-fluid),
+      transform 700ms var(--motion-fluid);
+  }
+
+  html.js .primary-nav a:nth-child(1) {
+    transition-delay: 100ms;
+  }
+
+  html.js .primary-nav a:nth-child(2) {
+    transition-delay: 150ms;
+  }
+
+  html.js .primary-nav a:nth-child(3) {
+    transition-delay: 200ms;
+  }
+
+  html.js .primary-nav a:nth-child(4) {
+    transition-delay: 250ms;
+  }
+
+  html.js .primary-nav a:nth-child(5) {
+    transition-delay: 300ms;
+  }
+
+  html.js .site-header.is-menu-open .primary-nav a {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  html.js .header-menu .theme-toggle {
+    width: 48px;
+    height: 48px;
+    margin-top: 16px;
+  }
+
+  .menu-lines,
+  .menu-line {
+    position: relative;
+    display: block;
+    width: 20px;
+    height: 2px;
+  }
+
+  .menu-line {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: currentColor;
+    transform-origin: center;
+    transition: transform 700ms var(--motion-fluid);
+  }
+
+  .menu-line-top {
+    transform: translate(-50%, calc(-50% - 4px));
+  }
+
+  .menu-line-bottom {
+    transform: translate(-50%, calc(-50% + 4px));
+  }
+
+  .is-menu-open .menu-line-top {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .is-menu-open .menu-line-bottom {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  body.is-menu-open {
+    overflow: hidden;
+  }
+
+  .product-hero h1 {
+    font-size: 48px;
+  }
+
+  html[lang="ko"] .product-hero .hero-title-line:last-child {
+    font-size: 36px;
   }
 }
 

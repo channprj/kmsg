@@ -52,6 +52,8 @@ const expectedFiles = [
   "assets/kmsg-workspace.webp",
   "assets/demo1.mp4",
   "assets/demo-captions.vtt",
+  "assets/geist-latin-wght-normal.woff2",
+  "assets/geist-OFL.txt",
   "robots.txt",
   "sitemap.xml",
   "llm.txt",
@@ -63,6 +65,79 @@ const expectedFiles = [
 
 test("build emits every localized page and discovery artifact", async () => {
   await Promise.all(expectedFiles.map((path) => access(join(distDir, path))));
+});
+
+test("site self-hosts the pinned Geist variable font", async () => {
+  const [styles, packageJson] = await Promise.all([
+    readOutput("assets/styles.css"),
+    readFile(join(siteDir, "package.json"), "utf8").then(JSON.parse),
+  ]);
+
+  assert.equal(
+    packageJson.dependencies["@fontsource-variable/geist"],
+    "5.3.0",
+  );
+  assert.match(
+    styles,
+    /@font-face\s*{[^}]*font-family:\s*"Geist Variable";[^}]*src:\s*url\("\.\/geist-latin-wght-normal\.woff2"\) format\("woff2"\);[^}]*font-style:\s*normal;[^}]*font-display:\s*swap;/s,
+  );
+  assert.match(
+    styles,
+    /body\s*{[^}]*font-family:\s*"Geist Variable",\s*-apple-system/s,
+  );
+  assert.doesNotMatch(styles, /fonts\.googleapis\.com/);
+});
+
+test("shared header exposes one fluid mobile menu in every locale", async () => {
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    assert.equal((html.match(/data-menu-toggle/g) || []).length, 1, localeId);
+    assert.equal((html.match(/data-menu-panel/g) || []).length, 1, localeId);
+    assert.match(html, /aria-expanded="false"/);
+    assert.match(html, /class="menu-line menu-line-top"/);
+    assert.match(html, /class="menu-line menu-line-bottom"/);
+  }
+});
+
+test("landing shell uses the approved primary colors and exact type steps", async () => {
+  const styles = await readOutput("assets/styles.css");
+  assert.match(styles, /:root\s*{[^}]*--accent:\s*#fee500;/s);
+  assert.match(
+    styles,
+    /:root\[data-theme="paper"\]\s*{[^}]*--accent:\s*#f2d500;/s,
+  );
+  assert.match(styles, /\.product-hero h1\s*{[^}]*font-size:\s*72px;/s);
+  assert.match(
+    styles,
+    /html\[lang="ko"\] \.product-hero \.hero-title-line:last-child\s*{[^}]*font-size:\s*48px;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.product-hero h1\s*{[^}]*font-size:\s*48px;[\s\S]*html\[lang="ko"\] \.product-hero \.hero-title-line:last-child\s*{[^}]*font-size:\s*36px;/s,
+  );
+});
+
+test("mobile menu behavior includes close, Escape, and focus containment", async () => {
+  const app = await readOutput("assets/app.js");
+  assert.match(app, /const setMenuOpen = \(open\) =>/);
+  assert.match(app, /menuToggle\.setAttribute\("aria-expanded", String\(nextOpen\)\)/);
+  assert.match(app, /event\.key === "Escape"/);
+  assert.match(app, /event\.key !== "Tab"/);
+  assert.match(app, /first\.focus\(\)/);
+  assert.match(app, /last\.focus\(\)/);
+  assert.match(app, /menuRestoreFocus\?\.focus\(\)/);
+});
+
+test("mobile menu overlay paints above landing content", async () => {
+  const styles = await readOutput("assets/styles.css");
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.site-header\s*{[^}]*backdrop-filter:\s*none;[^}]*}[\s\S]*html\.js \.header-menu\s*{[^}]*position:\s*fixed;[^}]*z-index:\s*0;/s,
+  );
+  assert.match(
+    styles,
+    /@media \(max-width:\s*759px\)[\s\S]*\.brand,\s*\.header-tools\s*{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s,
+  );
 });
 
 test("Korean is canonical at root and on every default documentation route", async () => {

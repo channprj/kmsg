@@ -46,6 +46,8 @@ const locales = {
       sourceAction: "source",
       lightTheme: "밝은 테마로 전환",
       darkTheme: "어두운 테마로 전환",
+      menuOpen: "메뉴 열기",
+      menuClose: "메뉴 닫기",
       language: "언어 선택",
       copy: "복사",
       copied: "복사됨",
@@ -78,6 +80,8 @@ const locales = {
       sourceAction: "source",
       lightTheme: "Switch to light theme",
       darkTheme: "Switch to dark theme",
+      menuOpen: "Open menu",
+      menuClose: "Close menu",
       language: "Select language",
       copy: "Copy",
       copied: "Copied",
@@ -110,6 +114,8 @@ const locales = {
       sourceAction: "source",
       lightTheme: "ライトテーマに切り替え",
       darkTheme: "ダークテーマに切り替え",
+      menuOpen: "メニューを開く",
+      menuClose: "メニューを閉じる",
       language: "言語を選択",
       copy: "コピー",
       copied: "コピーしました",
@@ -142,6 +148,8 @@ const locales = {
       sourceAction: "source",
       lightTheme: "切换到浅色主题",
       darkTheme: "切换到深色主题",
+      menuOpen: "打开菜单",
+      menuClose: "关闭菜单",
       language: "选择语言",
       copy: "复制",
       copied: "已复制",
@@ -928,6 +936,22 @@ const iconSourceDir = join(
   "regular",
 );
 
+const geistFontSource = join(
+  siteDir,
+  "node_modules",
+  "@fontsource-variable",
+  "geist",
+  "files",
+  "geist-latin-wght-normal.woff2",
+);
+const geistLicenseSource = join(
+  siteDir,
+  "node_modules",
+  "@fontsource-variable",
+  "geist",
+  "LICENSE",
+);
+
 const iconSources = Object.fromEntries(
   Object.entries(iconFiles).map(([name, filename]) => [
     name,
@@ -1266,13 +1290,21 @@ const renderHeader = (page) => {
           <img src="${relativeAsset(page.output, site.imagePath)}" alt="" width="32" height="32">
           <span>kmsg</span>
         </a>
-        <nav class="primary-nav" aria-label="${ui.navigation}" tabindex="0">
-          <a href="${usageLink}"${active("usage")}>${ui.usage}</a>
-          <a href="${architectureLink}"${active("architecture")}>${ui.architecture}</a>
-          <a href="${mcpLink}"${active("openclaw")}>MCP</a>
-          <a href="${skillLink}"${active("skill")}>${ui.skill}</a>
-          <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub ${renderIcon("external-link", 16)}</a>
-        </nav>
+        <div class="header-menu" data-menu-panel>
+          <nav class="primary-nav" aria-label="${ui.navigation}" tabindex="0">
+            <a href="${usageLink}"${active("usage")}>${ui.usage}</a>
+            <a href="${architectureLink}"${active("architecture")}>${ui.architecture}</a>
+            <a href="${mcpLink}"${active("openclaw")}>MCP</a>
+            <a href="${skillLink}"${active("skill")}>${ui.skill}</a>
+            <a href="${site.repositoryUrl}" target="_blank" rel="noopener noreferrer">GitHub ${renderIcon("external-link", 16)}</a>
+          </nav>
+          <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
+            <span class="theme-icon" aria-hidden="true">
+              ${renderIcon("sun", 18)}
+              ${renderIcon("moon", 18)}
+            </span>
+          </button>
+        </div>
         <div class="header-tools">
           <label class="language-control">
             <span class="sr-only">${ui.language}</span>
@@ -1281,10 +1313,10 @@ const renderHeader = (page) => {
             </select>
             <span class="language-chevron" aria-hidden="true">${renderIcon("chevron-down", 18)}</span>
           </label>
-          <button class="theme-toggle" type="button" aria-label="${ui.lightTheme}" data-theme-toggle data-light-label="${ui.lightTheme}" data-dark-label="${ui.darkTheme}">
-            <span class="theme-icon" aria-hidden="true">
-              ${renderIcon("sun", 18)}
-              ${renderIcon("moon", 18)}
+          <button class="menu-toggle" type="button" aria-label="${ui.menuOpen}" aria-expanded="false" data-menu-toggle data-open-label="${ui.menuOpen}" data-close-label="${ui.menuClose}">
+            <span class="menu-lines" aria-hidden="true">
+              <span class="menu-line menu-line-top"></span>
+              <span class="menu-line menu-line-bottom"></span>
             </span>
           </button>
         </div>
@@ -2193,6 +2225,11 @@ const main = async () => {
     copyFile(join(siteDir, "src/app.js"), join(outputDir, "assets/app.js")),
     copyFile(join(siteDir, "src/favicon.svg"), join(outputDir, "assets/favicon.svg")),
     copyFile(join(siteDir, "src/demo-captions.vtt"), join(outputDir, "assets/demo-captions.vtt")),
+    copyFile(
+      geistFontSource,
+      join(outputDir, "assets/geist-latin-wght-normal.woff2"),
+    ),
+    copyFile(geistLicenseSource, join(outputDir, "assets/geist-OFL.txt")),
     copyFile(join(siteDir, "src/kmsg-workspace.webp"), join(outputDir, site.heroImagePath)),
     copyFile(join(repoDir, site.imagePath), join(outputDir, site.imagePath)),
     copyFile(join(repoDir, "assets/demo1.mp4"), join(outputDir, "assets/demo1.mp4")),
