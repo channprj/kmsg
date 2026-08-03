@@ -205,6 +205,11 @@ const homeContent = {
     installTitle: "Homebrew로 바로 시작하세요.",
     installDescription:
       "macOS 13 이상, macOS용 KakaoTalk, 손쉬운 사용 권한이 필요합니다.",
+    installSteps: [
+      "Homebrew로 kmsg 설치",
+      "시스템 설정에서 손쉬운 사용 권한 허용",
+      "dry-run으로 첫 전송 확인",
+    ],
     releaseAction: "최신 릴리즈",
     disclaimer: "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
     principles: [
@@ -300,6 +305,11 @@ const homeContent = {
     installTitle: "Start with Homebrew.",
     installDescription:
       "Requires macOS 13+, KakaoTalk for macOS, and Accessibility permission.",
+    installSteps: [
+      "Install kmsg with Homebrew",
+      "Grant Accessibility permission in System Settings",
+      "Confirm your first send with dry-run",
+    ],
     releaseAction: "Latest release",
     disclaimer: "Independent open source. Not affiliated with Kakao Corp.",
     principles: [
@@ -396,6 +406,11 @@ const homeContent = {
     installTitle: "Homebrewですぐに開始。",
     installDescription:
       "macOS 13以降、macOS版KakaoTalk、アクセシビリティ権限が必要です。",
+    installSteps: [
+      "Homebrewでkmsgをインストール",
+      "システム設定でアクセシビリティ権限を許可",
+      "dry-runで最初の送信を確認",
+    ],
     releaseAction: "最新リリース",
     disclaimer:
       "Kakao Corp.とは無関係の独立したオープンソースです。",
@@ -493,6 +508,11 @@ const homeContent = {
     installTitle: "使用Homebrew立即开始。",
     installDescription:
       "需要macOS 13或更高版本、macOS版KakaoTalk和辅助功能权限。",
+    installSteps: [
+      "使用Homebrew安装kmsg",
+      "在系统设置中授予辅助功能权限",
+      "用dry-run确认首次发送",
+    ],
     releaseAction: "最新版本",
     disclaimer: "独立开源项目，与Kakao Corp.无隶属关系。",
     principles: [
@@ -1573,6 +1593,9 @@ const renderHomeInstall = (page, copy) => {
         <p class="section-label">${escapeHtml(copy.installLabel)}</p>
         <h2>${escapeHtml(copy.installTitle)}</h2>
         <p class="install-description">${escapeHtml(copy.installDescription)}</p>
+        <ol class="install-steps">
+          ${copy.installSteps.map((step) => `<li>${escapeHtml(step)}</li>`).join("\n          ")}
+        </ol>
         <button class="install-command copy-control" type="button" aria-label="${escapeHtml(`${page.localeConfig.ui.copy}: brew install channprj/tap/kmsg`)}" aria-live="polite" translate="no" data-copy="brew install channprj/tap/kmsg" data-copied-label="${page.localeConfig.ui.copied}" data-copy-failed-label="${page.localeConfig.ui.copyFailed}">
           <span class="prompt" aria-hidden="true">$</span>
           <code translate="no">brew install channprj/tap/kmsg</code>

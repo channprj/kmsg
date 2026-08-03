@@ -297,6 +297,25 @@ test("home hero pairs its actions with a proof and risk reversal line", async ()
   );
 });
 
+test("install panel walks through the three step setup path", async () => {
+  const stepLead = {
+    ko: "Homebrew로 kmsg 설치",
+    en: "Install kmsg with Homebrew",
+    jp: "Homebrewでkmsgをインストール",
+    cn: "使用Homebrew安装kmsg",
+  };
+
+  for (const localeId of Object.keys(locales)) {
+    const html = await readOutput(localizedPath(localeId, "home"));
+    const steps = html.match(/<ol class="install-steps">[\s\S]*?<\/ol>/)?.[0];
+
+    assert.ok(steps, `${localeId}: missing install steps`);
+    assert.equal((steps.match(/<li>/g) || []).length, 3, localeId);
+    assert.ok(steps.includes(stepLead[localeId]), localeId);
+    assert.match(steps, /dry-run/i);
+  }
+});
+
 test("home routes stage the tagline reveal word by word", async () => {
   const [styles, app] = await Promise.all([
     readOutput("assets/styles.css"),

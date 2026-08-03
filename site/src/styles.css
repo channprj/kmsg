@@ -3529,6 +3529,43 @@ html[lang="ko"] .hero h1 em {
   color: #efefe9;
 }
 
+.install-steps {
+  display: grid;
+  margin: 26px 0 0;
+  padding: 0;
+  grid-column: 1;
+  grid-row: 4;
+  gap: 10px;
+  list-style: none;
+  counter-reset: install-step;
+}
+
+.install-steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: color-mix(in srgb, var(--accent-ink) 84%, transparent);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  counter-increment: install-step;
+}
+
+.install-steps li::before {
+  content: "0" counter(install-step);
+  color: color-mix(in srgb, var(--accent-ink) 52%, transparent);
+  font-family: var(--mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.install-panel .install-links {
+  grid-row: 5;
+}
+
+.install-panel small {
+  grid-row: 5;
+}
+
 .requirement-list li {
   border-color: color-mix(in srgb, var(--accent-ink) 24%, transparent);
   border-radius: var(--radius-sm);
