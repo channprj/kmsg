@@ -44,7 +44,11 @@ test("the generated Shadcn button and KMSG document shell are present", async ()
 
   assert.match(button, /data-slot="button"/);
   assert.match(button, /buttonVariants/);
-  assert.match(root, /<html lang=/);
+  assert.match(root, /<html\s+lang=/);
+  assert.match(root, /readThemeFromDocument\(\)/);
+  assert.match(root, /className=\{theme === "dark" \? "dark" : ""\}/);
+  assert.match(root, /content=\{themeColorFor\(theme\)\}/);
+  assert.doesNotMatch(root, /<html[^>]+className="dark"[^>]+data-theme="dark"/s);
   assert.match(root, /import "\.\/app\.css"/);
   assert.match(styles, /@import "tailwindcss"/);
   assert.match(styles, /--primary:\s*#fee500/);

@@ -12,7 +12,11 @@ import {
 import type { Route } from "./+types/root"
 import { LOCALES } from "./content/locales"
 import { routeFromPath } from "./content/routes"
-import { THEME_BOOTSTRAP } from "./lib/theme"
+import {
+  THEME_BOOTSTRAP,
+  readThemeFromDocument,
+  themeColorFor,
+} from "./lib/theme"
 import "./app.css"
 
 export const links: Route.LinksFunction = () => [
@@ -24,12 +28,20 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: ReactNode }) {
   const route = routeFromPath(useLocation().pathname)
   const lang = LOCALES[route?.locale ?? "ko"].lang
+  const theme =
+    typeof document === "undefined" ? "dark" : readThemeFromDocument()
+
   return (
-    <html lang={lang} className="dark" data-theme="dark" suppressHydrationWarning>
+    <html
+      lang={lang}
+      className={theme === "dark" ? "dark" : ""}
+      data-theme={theme}
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#131209" />
+        <meta name="theme-color" content={themeColorFor(theme)} />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
         <Meta />
         <Links />

@@ -7,6 +7,10 @@ const THEME_COLORS: Record<SiteTheme, string> = {
   paper: "#f7f5ed",
 }
 
+export function themeColorFor(theme: SiteTheme) {
+  return THEME_COLORS[theme]
+}
+
 export function readThemeFromDocument(target: Document = document): SiteTheme {
   return target.documentElement.dataset.theme === "paper" ? "paper" : "dark"
 }
@@ -20,7 +24,7 @@ export function applyThemeToDocument(
   root.classList.toggle("dark", theme === "dark")
   target
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute("content", THEME_COLORS[theme])
+    ?.setAttribute("content", themeColorFor(theme))
 }
 
 export const THEME_BOOTSTRAP = `(() => {
