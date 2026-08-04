@@ -36,7 +36,12 @@ describe("localized React home", () => {
     expect(container.querySelector("select")).toBeNull()
     expect(container.querySelector("[data-footer-wordmark]")).toBeInTheDocument()
     const tagline = container.querySelector("[data-scroll-tagline]")
-    expect(Array.from(tagline?.querySelectorAll("span") ?? [], (line) => line.textContent)).toEqual([
+    expect(
+      Array.from(
+        tagline?.querySelectorAll(".scroll-tagline__line") ?? [],
+        (line) => line.textContent,
+      ),
+    ).toEqual([
       "모든 대화를 명령 한 줄로.",
       "kmsg는 별도 서버 없이",
       "macOS 에서 직접 실행됩니다.",

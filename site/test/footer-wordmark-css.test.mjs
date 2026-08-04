@@ -31,7 +31,7 @@ test("footer wordmark keeps the reference crop and stagger timing", () => {
   );
 });
 
-test("scroll tagline keeps authored lines and stagger timing", () => {
+test("scroll tagline keeps authored lines and layout-neutral word progress", () => {
   assert.match(
     styles,
     /\.scroll-tagline\s*\{[^}]*font-size:\s*clamp\(1\.375rem,\s*6\.8vw,\s*1\.8rem\);/s,
@@ -42,19 +42,21 @@ test("scroll tagline keeps authored lines and stagger timing", () => {
   );
   assert.match(
     styles,
-    /\.scroll-tagline span\s*\{[^}]*opacity:\s*0;[^}]*transform:\s*translateY\(\.45em\)/s,
+    /\.scroll-tagline__line\s*\{[^}]*display:\s*block;/s,
   );
   assert.match(
     styles,
-    /\.scroll-tagline\[data-state="revealed"\] span\s*\{[^}]*opacity:\s*1;[^}]*transform:\s*translateY\(0\)/s,
+    /\.scroll-tagline__word\s*\{[^}]*display:\s*inline-block;[^}]*will-change:\s*opacity;/s,
+  );
+  assert.doesNotMatch(styles, /\.scroll-tagline span\s*\{/);
+  assert.doesNotMatch(styles, /\.scroll-tagline\[data-state=/);
+  assert.doesNotMatch(
+    styles,
+    /\.scroll-tagline__word\s*\{[^}]*(?:transform|transition(?:-duration|-delay)?):/s,
   );
   assert.match(
     styles,
-    /\.scroll-tagline\[data-state="revealed"\] span\s*\{[^}]*transition-duration:\s*700ms;[^}]*transition-delay:\s*calc\(var\(--line-index\)\s*\*\s*85ms\)/s,
-  );
-  assert.match(
-    styles,
-    /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.scroll-tagline\[data-state] span\s*\{[^}]*opacity:\s*1;[^}]*transform:\s*none;[^}]*transition:\s*none;/,
+    /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.scroll-tagline__word\s*\{[^}]*opacity:\s*1\s*!important;/,
   );
 });
 
