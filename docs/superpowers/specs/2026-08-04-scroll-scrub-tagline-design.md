@@ -37,8 +37,8 @@ accessibility fallbacks.
   or reorder line boundaries.
 - Words brighten in reading order as the user scrolls down and dim in the
   reverse order as the user scrolls up.
-- Scroll progress starts when the heading top reaches `85vh` and finishes when
-  the heading bottom reaches `50vh`, matching the reference behavior.
+- Scroll progress starts when the tagline top reaches `85vh` and finishes when
+  the tagline bottom reaches `50vh`, matching the reference behavior.
 - Each word maps its own equal progress interval from opacity `0.22` to `1`.
 - The animation is directly coupled to scroll position, with no one-shot
   duration, easing, or delayed playback.
@@ -53,7 +53,7 @@ accessibility fallbacks.
 
 Use a small native React hook driven by passive `scroll` and `resize` events,
 coalesced through `requestAnimationFrame`. The hook measures the target
-heading, converts its viewport position to a clamped progress value from `0`
+paragraph, converts its viewport position to a clamped progress value from `0`
 to `1`, and exposes that value to the tagline component.
 
 The component assigns each word an equal slice of the overall range. A pure
@@ -164,7 +164,9 @@ live remote `main` must match with ahead/behind `0 0`.
 ## Realtime checkpoints
 
 1. `docs(site): define scroll-scrub tagline` publishes this approved design.
-2. `feat(site): scrub tagline words with scroll` publishes the tested behavior,
+2. `docs(site): plan scroll-scrub tagline` publishes the reviewed TDD and
+   deployment procedure.
+3. `feat(site): scrub tagline words with scroll` publishes the tested behavior,
    responsive styles, and regression coverage as one independently usable
    implementation outcome.
 
