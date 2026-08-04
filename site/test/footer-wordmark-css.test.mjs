@@ -34,6 +34,14 @@ test("footer wordmark keeps the reference crop and stagger timing", () => {
 test("scroll tagline keeps authored lines and stagger timing", () => {
   assert.match(
     styles,
+    /\.scroll-tagline\s*\{[^}]*font-size:\s*clamp\(1\.375rem,\s*6\.8vw,\s*1\.8rem\);/s,
+  );
+  assert.match(
+    styles,
+    /@media\s*\(min-width:\s*640px\)\s*\{\s*\.scroll-tagline\s*\{[^}]*font-size:\s*3rem;/s,
+  );
+  assert.match(
+    styles,
     /\.scroll-tagline span\s*\{[^}]*opacity:\s*0;[^}]*transform:\s*translateY\(\.45em\)/s,
   );
   assert.match(

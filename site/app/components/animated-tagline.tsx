@@ -7,7 +7,7 @@ export function AnimatedTagline({ text }: { text: string }) {
 
   return (
     <p
-      className="scroll-tagline mx-auto my-24 max-w-4xl text-center text-3xl font-semibold leading-tight tracking-tight sm:text-5xl"
+      className="scroll-tagline mx-auto my-24 max-w-4xl text-center font-semibold leading-tight tracking-tight"
       data-scroll-tagline
       data-state={state}
       ref={elementRef}
