@@ -209,7 +209,7 @@
       "principlesTitle": "로컬 자동화에 필요한 것만 담았습니다.",
       "capabilitiesLabel": "주요 기능",
       "capabilitiesTitle": "읽기부터 전송까지, 하나의 명령 체계로.",
-      "tagline": "모든 대화를 명령 한 줄로.\nkmsg는 별도 서버 없이 Mac에서 직접 실행됩니다.",
+      "tagline": "모든 대화를 명령 한 줄로.\nkmsg는 별도 서버 없이\nmacOS 에서 직접 실행됩니다.",
       "storiesLabel": "실사용 후기",
       "storiesTitle": "실제 자동화 워크플로우에서\n널리 사용되고 있습니다",
       "storiesDescription": "kmsg를 에이전트와 로컬 자동화에 연결한 사용 사례입니다.",

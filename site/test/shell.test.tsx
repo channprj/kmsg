@@ -51,6 +51,22 @@ describe("shared Shadcn shell", () => {
     expect(screen.getByRole("button", { name: "어두운 테마로 전환" })).toBeVisible()
   })
 
+  it("defaults to dark before paint when no theme is stored", () => {
+    document.head.innerHTML = '<meta name="theme-color" content="#f7f5ed">'
+    document.documentElement.className = ""
+    document.documentElement.dataset.theme = "paper"
+    localStorage.clear()
+
+    window.eval(THEME_BOOTSTRAP)
+
+    expect(document.documentElement).toHaveClass("dark")
+    expect(document.documentElement).toHaveAttribute("data-theme", "dark")
+    expect(document.querySelector('meta[name="theme-color"]')).toHaveAttribute(
+      "content",
+      "#131209",
+    )
+  })
+
   it("restores the stored theme before a new page paints", () => {
     document.head.innerHTML = '<meta name="theme-color" content="#131209">'
     localStorage.setItem("kmsg-theme", "paper")

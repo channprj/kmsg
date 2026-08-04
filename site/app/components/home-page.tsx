@@ -1,5 +1,6 @@
 import { ArrowRight, Check, ExternalLink, Terminal } from "lucide-react"
 
+import { AnimatedTagline } from "~/components/animated-tagline"
 import { CopyButton } from "~/components/copy-button"
 import { SiteFooter } from "~/components/site-footer"
 import { SiteHeader } from "~/components/site-header"
@@ -212,9 +213,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
 
         <section className="mx-auto max-w-6xl px-6 py-24">
           <Separator />
-          <p className="mx-auto my-24 max-w-4xl whitespace-pre-line text-center text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
-            {copy.tagline}
-          </p>
+          <AnimatedTagline text={copy.tagline} />
           <Separator />
         </section>
 
