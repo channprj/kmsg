@@ -10,11 +10,12 @@ import { SiteFooter } from "~/components/site-footer"
 
 afterEach(() => {
   cleanup()
+  vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
 
 describe("FooterWordmark", () => {
-  it("reveals four decorative letters once at the reference threshold", () => {
+  it("replays four decorative letters whenever the wordmark re-enters", () => {
     let notify: IntersectionObserverCallback = () => undefined
     const observe = vi.fn()
     const disconnect = vi.fn()
@@ -41,7 +42,7 @@ describe("FooterWordmark", () => {
       vi.fn(() => ({ matches: false })),
     )
 
-    const { container } = render(<FooterWordmark />)
+    const { container, unmount } = render(<FooterWordmark />)
     const wordmark = container.querySelector("[data-footer-wordmark]")
     const letters = wordmark?.querySelectorAll("span") ?? []
 
@@ -58,7 +59,35 @@ describe("FooterWordmark", () => {
     })
 
     expect(wordmark).toHaveAttribute("data-state", "revealed")
+    expect(disconnect).not.toHaveBeenCalled()
+
+    act(() => {
+      notify([{ isIntersecting: false } as IntersectionObserverEntry], {} as IntersectionObserver)
+    })
+    expect(wordmark).toHaveAttribute("data-state", "hidden")
+
+    act(() => {
+      notify([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver)
+    })
+    expect(wordmark).toHaveAttribute("data-state", "revealed")
+
+    unmount()
     expect(disconnect).toHaveBeenCalledOnce()
+  })
+
+  it("shows the final wordmark when IntersectionObserver is unavailable", () => {
+    vi.stubGlobal("IntersectionObserver", undefined)
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => ({ matches: false })),
+    )
+
+    const { container } = render(<FooterWordmark />)
+
+    expect(container.querySelector("[data-footer-wordmark]")).toHaveAttribute(
+      "data-state",
+      "revealed",
+    )
   })
 
   it("renders the final cropped state immediately for reduced motion", () => {

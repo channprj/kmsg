@@ -101,7 +101,7 @@
 }
 
 .footer-wordmark {
-  --wordmark-lift: -.06em;
+  --wordmark-lift: -.1em;
   display: block;
   height: .72em;
   overflow: hidden;

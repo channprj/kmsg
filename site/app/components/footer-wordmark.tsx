@@ -1,42 +1,19 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react"
+import type { CSSProperties } from "react"
+
+import { useReplayableReveal } from "~/lib/use-replayable-reveal"
 
 const WORDMARK = Array.from("kmsg")
 
 export function FooterWordmark() {
-  const wordmarkRef = useRef<HTMLDivElement>(null)
-  const [revealed, setRevealed] = useState(false)
-
-  useEffect(() => {
-    const reduceMotion = window.matchMedia?.(
-      "(prefers-reduced-motion: reduce)",
-    ).matches
-    if (reduceMotion) {
-      setRevealed(true)
-      return
-    }
-
-    const wordmark = wordmarkRef.current
-    if (!wordmark) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return
-        setRevealed(true)
-        observer.disconnect()
-      },
-      { threshold: 0.2 },
-    )
-    observer.observe(wordmark)
-    return () => observer.disconnect()
-  }, [])
+  const { elementRef, state } = useReplayableReveal<HTMLDivElement>()
 
   return (
     <div
       aria-hidden="true"
       className="footer-wordmark"
       data-footer-wordmark
-      data-state={revealed ? "revealed" : "hidden"}
-      ref={wordmarkRef}
+      data-state={state}
+      ref={elementRef}
     >
       {WORDMARK.map((letter, index) => (
         <span

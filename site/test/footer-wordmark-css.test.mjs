@@ -13,7 +13,8 @@ test("footer wordmark keeps the reference crop and stagger timing", () => {
     /\.footer-wordmark\s*\{[^}]*height:\s*\.72em;[^}]*overflow:\s*hidden;[^}]*font-size:\s*clamp\(5rem,\s*12vw,\s*11rem\);[^}]*line-height:\s*\.84;/s,
   );
   assert.match(styles, /translateY\(\.42em\)/);
-  assert.match(styles, /--wordmark-lift:\s*-\.06em/);
+  assert.match(styles, /--wordmark-lift:\s*-\.1em/);
+  assert.doesNotMatch(styles, /--wordmark-lift:\s*-\.06em/);
   assert.match(
     styles,
     /\.footer-wordmark\[data-state="revealed"\] span\s*\{[^}]*transform:\s*translateY\(var\(--wordmark-lift\)\)/s,
