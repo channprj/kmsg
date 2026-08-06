@@ -4,7 +4,7 @@
 
 **Goal:** Smoothly navigate from the homepage hero to installation and restore one centered story-discovery action beneath two whole-card YouTube links.
 
-**Architecture:** Native CSS owns anchor scrolling and its reduced-motion fallback, preserving the existing `#install` URL contract without JavaScript. The stories section keeps its existing source data, exports one historical Google query constant, renders each card as a single external anchor, and renders one localized button-style discovery anchor after the grid.
+**Architecture:** CSS owns smooth versus reduced-motion scrolling and the target offset. A scoped React click handler repairs mobile fragment activation by preserving `#install` in history and calling `scrollIntoView({ block: "start" })` for unmodified primary clicks; the semantic anchor remains intact. The stories section keeps its existing source data, exports one historical Google query constant, renders each card as a single external anchor, and renders one localized button-style discovery anchor after the grid.
 
 **Tech Stack:** React 19, TypeScript 6, React Router 8 static build, Tailwind CSS, Shadcn UI, Vitest/jsdom, Node test runner, agent-browser, GitHub Actions, GitHub Pages.
 
@@ -12,7 +12,7 @@
 
 - Keep the existing hero `href="#install"` and target `id="install"`.
 - Stop the installation target with `6rem` of top clearance below the fixed header.
-- Use native `scroll-behavior: smooth`; add no click handler, scroll listener, duration, easing, or animation dependency.
+- Use native `scroll-behavior: smooth` as the motion source. The install link may use only the scoped activation repair; add no scroll listener, duration, easing, or animation dependency.
 - Use `scroll-behavior: auto` when `prefers-reduced-motion: reduce` matches.
 - Keep exactly two featured stories in their current order with unchanged publisher, localized title, thumbnail, and YouTube URL data.
 - Make each entire story card one new-tab YouTube anchor with no nested interactive element.
@@ -31,10 +31,11 @@
 - Create: `site/test/home-interactions-css.test.mjs`
 - Modify: `site/test/home.test.tsx`
 - Modify: `site/app/app.css:82-101,158-168`
+- Modify after browser verification: `site/app/components/home-page.tsx`
 
 **Interfaces:**
 - Consumes: existing hero anchor `href="#install"` and installation section `id="install"`.
-- Produces: document-level `scroll-behavior: smooth`, `#install { scroll-margin-top: 6rem; }`, and a reduced-motion `scroll-behavior: auto` override.
+- Produces: document-level `scroll-behavior: smooth`, `#install { scroll-margin-top: 6rem; }`, a reduced-motion `scroll-behavior: auto` override, and a scoped activation repair when native mobile fragment scrolling does not settle at the target.
 
 - [ ] **Step 1: Write the failing CSS contract test**
 
@@ -161,6 +162,47 @@ git rev-list --left-right --count HEAD...refs/remotes/origin/main
 ```
 
 Expected parity: `0 0`.
+
+---
+
+### Task 1A: Repair mobile fragment activation found in browser verification
+
+**Files:**
+- Modify: `site/test/home.test.tsx`
+- Modify: `site/app/components/home-page.tsx`
+
+**Evidence:** At 390px and 320px, clicking the native fragment link stopped
+well before `#install`. The target's document position and page height remained
+stable, while a direct `scrollIntoView({ behavior: "smooth", block: "start" })`
+settled at the expected 6rem clearance. This isolated activation interruption
+from layout shift.
+
+- [ ] **Step 1: Add a failing activation regression test**
+
+Assert that an unmodified install-link click keeps `location.hash` equal to
+`#install` and calls the target's `scrollIntoView` with `{ block: "start" }`.
+
+- [ ] **Step 2: Add the minimal scoped handler**
+
+Ignore prevented events, non-primary buttons, and modifier-key clicks. When the
+target exists, prevent the interrupted native activation, push `#install` only
+when necessary, and call `scrollIntoView({ block: "start" })`. Do not pass a
+`behavior` option: the CSS media query must continue to select smooth or auto.
+
+- [ ] **Step 3: Re-run automated and browser gates**
+
+Run the focused Vitest case and the full site gate. At 1440px, 390px, and 320px,
+prove multiple intermediate positions under normal motion, a final target top
+near 96px, the fragment hash, and zero overflow. Under reduced motion, prove
+the click and next-frame positions are identical at all three widths.
+
+- [ ] **Step 4: Commit and push the corrective checkpoint**
+
+```bash
+git add site/app/components/home-page.tsx site/test/home.test.tsx
+git commit -m "fix(site): keep install scroll aligned on mobile"
+git push origin refs/heads/main:refs/heads/main
+```
 
 ---
 

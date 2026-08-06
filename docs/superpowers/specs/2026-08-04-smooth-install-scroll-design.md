@@ -1,7 +1,8 @@
 # KMSG homepage navigation and story discovery
 
 Status: Initial scroll design approved on 2026-08-04. Revised story discovery
-scope approved by the user on 2026-08-06.
+scope approved by the user on 2026-08-06. Scroll activation was refined after
+mobile production verification on 2026-08-06.
 
 ## Context
 
@@ -51,12 +52,15 @@ Improve two homepage navigation moments:
 
 ## Approaches considered
 
-### Native CSS anchor scrolling (selected)
+### CSS-owned scrolling with scoped activation repair (selected)
 
 Set the document scroll behavior to `smooth`, give `#install` a scroll margin
 that clears the fixed header, and restore `auto` scrolling in the existing
-reduced-motion media query. This keeps native anchor semantics and needs no new
-client-side event handler or dependency.
+reduced-motion media query. Production verification found that native fragment
+activation could stop before the target at 390px and 320px even though direct
+`scrollIntoView` reached the correct position. A scoped click handler therefore
+repairs unmodified primary activation while CSS remains the single source of
+smooth versus immediate motion. No animation dependency is added.
 
 ### JavaScript `scrollIntoView`
 
@@ -85,18 +89,22 @@ to individual YouTube videos rather than broader examples.
 ## Design
 
 The existing hero anchor and installation section markup remain unchanged.
-Global document scrolling uses native smooth behavior so activation still
-updates the URL fragment and the browser remains responsible for navigation.
-The `#install` target receives a `scroll-margin-top` of `6rem`, placing its top
-below the fixed header rather than flush against the viewport edge.
+Global document scrolling uses native smooth behavior. For an unmodified
+primary click, the anchor handler preserves `#install` in browser history and
+calls `scrollIntoView({ block: "start" })`; it intentionally omits an explicit
+`behavior` option so the document CSS still owns motion. Modified clicks and a
+missing target fall back to the anchor's native behavior. The `#install` target
+receives a `scroll-margin-top` of `6rem`, placing its top below the fixed header
+rather than flush against the viewport edge.
 
 The existing `prefers-reduced-motion: reduce` media query sets document scroll
 behavior back to `auto`. This ensures the target still moves into view and
 receives the same header clearance without animated travel.
 
-No JavaScript fallback is required: browsers that do not understand smooth
-scrolling retain a functional immediate anchor jump. The target remains a
-semantic section and no focus manipulation is introduced.
+The handler does not manipulate focus, synthesize a duration, or replace the
+semantic link. Browsers without smooth scrolling still receive a functional
+immediate `scrollIntoView`, while copying or opening the fragment link retains
+the original `href="#install"` contract.
 
 Each story entry renders as one external anchor wrapping its visual card. The
 anchor's accessible name is composed from the existing publisher and localized
@@ -118,8 +126,9 @@ destinations and security attributes.
 
 ## Verification
 
-Automated tests will assert the link-to-target contract, native smooth-scroll
-CSS, the `6rem` target offset, and the reduced-motion override. They will also
+Automated tests will assert the link-to-target contract, scoped activation,
+fragment update, target call, native smooth-scroll CSS, the `6rem` target
+offset, and the reduced-motion override. They will also
 assert two whole-card YouTube links, exactly one discovery action outside the
 cards, the historical Google URL, localized labels, new-tab security
 attributes, and the absence of nested interactive elements. The full site gate
@@ -146,6 +155,10 @@ after CI and deployment succeed for the implementation commits.
    scrolling behavior and regression coverage.
 5. `fix(site): restore centralized story discovery` publishes whole-card video
    links and the single historical Google action.
+6. `fix(site): keep install scroll aligned on mobile` publishes the
+   verification-driven activation repair and regression test.
+7. `docs(site): document reliable install scrolling` records the verified
+   implementation decision without rewriting published history.
 
 If verification reveals a regression after a checkpoint is published, the fix
 will be a new ordinary commit and push. Published history will not be amended or
