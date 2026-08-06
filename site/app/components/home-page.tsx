@@ -22,7 +22,11 @@ import {
 } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
 import { FAQ_CONTENT } from "~/content/faq"
-import { HOME_CONTENT, HOME_STORIES } from "~/content/home"
+import {
+  HOME_CONTENT,
+  HOME_STORIES,
+  MORE_STORIES_URL,
+} from "~/content/home"
 import { LOCALES } from "~/content/locales"
 import { pageCopyFor } from "~/content/pages"
 import { publicRouteFor, type LocaleId } from "~/content/routes"
@@ -225,20 +229,35 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           />
           <div className="grid gap-4 md:grid-cols-2">
             {HOME_STORIES.map((story) => (
-              <Card className="overflow-hidden" key={story.href}>
-                <img alt="" className="aspect-video w-full object-cover" loading="lazy" src={story.image} />
-                <CardHeader>
-                  <p className="text-sm text-muted-foreground">{story.publisher}</p>
-                  <CardTitle>{story.title[locale]}</CardTitle>
-                </CardHeader>
-                <CardFooter>
-                  <a className={buttonVariants({ variant: "outline" })} href={story.href} rel="noopener noreferrer" target="_blank">
-                    {copy.moreStoriesAction}
-                    <ExternalLink aria-hidden="true" data-icon="inline-end" />
-                  </a>
-                </CardFooter>
-              </Card>
+              <a
+                className="block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                data-story-link
+                href={story.href}
+                key={story.href}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <Card className="h-full overflow-hidden hover:border-primary/40">
+                  <img alt="" className="aspect-video w-full object-cover" loading="lazy" src={story.image} />
+                  <CardHeader>
+                    <p className="text-sm text-muted-foreground">{story.publisher}</p>
+                    <CardTitle>{story.title[locale]}</CardTitle>
+                  </CardHeader>
+                </Card>
+              </a>
             ))}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <a
+              className={buttonVariants({ variant: "outline" })}
+              data-story-search
+              href={MORE_STORIES_URL}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {copy.moreStoriesAction}
+              <ExternalLink aria-hidden="true" data-icon="inline-end" />
+            </a>
           </div>
         </section>
 
