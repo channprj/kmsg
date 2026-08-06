@@ -86,6 +86,7 @@
 
   html {
     @apply bg-background font-sans text-foreground antialiased;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -98,6 +99,10 @@
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+}
+
+#install {
+  scroll-margin-top: 6rem;
 }
 
 .scroll-tagline {
@@ -156,6 +161,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .scroll-tagline__word {
     opacity: 1 !important;
   }

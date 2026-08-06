@@ -20,6 +20,8 @@ describe("localized React home", () => {
       vi.fn(() => ({ matches: true })),
     )
     const { container } = render(<HomePage locale="ko" />)
+    const installAction = screen.getByRole("link", { name: "설치하기" })
+    const installTarget = container.querySelector("#install")
 
     expect(
       screen.getByRole("heading", {
@@ -35,6 +37,9 @@ describe("localized React home", () => {
     expect(screen.getAllByText('kmsg send "AI 프로젝트" "확인했어요." --dry-run').length).toBeGreaterThan(0)
     expect(container.querySelector("select")).toBeNull()
     expect(container.querySelector("[data-footer-wordmark]")).toBeInTheDocument()
+    expect(installAction).toHaveAttribute("href", "#install")
+    expect(installTarget).toBeInTheDocument()
+    expect(installTarget).toHaveAttribute("id", "install")
     const tagline = container.querySelector("[data-scroll-tagline]")
     expect(
       Array.from(
