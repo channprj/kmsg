@@ -2,7 +2,8 @@
 
 Status: Initial scroll design approved on 2026-08-04. Revised story discovery
 scope approved by the user on 2026-08-06. Scroll activation was refined after
-mobile production verification on 2026-08-06.
+mobile production verification on 2026-08-06. The discovery query and homepage
+density were revised by the user on 2026-08-07.
 
 ## Context
 
@@ -27,6 +28,8 @@ Improve two homepage navigation moments:
 2. Make each featured story card link directly to its YouTube video while
    restoring one centered Google discovery action below the complete story
    grid.
+3. Reduce the hero and section footprint and compact the global navigation so
+   following content appears sooner without removing the terminal preview.
 
 ## Success criteria
 
@@ -44,9 +47,13 @@ Improve two homepage navigation moments:
 - No “See more examples” action appears inside an individual story card.
 - Exactly one localized “See more examples” button appears centered below the
   story grid.
-- The single discovery button opens this historical Google query in a new tab:
-  `"kmsg 카카오톡" OR "kmsg 카톡" OR "kmsg 카카오"`.
+- The single discovery button opens this unquoted Google query in a new tab:
+  `kmsg 카카오톡 OR kmsg 카톡 OR kmsg 카카오`.
 - Every new-tab story and discovery link uses `rel="noopener noreferrer"`.
+- The GNB is a centered 56px floating pill capped at `max-w-5xl`.
+- The desktop hero ends near 640px at 1440×900 and reveals the next section.
+- At 390×844, the hero and the following workflow label both fit in the first
+  viewport; 320px remains overflow-free even when terminal lines wrap.
 - Other homepage content, animations, themes, locales, and navigation remain
   unchanged.
 
@@ -113,10 +120,10 @@ no nested link or button, and keyboard focus receives a visible outline.
 
 After the story grid, one centered button-style anchor uses the localized
 `moreStoriesAction` label and an external-link icon. It opens the exact
-historical discovery URL:
+unquoted discovery URL:
 
 ```text
-https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22
+https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4
 ```
 
 Both story links and the discovery action open in new tabs with
@@ -124,15 +131,37 @@ Both story links and the discovery action open in new tabs with
 source constants consumed by the homepage. Tests verify their rendered
 destinations and security attributes.
 
+### Homepage density and GNB revision
+
+The redesign uses `https://markdowner.chann.dev` as a spacing and navigation
+reference, not as a visual template. At 1440×900 the earlier KMSG hero occupied
+828px and the next section's first content began below the viewport at 924px.
+Markdowner's 56px floating GNB and 700px hero demonstrated a denser rhythm.
+
+KMSG keeps its split hero, yellow installation action, proof badges, and real
+terminal transcript. The `92svh` minimum is removed; desktop hero padding is
+96px above and 80px below. Mobile uses a 36px heading, tighter terminal type and
+spacing, and an optically reduced hero-to-workflow boundary. Other homepage
+sections use 64px vertical padding on mobile and 80px from the small breakpoint.
+The GNB becomes a 56px, `max-w-5xl`, fully rounded floating bar with a lighter
+shadow while keeping all routes, locale controls, mobile Sheet, themes, and
+focus behavior.
+
 ## Verification
 
 Automated tests will assert the link-to-target contract, scoped activation,
 fragment update, target call, native smooth-scroll CSS, the `6rem` target
 offset, and the reduced-motion override. They will also
 assert two whole-card YouTube links, exactly one discovery action outside the
-cards, the historical Google URL, localized labels, new-tab security
+cards, the current unquoted Google URL, localized labels, new-tab security
 attributes, and the absence of nested interactive elements. The full site gate
 must build all static routes, typecheck, and pass Vitest and Node tests.
+
+Layout regression tests assert the compact hero, responsive terminal density,
+eight section-spacing contracts, and the GNB dimensions. Browser checks compare
+the first two section positions at 1440×900, 390×844, and 320×720, verify zero
+horizontal overflow, exercise the mobile Sheet, and audit both dark and paper
+themes.
 
 Local browser verification will click the rendered installation action and
 sample scroll position immediately, during movement, and after settlement. It
@@ -159,6 +188,12 @@ after CI and deployment succeed for the implementation commits.
    verification-driven activation repair and regression test.
 7. `docs(site): document reliable install scrolling` records the verified
    implementation decision without rewriting published history.
+8. `fix(site): broaden case discovery search` removes phrase quotes from the
+   requested Google query and updates its regression expectation.
+9. `feat(site): refine homepage layout rhythm` publishes the compact hero,
+   GNB, responsive terminal, section spacing, and regression coverage.
+10. `docs(site): document compact homepage layout` records the current query
+    and verified Markdowner-informed density decisions.
 
 If verification reveals a regression after a checkpoint is published, the fix
 will be a new ordinary commit and push. Published history will not be amended or

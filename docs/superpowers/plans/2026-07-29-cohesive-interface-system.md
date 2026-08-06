@@ -58,7 +58,7 @@ Add this test next to the existing homepage story geometry test:
 ```js
 test("story discovery searches every requested Korean phrase", async () => {
   const expectedUrl =
-    "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22";
+    "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4";
   const expectedTerms = [
     "kmsg 카카오톡",
     "kmsg 카톡",
@@ -149,7 +149,7 @@ const storySearchTerms = [
   "kmsg 카카오",
 ];
 const moreStoriesUrl =
-  "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22";
+  "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4";
 ```
 
 Replace the old `.section-action` block in `renderHomeStories` with:

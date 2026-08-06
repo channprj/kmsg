@@ -13,7 +13,7 @@ and documentation feel assembled from separate visual languages.
 The user-visible outcomes are:
 
 - make “more examples” search all three phrases in one result set:
-  `"kmsg 카카오톡"`, `"kmsg 카톡"`, and `"kmsg 카카오"`;
+  `kmsg 카카오톡`, `kmsg 카톡`, and `kmsg 카카오`;
 - expose those three phrases visibly before the user opens Google;
 - replace text-character icons with one consistent SVG icon language;
 - reduce the number of arbitrary font sizes and establish a readable type
@@ -122,13 +122,13 @@ word “OpenClaw”; the URL contract concerns the public website route.
 Use the following human-readable query:
 
 ```text
-"kmsg 카카오톡" OR "kmsg 카톡" OR "kmsg 카카오"
+kmsg 카카오톡 OR kmsg 카톡 OR kmsg 카카오
 ```
 
 Use this exact encoded URL:
 
 ```text
-https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22
+https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4
 ```
 
 The stories section ends with a search action panel rather than an isolated

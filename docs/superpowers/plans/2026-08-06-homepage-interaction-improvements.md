@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Smoothly navigate from the homepage hero to installation and restore one centered story-discovery action beneath two whole-card YouTube links.
+**Goal:** Smoothly navigate from the homepage hero to installation, restore one centered story-discovery action beneath two whole-card YouTube links, and tighten the homepage rhythm so following content appears sooner.
 
-**Architecture:** CSS owns smooth versus reduced-motion scrolling and the target offset. A scoped React click handler repairs mobile fragment activation by preserving `#install` in history and calling `scrollIntoView({ block: "start" })` for unmodified primary clicks; the semantic anchor remains intact. The stories section keeps its existing source data, exports one historical Google query constant, renders each card as a single external anchor, and renders one localized button-style discovery anchor after the grid.
+**Architecture:** CSS owns smooth versus reduced-motion scrolling and the target offset. A scoped React click handler repairs mobile fragment activation by preserving `#install` in history and calling `scrollIntoView({ block: "start" })` for unmodified primary clicks; the semantic anchor remains intact. The stories section keeps its existing source data, exports one unquoted Google query constant, renders each card as a single external anchor, and renders one localized button-style discovery anchor after the grid. Responsive Tailwind classes compact the GNB, hero, terminal preview, and section spacing without changing page order or product copy.
 
 **Tech Stack:** React 19, TypeScript 6, React Router 8 static build, Tailwind CSS, Shadcn UI, Vitest/jsdom, Node test runner, agent-browser, GitHub Actions, GitHub Pages.
 
@@ -16,7 +16,7 @@
 - Use `scroll-behavior: auto` when `prefers-reduced-motion: reduce` matches.
 - Keep exactly two featured stories in their current order with unchanged publisher, localized title, thumbnail, and YouTube URL data.
 - Make each entire story card one new-tab YouTube anchor with no nested interactive element.
-- Render exactly one localized `moreStoriesAction` below the story grid, centered, using the historical Google query URL.
+- Render exactly one localized `moreStoriesAction` below the story grid, centered, using `kmsg 카카오톡 OR kmsg 카톡 OR kmsg 카카오` without quote characters.
 - Give every new-tab story and discovery link `rel="noopener noreferrer"`.
 - Preserve the tagline scrub, footer wordmark, theme persistence, locale behavior, and all non-homepage runtime code.
 - Leave the user-owned untracked `tasks/` directory untouched and stage only explicit task paths.
@@ -224,7 +224,7 @@ Google URL:
 
 ```tsx
 const MORE_STORIES_URL =
-  "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22"
+  "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4"
 
 it("links whole featured cards and renders one centered discovery action", () => {
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })))
@@ -288,7 +288,7 @@ Add to `site/app/content/home.ts`:
 
 ```ts
 export const MORE_STORIES_URL =
-  "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22"
+  "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4"
 ```
 
 - [ ] **Step 5: Make each complete card one YouTube link**
@@ -383,6 +383,63 @@ git rev-list --left-right --count HEAD...refs/remotes/origin/main
 ```
 
 Expected parity: `0 0`.
+
+---
+
+### Task 2A: Remove query quotes and tighten homepage density
+
+**Files:**
+- Modify: `site/app/content/home.ts`
+- Modify: `site/app/components/home-page.tsx`
+- Modify: `site/app/components/site-header.tsx`
+- Modify: `site/test/home.test.tsx`
+- Modify: `site/test/shell.test.tsx`
+
+**Reference evidence:** At 1440×900, the published KMSG hero occupied 828px
+and the next section content started after the viewport. Markdowner used a 56px
+floating GNB and ended its hero at 700px. At 390×844, KMSG's content-driven
+hero reached about 1059px while Markdowner's ended near 696px.
+
+- [ ] **Step 1: Update the independent URL expectation and prove RED**
+
+Change the expected discovery URL to the exact unquoted query, run the focused
+homepage test, and confirm it fails against the three `%22` phrase wrappers.
+
+- [ ] **Step 2: Publish the unquoted query**
+
+Remove only the encoded quote characters from `MORE_STORIES_URL`, keep the
+three terms and `OR` operators in order, run the full site gate, then commit and
+push `fix(site): broaden case discovery search`.
+
+- [ ] **Step 3: Add failing density and GNB regression tests**
+
+Assert the hero has no viewport-height minimum, mobile and desktop typography
+use the agreed Tailwind scale, the terminal compacts responsively, the eight
+following sections use the new rhythm, and the GNB is a centered 56px
+`max-w-5xl` pill.
+
+- [ ] **Step 4: Apply the targeted existing-stack redesign**
+
+Keep the split hero, yellow CTA, terminal content, product copy, routes, and
+section order. Use a content-height hero, 36px mobile heading, compact mobile
+terminal, 64px/80px section spacing, an optically tighter first workflow
+boundary, and the 56px GNB. Add no dependency or new runtime abstraction.
+
+- [ ] **Step 5: Verify layout and interaction in real browsers**
+
+At 1440×900, 390×844, and 320×720, record the GNB, hero bottom, next label,
+install target, and horizontal overflow. Require the next label in the first
+viewport at 1440px and 390px, allow terminal wrapping at 320px, and preserve
+smooth/reduced-motion installation behavior. Exercise the mobile Sheet and run
+Axe in dark and paper themes.
+
+- [ ] **Step 6: Commit and push the layout checkpoint**
+
+```bash
+git add site/app/components/home-page.tsx site/app/components/site-header.tsx site/test/home.test.tsx site/test/shell.test.tsx
+git commit -m "feat(site): refine homepage layout rhythm"
+git push origin refs/heads/main:refs/heads/main
+```
 
 ---
 
