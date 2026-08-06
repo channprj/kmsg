@@ -31,8 +31,11 @@ export function SiteHeader({
 
   return (
     <TooltipProvider>
-      <header className="site-header fixed inset-x-0 top-0 z-40 px-3 pt-3 sm:px-6">
-        <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 rounded-2xl border bg-background/92 px-3 shadow-lg backdrop-blur-xl sm:px-4">
+      <header className="site-header fixed inset-x-0 top-4 z-40 px-4">
+        <div
+          className="mx-auto flex h-14 max-w-5xl items-center gap-2 rounded-full border bg-background/92 px-2 shadow-sm backdrop-blur-xl sm:px-3"
+          data-site-header-bar
+        >
           <a
             aria-label="kmsg home"
             className="mr-auto flex min-h-11 items-center gap-2 rounded-xl px-2 font-semibold tracking-tight focus-visible:outline-2"

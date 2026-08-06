@@ -84,6 +84,50 @@ describe("localized React home", () => {
     expect(container.querySelectorAll('[data-slot="accordion-item"]')).toHaveLength(4)
   })
 
+  it("keeps the hero compact and uses a tighter section rhythm", () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })))
+    const { container } = render(<HomePage locale="ko" />)
+    const hero = container.querySelector("[data-home-hero]")
+    const heading = screen.getByRole("heading", {
+      level: 1,
+      name: /카카오톡을\s+AI Native 하게 사용하세요/,
+    })
+    const terminalBody = container.querySelector("[data-terminal-body]")
+    const sections = [
+      ...container.querySelectorAll("[data-home-section]"),
+    ]
+
+    expect(heading).toHaveClass("text-4xl", "sm:text-6xl", "lg:text-7xl")
+    expect(hero).toHaveClass(
+      "gap-8",
+      "pt-20",
+      "pb-6",
+      "sm:gap-10",
+      "sm:pt-24",
+      "sm:pb-16",
+      "lg:gap-12",
+      "lg:pb-20",
+    )
+    expect(hero).not.toHaveClass("min-h-[92svh]")
+    expect(terminalBody).toHaveClass(
+      "space-y-3",
+      "p-4",
+      "text-xs",
+      "leading-5",
+      "sm:space-y-4",
+      "sm:p-6",
+      "sm:text-sm",
+    )
+    expect(sections).toHaveLength(8)
+    expect(sections[0]).toHaveClass("pt-8", "pb-16", "sm:py-20")
+    expect(sections[0]).not.toHaveClass("py-16")
+    expect(sections[0]).not.toHaveClass("py-24")
+    for (const section of sections.slice(1)) {
+      expect(section).toHaveClass("py-16", "sm:py-20")
+      expect(section).not.toHaveClass("py-24")
+    }
+  })
+
   it("keeps the fragment URL and scrolls the install target on activation", () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })))
     const { container } = render(<HomePage locale="ko" />)

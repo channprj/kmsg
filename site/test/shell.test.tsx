@@ -20,6 +20,20 @@ afterEach(() => {
 })
 
 describe("shared Shadcn shell", () => {
+  it("uses a compact centered global navigation bar", () => {
+    const { container } = render(<SiteHeader locale="ko" pageKey="home" />)
+    const header = screen.getByRole("banner")
+    const navigationBar = container.querySelector("[data-site-header-bar]")
+
+    expect(header).toHaveClass("top-4", "px-4")
+    expect(navigationBar).toHaveClass(
+      "h-14",
+      "max-w-5xl",
+      "rounded-full",
+      "shadow-sm",
+    )
+  })
+
   it("opens mobile navigation in a titled Sheet", async () => {
     const user = userEvent.setup()
     render(<SiteHeader locale="en" pageKey="home" />)

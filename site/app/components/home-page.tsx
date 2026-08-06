@@ -97,7 +97,10 @@ function TerminalPreview({ locale }: { locale: LocaleId }) {
         <span className="size-2.5 rounded-full bg-[#28c840]" />
         <span className="ml-auto font-mono text-[11px] text-white/60">kmsg — zsh</span>
       </div>
-      <div className="space-y-4 overflow-x-auto p-5 font-mono text-[13px] leading-[1.65] sm:p-6">
+      <div
+        className="space-y-3 overflow-x-auto p-4 font-mono text-xs leading-5 sm:space-y-4 sm:p-6 sm:text-sm"
+        data-terminal-body
+      >
         <div>
           <p><span className="text-primary">❯</span> <span>kmsg chats --json</span></p>
           <p className="text-white/62">{`[{"title":"${chatName}","chat_id":"chat_7f42c5e1d9ab"}]`}</p>
@@ -123,16 +126,19 @@ export function HomePage({ locale }: { locale: LocaleId }) {
     <>
       <SiteHeader locale={locale} pageKey="home" />
       <main id="content">
-        <section className="mx-auto grid min-h-[92svh] max-w-6xl items-center gap-14 px-6 pb-20 pt-32 lg:grid-cols-[.92fr_1.08fr]">
+        <section
+          className="mx-auto grid max-w-6xl items-center gap-8 px-6 pb-6 pt-20 sm:gap-10 sm:pb-16 sm:pt-24 lg:grid-cols-[.92fr_1.08fr] lg:gap-12 lg:pb-20"
+          data-home-hero
+        >
           <div>
             <p className="text-sm font-semibold text-primary-readable">{copy.kicker}</p>
-            <h1 className="mt-5 whitespace-pre-line text-5xl font-semibold leading-[.98] tracking-[-.055em] sm:text-7xl">
+            <h1 className="mt-5 whitespace-pre-line text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
               {copy.headline}
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
+            <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground sm:mt-6 sm:text-lg sm:leading-8">
               {copy.description}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
               <a
                 className={cn(buttonVariants({ size: "lg" }), "min-h-11")}
                 href="#install"
@@ -148,7 +154,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
                 {copy.docsAction}
               </a>
             </div>
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-5 flex flex-wrap gap-2 sm:mt-6">
               {copy.heroProof.map((proof) => (
                 <Badge key={proof} variant="secondary">
                   <Check aria-hidden="true" />
@@ -160,7 +166,10 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           <TerminalPreview locale={locale} />
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-24">
+        <section
+          className="mx-auto max-w-6xl px-6 pb-16 pt-8 sm:py-20"
+          data-home-section
+        >
           <SectionHeading
             description={copy.workflowDescription}
             label={copy.workflowStepsLabel}
@@ -179,7 +188,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-24">
+        <section className="mx-auto max-w-6xl px-6 py-16 sm:py-20" data-home-section>
           <SectionHeading label={copy.principlesLabel} title={copy.principlesTitle} />
           <div className="grid gap-4 md:grid-cols-3">
             {copy.principles.map((principle) => (
@@ -194,7 +203,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-24">
+        <section className="mx-auto max-w-6xl px-6 py-16 sm:py-20" data-home-section>
           <Card className="overflow-hidden border-primary/25 bg-primary/[.04]">
             <CardHeader>
               <p className="text-sm font-semibold text-primary-readable">{copy.agentSkillLabel}</p>
@@ -219,7 +228,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           </Card>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-24">
+        <section className="mx-auto max-w-6xl px-6 py-16 sm:py-20" data-home-section>
           <SectionHeading label={copy.capabilitiesLabel} title={copy.capabilitiesTitle} />
           <div className="grid gap-4 lg:grid-cols-3">
             {copy.capabilities.map((capability) => (
@@ -240,13 +249,13 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-24">
+        <section className="mx-auto max-w-6xl px-6 py-16 sm:py-20" data-home-section>
           <Separator />
           <AnimatedTagline text={copy.tagline} />
           <Separator />
         </section>
 
-        <section className="mx-auto max-w-6xl px-6 py-24">
+        <section className="mx-auto max-w-6xl px-6 py-16 sm:py-20" data-home-section>
           <SectionHeading
             description={copy.storiesDescription}
             label={copy.storiesLabel}
@@ -286,7 +295,11 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           </div>
         </section>
 
-        <section className="mx-auto max-w-4xl px-6 py-24" id="faq">
+        <section
+          className="mx-auto max-w-4xl px-6 py-16 sm:py-20"
+          data-home-section
+          id="faq"
+        >
           <SectionHeading
             description={copy.faqDescription}
             label={copy.faqLabel}
@@ -302,7 +315,11 @@ export function HomePage({ locale }: { locale: LocaleId }) {
           </Accordion>
         </section>
 
-        <section className="mx-auto max-w-5xl px-6 py-24" id="install">
+        <section
+          className="mx-auto max-w-5xl px-6 py-16 sm:py-20"
+          data-home-section
+          id="install"
+        >
           <Card className="border-primary/35 bg-primary/[.05]">
             <CardHeader>
               <p className="text-sm font-semibold text-primary-readable">{copy.installLabel}</p>
