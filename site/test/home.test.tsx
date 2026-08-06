@@ -2,7 +2,7 @@
 
 import "@testing-library/jest-dom/vitest"
 
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { HomePage } from "~/components/home-page"
@@ -12,6 +12,7 @@ const EXPECTED_MORE_STORIES_URL =
 
 afterEach(() => {
   cleanup()
+  window.history.replaceState(null, "", "/")
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
@@ -81,6 +82,21 @@ describe("localized React home", () => {
 
     rerender(<HomePage locale="cn" />)
     expect(container.querySelectorAll('[data-slot="accordion-item"]')).toHaveLength(4)
+  })
+
+  it("keeps the fragment URL and scrolls the install target on activation", () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })))
+    const { container } = render(<HomePage locale="ko" />)
+    const installTarget = container.querySelector<HTMLElement>("#install")
+    const scrollIntoView = vi.fn()
+
+    expect(installTarget).not.toBeNull()
+    Object.assign(installTarget!, { scrollIntoView })
+
+    fireEvent.click(screen.getByRole("link", { name: "설치하기" }))
+
+    expect(window.location.hash).toBe("#install")
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "start" })
   })
 
   it("links whole featured cards and renders one centered discovery action", () => {

@@ -1,3 +1,5 @@
+import type { MouseEvent as ReactMouseEvent } from "react"
+
 import { ArrowRight, Check, ExternalLink, Terminal } from "lucide-react"
 
 import { AnimatedTagline } from "~/components/animated-tagline"
@@ -33,6 +35,28 @@ import { publicRouteFor, type LocaleId } from "~/content/routes"
 import { cn } from "~/lib/utils"
 
 const agentNames = ["OpenClaw", "Hermes Agent", "Claude Code", "Codex"]
+
+function handleInstallNavigation(event: ReactMouseEvent<HTMLAnchorElement>) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  ) {
+    return
+  }
+
+  const target = document.getElementById("install")
+  if (!target) return
+
+  event.preventDefault()
+  if (window.location.hash !== "#install") {
+    window.history.pushState(null, "", "#install")
+  }
+  target.scrollIntoView({ block: "start" })
+}
 
 function SectionHeading({
   label,
@@ -112,6 +136,7 @@ export function HomePage({ locale }: { locale: LocaleId }) {
               <a
                 className={cn(buttonVariants({ size: "lg" }), "min-h-11")}
                 href="#install"
+                onClick={handleInstallNavigation}
               >
                 {copy.installAction}
                 <ArrowRight aria-hidden="true" data-icon="inline-end" />
