@@ -72,6 +72,6 @@ export const HOME_CONTENT = legacyContent.homeContent as unknown as Record<
 >
 
 export const MORE_STORIES_URL =
-  "https://www.google.com/search?q=%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%ED%86%A1%22+OR+%22kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%22"
+  "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4"
 
 export const HOME_STORIES = legacyContent.homeStories as unknown as HomeStory[]
