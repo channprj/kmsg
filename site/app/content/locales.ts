@@ -21,7 +21,6 @@ export interface LocaleUi {
   table: string
   updated: string
   edit: string
-  pipeline: string
   footerTagline: string
   footerDisclaimer: string
   privacy: string

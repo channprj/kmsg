@@ -135,8 +135,6 @@ function DocumentShell({
               {copy.description}
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground">
-              <span>{ui.pipeline}</span>
-              <Separator className="h-4" orientation="vertical" />
               <span>{ui.updated} {updated}</span>
               <Separator className="h-4" orientation="vertical" />
               <a className="inline-flex items-center gap-1 hover:text-foreground" href={sourceUrl} rel="noopener noreferrer" target="_blank">

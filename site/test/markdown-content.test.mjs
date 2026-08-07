@@ -4,7 +4,7 @@ import test from "node:test"
 
 const contentUrl = new URL("../app/content/document-content.json", import.meta.url)
 
-test("synced Markdown content covers every localized documentation route", async () => {
+test("synced Markdown content covers every documentation route", async () => {
   const entries = JSON.parse(await readFile(contentUrl, "utf8"))
 
   assert.equal(entries.length, 20)

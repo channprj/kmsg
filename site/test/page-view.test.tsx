@@ -37,7 +37,7 @@ describe("PageView", () => {
     expect(screen.getByText(/アカウント、入力フォーム、解析サービス/)).toBeVisible()
   })
 
-  it("renders a localized documentation shell", () => {
+  it("renders a documentation shell", () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })))
     render(<PageView locale="cn" pageKey="architecture" />)
     expect(
