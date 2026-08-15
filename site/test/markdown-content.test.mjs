@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises"
 import test from "node:test"
 
 const contentUrl = new URL("../app/content/document-content.json", import.meta.url)
+const readmeUrl = new URL("../../README.md", import.meta.url)
 
 test("synced Markdown content covers every documentation route", async () => {
   const entries = JSON.parse(await readFile(contentUrl, "utf8"))
@@ -39,4 +40,19 @@ test("synced Markdown stays safe and keeps accessible rich content", async () =>
       `${entry.locale}/${entry.pageKey} must give every table region a unique name`,
     )
   }
+})
+
+test("repository README owns the brand signature without duplicating it into site content", async () => {
+  const [readme, entries] = await Promise.all([
+    readFile(readmeUrl, "utf8"),
+    readFile(contentUrl, "utf8").then(JSON.parse),
+  ])
+
+  assert.match(readme, /<p data-brand-signature>/)
+  assert.match(readme, /kmsg-signature-light\.svg#gh-light-mode-only/)
+  assert.match(readme, /kmsg-signature-dark\.svg#gh-dark-mode-only/)
+  assert.doesNotMatch(
+    entries.map(({ html }) => html).join("\n"),
+    /data-brand-signature|kmsg-signature-(?:light|dark)/,
+  )
 })

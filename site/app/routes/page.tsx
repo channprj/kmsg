@@ -9,7 +9,7 @@ import { metadataFor } from "~/lib/metadata"
 export function meta({ location }: Route.MetaArgs) {
   const route = routeFromPath(location.pathname) ?? { locale: "ko" as const, pageKey: "home" as const }
   const metadata = metadataFor(route.locale, route.pageKey)
-  const image = "https://channprj.github.io/kmsg/assets/kmsg-logo.jpg"
+  const image = "https://channprj.github.io/kmsg/assets/brand/png/kmsg-social-preview-1200x630.png"
   return [
     { title: metadata.title },
     { name: "description", content: metadata.description },
@@ -22,10 +22,10 @@ export function meta({ location }: Route.MetaArgs) {
     { property: "og:description", content: metadata.description },
     { property: "og:url", content: metadata.canonical },
     { property: "og:image", content: image },
-    { property: "og:image:type", content: "image/jpeg" },
-    { property: "og:image:width", content: "1000" },
-    { property: "og:image:height", content: "1000" },
-    { property: "og:image:alt", content: "kmsg KakaoTalk CLI logo" },
+    { property: "og:image:type", content: "image/png" },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    { property: "og:image:alt", content: "kmsg — KakaoTalk CLI and MCP server for macOS" },
     { property: "og:locale", content: metadata.ogLocale },
     ...LOCALE_IDS.filter((locale) => locale !== route.locale).map((locale) => ({
       property: "og:locale:alternate",
@@ -35,7 +35,7 @@ export function meta({ location }: Route.MetaArgs) {
     { name: "twitter:title", content: metadata.title },
     { name: "twitter:description", content: metadata.description },
     { name: "twitter:image", content: image },
-    { name: "twitter:image:alt", content: "kmsg KakaoTalk CLI logo" },
+    { name: "twitter:image:alt", content: "kmsg — KakaoTalk CLI and MCP server for macOS" },
     { tagName: "link", rel: "canonical", href: metadata.canonical },
     ...LOCALE_IDS.map((locale) => ({
       tagName: "link",

@@ -45,7 +45,7 @@ export function SiteHeader({
               alt=""
               className="size-8 rounded-lg"
               height="32"
-              src="/kmsg/assets/kmsg-logo.jpg"
+              src="/kmsg/assets/brand/png/kmsg-app-icon-32.png"
               width="32"
             />
             <span translate="no">kmsg</span>

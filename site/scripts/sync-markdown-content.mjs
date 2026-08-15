@@ -84,14 +84,22 @@ function resolveMarkdownTarget(target, page) {
 
 function prepareMarkdown(markdown, page) {
   let skippedTitle = false
+  let skippingBrandSignature = false
   const filtered = markdown.split("\n").filter((line) => {
+    if (skippingBrandSignature) {
+      if (line.trim() === "</p>") skippingBrandSignature = false
+      return false
+    }
     if (!skippedTitle && line.startsWith("# ")) {
       skippedTitle = true
       return false
     }
     if (/^\[!\[.+]\(https:\/\/img\.shields\.io\//.test(line)) return false
     if (/^\[(한국어|English)]\(.+\)$/.test(line)) return false
-    if (/^<p><img src="assets\/kmsg-logo\.jpg"/.test(line)) return false
+    if (line.trim() === "<p data-brand-signature>") {
+      skippingBrandSignature = true
+      return false
+    }
     return true
   })
 

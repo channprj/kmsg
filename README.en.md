@@ -5,7 +5,10 @@
 
 [Project website](https://channprj.github.io/kmsg/en/) · [한국어](README.md)
 
-<p><img src="assets/kmsg-logo.jpg" alt="kmsg logo" width="220" /></p>
+<p data-brand-signature>
+  <img src="assets/brand/source/kmsg-signature-light.svg#gh-light-mode-only" alt="kmsg" width="220" />
+  <img src="assets/brand/source/kmsg-signature-dark.svg#gh-dark-mode-only" alt="kmsg" width="220" />
+</p>
 
 `kmsg` is an unofficial KakaoTalk CLI and native MCP server for macOS.
 It reads, watches, and sends messages through the macOS Accessibility API,

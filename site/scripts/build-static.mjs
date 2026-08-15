@@ -63,7 +63,7 @@ await cp(prerenderDir, distDir, { recursive: true })
 await mkdir(join(distDir, "assets"), { recursive: true })
 await cp(join(clientDir, "assets"), join(distDir, "assets"), { recursive: true })
 await Promise.all([
-  cp(resolve(repoDir, "assets/kmsg-logo.jpg"), join(distDir, "assets/kmsg-logo.jpg")),
+  cp(resolve(repoDir, "assets/brand"), join(distDir, "assets/brand"), { recursive: true }),
   cp(resolve(repoDir, "assets/demo1.mp4"), join(distDir, "assets/demo1.mp4")),
 ])
 
@@ -90,7 +90,7 @@ const localeLinks = Object.entries(localePrefixes)
   .join("")
 await write(
   "404.html",
-  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found - kmsg</title><meta name="robots" content="noindex,follow"><link rel="icon" href="/kmsg/assets/favicon.svg" type="image/svg+xml"><style>html{color-scheme:dark;background:#11110f;color:#f7f7f2;font-family:system-ui,sans-serif}body{margin:0}.not-found-page{display:flex;min-height:100vh;box-sizing:border-box;flex-direction:column;justify-content:center;max-width:48rem;margin:auto;padding:2rem}.not-found-page img{border-radius:.75rem}.not-found-page h1{font-size:clamp(2.5rem,8vw,5rem);margin:.75rem 0}.not-found-page p{color:#aaa99f;line-height:1.7}.not-found-page nav{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}.not-found-locale{min-height:2.75rem;display:inline-flex;align-items:center;border:1px solid #35352e;border-radius:.75rem;padding:0 1rem;color:inherit;text-decoration:none}.not-found-locale:hover{background:#252520}</style></head><body><main class="not-found-page"><img src="/kmsg/assets/kmsg-logo.jpg" alt="" width="64" height="64"><p>404</p><h1>Page not found</h1><p>The requested page does not exist. Choose a language to return to kmsg.</p><nav aria-label="Choose a kmsg homepage">${localeLinks}</nav></main></body></html>`,
+  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found - kmsg</title><meta name="robots" content="noindex,follow"><link rel="icon" href="/kmsg/assets/favicon.svg" type="image/svg+xml"><style>html{color-scheme:dark;background:#11110f;color:#f7f7f2;font-family:system-ui,sans-serif}body{margin:0}.not-found-page{display:flex;min-height:100vh;box-sizing:border-box;flex-direction:column;justify-content:center;max-width:48rem;margin:auto;padding:2rem}.not-found-page img{border-radius:.75rem}.not-found-page h1{font-size:clamp(2.5rem,8vw,5rem);margin:.75rem 0}.not-found-page p{color:#aaa99f;line-height:1.7}.not-found-page nav{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}.not-found-locale{min-height:2.75rem;display:inline-flex;align-items:center;border:1px solid #35352e;border-radius:.75rem;padding:0 1rem;color:inherit;text-decoration:none}.not-found-locale:hover{background:#252520}</style></head><body><main class="not-found-page"><img src="/kmsg/assets/brand/png/kmsg-app-icon-64.png" alt="" width="64" height="64"><p>404</p><h1>Page not found</h1><p>The requested page does not exist. Choose a language to return to kmsg.</p><nav aria-label="Choose a kmsg homepage">${localeLinks}</nav></main></body></html>`,
 )
 
 const sitemapEntries = canonicalPages
@@ -172,9 +172,15 @@ await write(
       theme_color: "#fee500",
       icons: [
         {
-          src: "/kmsg/assets/kmsg-logo.jpg",
-          sizes: "1000x1000",
-          type: "image/jpeg",
+          src: "/kmsg/assets/brand/png/kmsg-app-icon-192.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "/kmsg/assets/brand/png/kmsg-app-icon-512.png",
+          sizes: "512x512",
+          type: "image/png",
           purpose: "any",
         },
       ],

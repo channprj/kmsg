@@ -5,7 +5,10 @@
 
 [프로젝트 홈페이지](https://channprj.github.io/kmsg/) · [English](README.en.md)
 
-<p><img src="assets/kmsg-logo.jpg" alt="kmsg logo" width="220" /></p>
+<p data-brand-signature>
+  <img src="assets/brand/source/kmsg-signature-light.svg#gh-light-mode-only" alt="kmsg" width="220" />
+  <img src="assets/brand/source/kmsg-signature-dark.svg#gh-dark-mode-only" alt="kmsg" width="220" />
+</p>
 
 `kmsg`는 macOS용 비공식 카카오톡 CLI이자 네이티브 MCP 서버입니다.
 macOS 손쉬운 사용 API로 메시지를 읽고, 감시하고, 전송하며 로컬 자동화와
