@@ -72,6 +72,10 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.match(home, /<meta property="og:image:type" content="image\/png"/)
   assert.match(home, /<meta property="og:image:width" content="1200"/)
   assert.match(home, /<meta property="og:image:height" content="630"/)
+  assert.match(
+    home,
+    /<link rel="apple-touch-icon" href="\/kmsg\/assets\/brand\/png\/kmsg-app-icon-192\.png"/,
+  )
   assert.match(docs, /data-code-copy/)
   assert.match(docs, /role="region"/)
   assert.match(

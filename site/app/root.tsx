@@ -21,6 +21,11 @@ import "./app.css"
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/kmsg/assets/favicon.svg", type: "image/svg+xml" },
+  {
+    rel: "apple-touch-icon",
+    href: "/kmsg/assets/brand/png/kmsg-app-icon-192.png",
+    sizes: "192x192",
+  },
   { rel: "manifest", href: "/kmsg/site.webmanifest" },
   { rel: "alternate", href: "/kmsg/llm.txt", type: "text/plain", title: "LLM-readable site index" },
 ]
