@@ -68,24 +68,16 @@ def symbol_markup(
     *,
     prefix: str,
     stroke: int = STROKE,
-    gap_radius: int = 68,
     transform: str | None = None,
 ) -> str:
-    left_mask = f"{prefix}-left-mask"
-    right_mask = f"{prefix}-right-mask"
+    _ = prefix
     inner = f"""
-<defs>
-  <mask id="{left_mask}" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-    <rect width="1024" height="1024" fill="#FFFFFF"/>
-    <circle cx="512" cy="592" r="{gap_radius}" fill="#000000"/>
-  </mask>
-  <mask id="{right_mask}" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-    <rect width="1024" height="1024" fill="#FFFFFF"/>
-    <circle cx="556" cy="424" r="{gap_radius}" fill="#000000"/>
-  </mask>
-</defs>
-<path d="{RIGHT_PATH}" fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round" mask="url(#{right_mask})"/>
-<path d="{LEFT_PATH}" fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round" mask="url(#{left_mask})"/>""".strip()
+<g transform="translate(20 46) scale(.86)">
+  <g transform="translate(90 50)">
+    <path d="{RIGHT_PATH}" fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="{LEFT_PATH}" fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round"/>
+</g>""".strip()
     if transform:
         return f'<g transform="{transform}">\n{inner}\n</g>'
     return inner
@@ -94,7 +86,7 @@ def symbol_markup(
 def app_icon_markup(*, prefix: str, transform: str | None = None) -> str:
     content = f"""
 <rect x="32" y="32" width="960" height="960" rx="216" fill="{YELLOW}"/>
-{symbol_markup(INK, prefix=f"{prefix}-symbol", transform="translate(24 48) scale(.9)")}""".strip()
+{symbol_markup(INK, prefix=f"{prefix}-symbol")}""".strip()
     if transform:
         return f'<g transform="{transform}">\n{content}\n</g>'
     return content
@@ -175,13 +167,13 @@ def signature_markup(
     word_color: str,
 ) -> tuple[str, int]:
     word_scale = 0.82
-    word_x = 900
+    word_x = 760
     word_y = 110
     width = math.ceil(word_x + word_width * word_scale + 80)
     symbol = symbol_markup(
         symbol_color,
         prefix=f"{prefix}-mark",
-        transform="translate(-191 -271) scale(1.154)",
+        transform="translate(-91 -121) scale(.868)",
     )
     content = f"""
 {symbol}
@@ -254,7 +246,7 @@ def review_board_svg(
         symbol_color=YELLOW,
         word_color=PAPER,
     )
-    signature_scale = min(0.30, 610 / signature_width)
+    signature_scale = 220 / signature_width
     social = social_markup(
         word_paths,
         word_width,
@@ -285,16 +277,16 @@ def review_board_svg(
 <text x="832" y="385" fill="{MUTED}" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">MONO</text>
 <text x="1054" y="385" fill="{MUTED}" font-family="Arial, sans-serif" font-size="12" text-anchor="middle">REVERSE</text>
 
-<rect x="510" y="430" width="710" height="212" rx="30" fill="#FFFDF5"/>
+<rect x="510" y="430" width="710" height="240" rx="30" fill="#FFFDF5"/>
 <text x="540" y="470" fill="{MUTED}" font-family="Arial, sans-serif" font-size="14" font-weight="700">HORIZONTAL SIGNATURE</text>
-<rect x="540" y="492" width="650" height="58" rx="16" fill="#EEEADF"/>
-<g transform="translate(560 495) scale({signature_scale:.6f})">{light_signature}</g>
-<rect x="540" y="560" width="650" height="58" rx="16" fill="{DARK}"/>
-<g transform="translate(560 563) scale({signature_scale:.6f})">{dark_signature}</g>
+<rect x="540" y="492" width="650" height="74" rx="16" fill="#EEEADF"/>
+<g transform="translate(560 496) scale({signature_scale:.6f})">{light_signature}</g>
+<rect x="540" y="576" width="650" height="74" rx="16" fill="{DARK}"/>
+<g transform="translate(560 580) scale({signature_scale:.6f})">{dark_signature}</g>
 
-<rect x="60" y="674" width="1160" height="286" rx="30" fill="#FFFDF5"/>
-<text x="90" y="715" fill="{MUTED}" font-family="Arial, sans-serif" font-size="14" font-weight="700">SOCIAL PREVIEW · 1200 × 630</text>
-<g transform="translate(90 742) scale(.344)">{social}</g>
+<rect x="60" y="700" width="1160" height="260" rx="30" fill="#FFFDF5"/>
+<text x="90" y="740" fill="{MUTED}" font-family="Arial, sans-serif" font-size="14" font-weight="700">SOCIAL PREVIEW · 1200 × 630</text>
+<g transform="translate(90 760) scale(.30)">{social}</g>
 <text x="550" y="786" fill="{INK}" font-family="Arial, sans-serif" font-size="18" font-weight="700">Core idea</text>
 <text x="550" y="820" fill="{MUTED}" font-family="Arial, sans-serif" font-size="15">Two directional speech loops form one bridge.</text>
 <text x="550" y="852" fill="{INK}" font-family="Arial, sans-serif" font-size="18" font-weight="700">Priority surfaces</text>
@@ -309,10 +301,10 @@ def size_board_svg(samples: dict[int, Path], legacy_32: Path) -> str:
     for size, x in zip([16, 24, 32, 64, 128], x_positions):
         sample = samples[size]
         actual_items.append(
-            f'<image href="{data_uri(sample)}" x="{x - size / 2}" y="205" width="{size}" height="{size}"/>'
+            f'<image href="{data_uri(sample)}" x="{x - size / 2}" y="{232 - size / 2}" width="{size}" height="{size}"/>'
         )
         actual_items.append(
-            f'<text x="{x}" y="294" fill="{MUTED}" font-family="Arial, sans-serif" font-size="13" text-anchor="middle">{size}px</text>'
+            f'<text x="{x}" y="314" fill="{MUTED}" font-family="Arial, sans-serif" font-size="13" text-anchor="middle">{size}px</text>'
         )
 
     enlarged_items: list[str] = []
@@ -403,7 +395,6 @@ def main() -> None:
                 INK,
                 prefix="small",
                 stroke=SMALL_STROKE,
-                gap_radius=60,
             ),
             width=1024,
             height=1024,

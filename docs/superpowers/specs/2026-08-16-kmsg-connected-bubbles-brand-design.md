@@ -30,11 +30,11 @@
 
 ### 3.1 의미
 
-Connected Bubbles는 서로 다른 방향을 보는 두 말풍선 loop가 중앙에서 interlock되는 구조다.
+Connected Bubbles는 서로 다른 방향을 보는 두 말풍선 loop가 중앙의 짧은 open bridge로 연결되는 구조다.
 
 - 두 말풍선: 사용자와 KakaoTalk, 또는 AI agent와 사용자
 - 반대 방향의 꼬리: 양방향 읽기·전송
-- 중앙 interlock: CLI/MCP가 제공하는 안정적인 bridge
+- 중앙 open bridge: CLI/MCP가 제공하는 안정적인 연결
 - 열린 내부 공간: 메시지 내용과 사용자 통제권
 
 ### 3.2 시각적 성격
@@ -42,7 +42,7 @@ Connected Bubbles는 서로 다른 방향을 보는 두 말풍선 loop가 중앙
 - 친근함: 큰 corner radius와 완만한 곡선
 - 기술적 신뢰: 일정한 stroke와 정렬된 geometry
 - 절제: flat vector, 최대 두 색
-- 독립성: KakaoTalk의 단일 말풍선 silhouette를 복제하지 않고 이중 interlock 구조를 사용
+- 독립성: KakaoTalk의 단일 말풍선 silhouette를 복제하지 않고 이중 loop와 bridge 구조를 사용
 
 ### 3.3 금지 요소
 
@@ -76,15 +76,15 @@ Connected Bubbles는 서로 다른 방향을 보는 두 말풍선 loop가 중앙
 - body corner radius: 112px
 - Left tail: body의 좌하단에서 바깥쪽으로 104px 연장
 - Right tail: body의 우상단에서 바깥쪽으로 104px 연장
-- 두 body의 중심 간 offset: x 240px, y 112px
+- 두 body의 중심 간 offset: x 330px, y 162px
 - 내부 counter의 최소 폭: 176px
 
-두 outline은 중앙에서 두 번 교차한다. 한 교차점에서는 left loop를 전면에, 다른 교차점에서는 right loop를 전면에 배치해 chain처럼 상호 연결된 관계를 만든다. 후면 stroke는 교차점 중심에서 stroke 폭의 1.35배 길이만큼 clip해 겹침을 명확히 한다.
+Right loop는 left loop 기준 X축 +330px, Y축 +162px에 배치한다. 두 outline은 mask나 clip 없이 중앙에서 짧은 solid bridge를 형성한다. 전체 symbol group은 `translate(20 46) scale(.86)`으로 optical centering하며, circular cutout이나 교차 mask는 사용하지 않는다.
 
 ### 4.3 Small-size correction
 
 - 32px 이상: master geometry 그대로 사용
-- 16–24px: stroke를 104px equivalent로 보정하고, 교차부 clip 길이를 stroke 폭의 1.15배로 줄인다.
+- 16–24px: stroke를 104px equivalent로 보정하고 bridge offset은 유지한다.
 - 16px에서 두 counter 중 하나라도 2px 미만이 되면 실패로 판정한다.
 - pixel hinting을 위한 수동 직선화는 허용하지만 전체 silhouette와 tail 방향은 바꾸지 않는다.
 
@@ -105,7 +105,7 @@ Connected Bubbles는 서로 다른 방향을 보는 두 말풍선 loop가 중앙
 - light background 위 yellow text는 금지하고 `#756600`을 사용한다.
 - dark background 위 primary symbol은 `#FEE500` 또는 `#F7F7F2`를 사용한다.
 - symbol 한 개 안에 세 가지 이상의 색을 사용하지 않는다.
-- 색으로만 두 말풍선을 구분하지 않는다. interlock geometry가 관계를 설명해야 한다.
+- 색으로만 두 말풍선을 구분하지 않는다. open-bridge geometry가 관계를 설명해야 한다.
 
 ## 6. Wordmark와 signature
 
@@ -219,7 +219,7 @@ Review board는 다음을 한 화면에 포함한다.
 1. app icon의 `#FEE500`/`#19170D` 조합은 WCAG 계산 기준 14.04:1의 명도 대비를 유지한다.
 2. paper theme에서 yellow는 본문 text color로 사용하지 않는다. `#756600`/`#F7F5ED` 조합은 5.26:1 이상을 유지한다.
 3. logo image의 `alt`는 맥락에 따라 `kmsg` 또는 빈 문자열을 사용한다. 옆에 `kmsg` text가 있으면 중복 낭독을 막기 위해 `alt=""`를 유지한다.
-4. symbol은 색상 없이 mono 상태에서도 두 말풍선과 interlock이 구분되어야 한다.
+4. symbol은 색상 없이 mono 상태에서도 두 말풍선과 중앙 bridge가 구분되어야 한다.
 5. 16·24·32px raster preview를 실제 픽셀 크기로 검토한다. 확대 preview만으로 승인하지 않는다.
 6. favicon은 dark·paper browser chrome 모두에서 외곽이 사라지지 않아야 한다.
 
@@ -238,7 +238,7 @@ Review board는 다음을 한 화면에 포함한다.
 
 - 1280×1024 review board를 Telegram에 직접 첨부한다.
 - 32px header crop을 1×로 확인한다.
-- 16·24·32·64·128px size row에서 tail과 interlock을 검사한다.
+- 16·24·32·64·128px size row에서 tail과 bridge를 검사한다.
 - dark background, paper background, yellow app icon을 모두 확인한다.
 - 기존 로고 대비 새로운 mark가 mascot이 아닌 message bridge로 읽히는지 검토한다.
 
@@ -254,7 +254,7 @@ Review board는 다음을 한 화면에 포함한다.
 다음 조건을 모두 만족해야 완료다.
 
 - Connected Bubbles가 두 말풍선과 중앙 bridge로 인지된다.
-- 32px에서 두 counter, 두 tail, interlock이 구분된다.
+- 32px에서 두 counter, 두 tail, 중앙 bridge가 구분된다.
 - primary, mono, reverse가 같은 silhouette를 유지한다.
 - 220px horizontal signature에서 `kmsg`가 즉시 읽힌다.
 - dark·paper theme에서 symbol이 배경과 분리된다.

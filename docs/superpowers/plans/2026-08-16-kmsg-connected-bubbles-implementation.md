@@ -171,7 +171,7 @@ LEFT_PATH = "M312 304H472C534 304 584 354 584 416V496C584 558 534 608 472 608H35
 RIGHT_PATH = "M552 416H712C750 416 786 436 806 468L872 392L824 500V608C824 670 774 720 712 720H552C490 720 440 670 440 608V528C440 466 490 416 552 416Z"
 ```
 
-Use `fill="none"`, round cap/join, and two masks. The left mask removes a 136px-diameter crossing window centered at `(512, 592)`; the right mask removes a 136px-diameter crossing window centered at `(556, 424)`. Draw right then left so each loop is frontmost at one crossing.
+Use `fill="none"` with round cap/join. Offset the right loop by `(90, 50)` inside a shared `translate(20 46) scale(.86)` optical-normalization group. The overlapping strokes form one short solid bridge; do not add masks, clips, or circular cutouts.
 
 - [ ] **Step 3: Convert Geist `kmsg` glyphs to paths**
 
@@ -342,7 +342,7 @@ The staged deletion of `assets/kmsg-logo.jpg` must be included in this commit.
 Use `vision_analyze` on each 1280×1024 PNG. Verify:
 
 - two speech bubbles and opposite tails are distinguishable
-- both crossings read as an interlock, not accidental breaks
+- the open bridge reads as an intentional connection, not a knot or accidental break
 - 16/24/32px counters remain open
 - app icon is optically centered
 - primary, mono, reverse share the same silhouette
@@ -356,7 +356,7 @@ Start the existing site preview only if required by the repository's normal work
 
 - [ ] **Step 3: Fix generator constants, regenerate, and re-run tests if QA fails**
 
-Allowed corrections are stroke, mask center/radius, optical translation, wordmark scale, and card spacing. Do not introduce gradients, shadows, mascot elements, or a third color.
+Allowed corrections are stroke, loop offset, optical translation, wordmark scale, and card spacing. Do not introduce masks, gradients, shadows, mascot elements, or a third color.
 
 - [ ] **Step 4: Commit visual corrections only when files changed**
 

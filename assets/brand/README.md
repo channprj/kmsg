@@ -1,6 +1,6 @@
 # kmsg Brand Assets
 
-Connected Bubbles는 kmsg의 양방향 message bridge 역할을 나타내는 공식 symbol system입니다. 두 말풍선 loop와 반대 방향의 tail, 중앙 interlock을 모든 variant에서 동일하게 유지합니다.
+Connected Bubbles는 kmsg의 양방향 message bridge 역할을 나타내는 공식 symbol system입니다. 두 말풍선 loop와 반대 방향의 tail, 중앙 open bridge를 모든 variant에서 동일하게 유지합니다.
 
 ## 재생성
 
@@ -34,7 +34,7 @@ PNG rendering에는 `rsvg-convert`가 필요합니다. macOS Homebrew 기준 설
 - 16–24px에서는 `kmsg-symbol-small-ink.svg` geometry를 사용합니다.
 - light background 위 yellow text는 사용하지 않습니다. Text accent는 `#756600`을 사용합니다.
 - gradient, shadow, outline effect, mascot face를 추가하지 않습니다.
-- symbol의 tail 방향과 interlock 순서를 변경하지 않습니다.
+- symbol의 tail 방향과 두 loop 사이 bridge offset을 변경하지 않습니다.
 - Release SVG는 `<text>`와 외부 image·font reference 없이 path로만 배포합니다.
 
 ## 비제휴 고지

@@ -1,14 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-<defs>
-  <mask id="reverse-left-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-    <rect width="1024" height="1024" fill="#FFFFFF"/>
-    <circle cx="512" cy="592" r="68" fill="#000000"/>
-  </mask>
-  <mask id="reverse-right-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
-    <rect width="1024" height="1024" fill="#FFFFFF"/>
-    <circle cx="556" cy="424" r="68" fill="#000000"/>
-  </mask>
-</defs>
-<path d="M552 416H712C750 416 786 436 806 468L872 392L824 500V608C824 670 774 720 712 720H552C490 720 440 670 440 608V528C440 466 490 416 552 416Z" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round" stroke-linejoin="round" mask="url(#reverse-right-mask)"/>
-<path d="M312 304H472C534 304 584 354 584 416V496C584 558 534 608 472 608H352L240 712L264 600C226 580 200 540 200 496V416C200 354 250 304 312 304Z" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round" stroke-linejoin="round" mask="url(#reverse-left-mask)"/>
+<g transform="translate(20 46) scale(.86)">
+  <g transform="translate(90 50)">
+    <path d="M552 416H712C750 416 786 436 806 468L872 392L824 500V608C824 670 774 720 712 720H552C490 720 440 670 440 608V528C440 466 490 416 552 416Z" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M312 304H472C534 304 584 354 584 416V496C584 558 534 608 472 608H352L240 712L264 600C226 580 200 540 200 496V416C200 354 250 304 312 304Z" fill="none" stroke="#FFFFFF" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
 </svg>

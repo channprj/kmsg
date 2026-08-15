@@ -53,6 +53,21 @@ test("brand SVG sources keep the approved palette and flat construction", async 
   assert.doesNotMatch(combined, /<filter\b|<linearGradient\b|<radialGradient\b/)
 })
 
+test("speech loops use the approved open-bridge geometry without masks", async () => {
+  const [master, small] = await Promise.all([
+    readFile(asset("source", "kmsg-symbol-mono.svg"), "utf8"),
+    readFile(asset("source", "kmsg-symbol-small-ink.svg"), "utf8"),
+  ])
+
+  for (const svg of [master, small]) {
+    assert.doesNotMatch(svg, /<mask\b|<circle\b/)
+    assert.match(svg, /translate\(20 46\) scale\(\.86\)/)
+    assert.match(svg, /translate\(90 50\)/)
+  }
+  assert.match(master, /stroke-width="96"/)
+  assert.match(small, /stroke-width="104"/)
+})
+
 const fixedPngs = new Map([
   ["kmsg-symbol-primary-1024.png", [1024, 1024]],
   ["kmsg-symbol-mono-1024.png", [1024, 1024]],
