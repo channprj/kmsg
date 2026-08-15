@@ -40,7 +40,11 @@ test("React build emits every canonical page and compatibility artifact", async 
   ]
   const assets = [
     "assets/favicon.svg",
-    "assets/kmsg-logo.jpg",
+    "assets/brand/png/kmsg-app-icon-32.png",
+    "assets/brand/png/kmsg-app-icon-64.png",
+    "assets/brand/png/kmsg-app-icon-192.png",
+    "assets/brand/png/kmsg-app-icon-512.png",
+    "assets/brand/png/kmsg-social-preview-1200x630.png",
     "assets/kmsg-workspace.webp",
     "assets/demo1.mp4",
     "assets/demo-captions.vtt",
@@ -64,7 +68,10 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.match(home, /data-footer-wordmark="true"/)
   assert.doesNotMatch(home, /<select\b/)
   assert.match(home, /<meta name="twitter:card" content="summary_large_image"/)
-  assert.match(home, /<meta property="og:image" content="https:\/\/channprj\.github\.io\/kmsg\/assets\/kmsg-logo\.jpg"/)
+  assert.match(home, /<meta property="og:image" content="https:\/\/channprj\.github\.io\/kmsg\/assets\/brand\/png\/kmsg-social-preview-1200x630\.png"/)
+  assert.match(home, /<meta property="og:image:type" content="image\/png"/)
+  assert.match(home, /<meta property="og:image:width" content="1200"/)
+  assert.match(home, /<meta property="og:image:height" content="630"/)
   assert.match(docs, /data-code-copy/)
   assert.match(docs, /role="region"/)
   assert.match(
@@ -108,5 +115,20 @@ test("redirects, 404, and discovery files preserve public contracts", async () =
   assert.equal((sitemap.match(/<url>/g) ?? []).length, 32)
   assert.match(llm, /Current version: 1\.260729\.0/)
   assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\//)
-  assert.equal(JSON.parse(manifest).start_url, "/kmsg/")
+  const webmanifest = JSON.parse(manifest)
+  assert.equal(webmanifest.start_url, "/kmsg/")
+  assert.deepEqual(webmanifest.icons, [
+    {
+      src: "/kmsg/assets/brand/png/kmsg-app-icon-192.png",
+      sizes: "192x192",
+      type: "image/png",
+      purpose: "any",
+    },
+    {
+      src: "/kmsg/assets/brand/png/kmsg-app-icon-512.png",
+      sizes: "512x512",
+      type: "image/png",
+      purpose: "any",
+    },
+  ])
 })
