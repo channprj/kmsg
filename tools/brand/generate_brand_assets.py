@@ -303,19 +303,6 @@ def review_board_svg(
     return svg_document("0 0 1280 1024", content, width=1280, height=1024)
 
 
-def legacy_logo_path(temp_dir: Path) -> Path:
-    current = ROOT / "assets" / "kmsg-logo.jpg"
-    if current.exists():
-        return current
-    fallback = temp_dir / "kmsg-logo-legacy.jpg"
-    fallback.write_bytes(
-        subprocess.check_output(
-            ["git", "show", "origin/main:assets/kmsg-logo.jpg"], cwd=ROOT
-        )
-    )
-    return fallback
-
-
 def size_board_svg(samples: dict[int, Path], legacy_32: Path) -> str:
     actual_items: list[str] = []
     x_positions = [180, 360, 540, 760, 1020]
@@ -527,14 +514,9 @@ def main() -> None:
             render(SOURCE_DIR / "kmsg-app-icon.svg", sample, width=size, height=size)
             samples[size] = sample
 
-        magick = shutil.which("magick")
-        if magick is None:
-            raise RuntimeError("ImageMagick `magick` is required for legacy comparison.")
-        legacy_32 = temp_dir / "legacy-32.png"
-        subprocess.run(
-            [magick, str(legacy_logo_path(temp_dir)), "-resize", "32x32!", str(legacy_32)],
-            check=True,
-        )
+        legacy_32 = ROOT / "assets" / "brand" / "reference" / "kmsg-legacy-32.png"
+        if not legacy_32.exists():
+            raise FileNotFoundError(f"Legacy comparison thumbnail not found: {legacy_32}")
         size_svg = temp_dir / "size-review.svg"
         size_svg.write_text(size_board_svg(samples, legacy_32))
         size_output = REVIEW_DIR / "kmsg-connected-bubbles-size-test-1280x1024.png"

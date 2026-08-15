@@ -109,3 +109,14 @@ test("Telegram review boards use the requested 1280 by 1024 surface", async () =
     )
   }
 })
+
+test("review generation keeps a standalone legacy comparator without a JPEG runtime reference", async () => {
+  const [generator, legacy] = await Promise.all([
+    readFile(join(repoDir, "tools", "brand", "generate_brand_assets.py"), "utf8"),
+    readFile(asset("reference", "kmsg-legacy-32.png")),
+  ])
+  const header = pngHeader(legacy)
+
+  assert.doesNotMatch(generator, /assets\/kmsg-logo\.jpg/)
+  assert.deepEqual([header.width, header.height], [32, 32])
+})

@@ -26,6 +26,7 @@ PNG rendering에는 `rsvg-convert`가 필요합니다. macOS Homebrew 기준 설
 - `kmsg-signature-light.svg`: light background용 horizontal signature
 - `kmsg-signature-dark.svg`: dark background용 horizontal signature
 - `kmsg-social-preview-1200x630.*`: Open Graph와 social card
+- `reference/kmsg-legacy-32.png`: size-test board 전용 legacy 32px comparator
 
 ## 사용 규칙
 
