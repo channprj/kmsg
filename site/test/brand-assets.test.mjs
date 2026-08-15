@@ -36,7 +36,10 @@ test("brand SVG sources are self-contained vector assets", async () => {
     const svg = await readFile(asset("source", name), "utf8")
     assert.match(svg, /<svg\b/)
     assert.match(svg, /viewBox="[^"]+"/)
-    assert.doesNotMatch(svg, /<text\b|<image\b|https?:\/\/|data:/)
+    assert.doesNotMatch(
+      svg,
+      /<text\b|<image\b|<style\b|(?:href|src)="(?:https?:\/\/|data:)|url\((?:https?:\/\/|data:)/,
+    )
   }
 })
 
