@@ -221,6 +221,7 @@
         "시스템 설정에서 손쉬운 사용 권한 허용",
         "dry-run으로 첫 전송 확인"
       ],
+      "updateDescription": "kmsg update는 필요하면 Homebrew를 설치하고, 포뮬러를 설치하거나 업그레이드한 뒤, 직접 설치한 바이너리를 Homebrew 명령으로 연결합니다.",
       "releaseAction": "최신 릴리즈",
       "disclaimer": "Kakao Corp.와 무관한 독립 오픈소스 프로젝트입니다.",
       "principles": [
@@ -336,6 +337,7 @@
         "Grant Accessibility permission in System Settings",
         "Confirm your first send with dry-run"
       ],
+      "updateDescription": "kmsg update installs Homebrew when it is missing, installs or upgrades the formula, and links a directly installed binary to the Homebrew-managed command.",
       "releaseAction": "Latest release",
       "disclaimer": "Independent open source. Not affiliated with Kakao Corp.",
       "principles": [
@@ -451,6 +453,7 @@
         "システム設定でアクセシビリティ権限を許可",
         "dry-runで最初の送信を確認"
       ],
+      "updateDescription": "kmsg update は必要に応じて Homebrew をインストールし、フォーミュラをインストールまたはアップグレードし、直接インストールしたバイナリを Homebrew 管理のコマンドにリンクします。",
       "releaseAction": "最新リリース",
       "disclaimer": "Kakao Corp.とは無関係の独立したオープンソースです。",
       "principles": [
@@ -566,6 +569,7 @@
         "在系统设置中授予辅助功能权限",
         "用dry-run确认首次发送"
       ],
+      "updateDescription": "kmsg update 会在需要时安装 Homebrew，安装或升级 formula，并将直接安装的二进制文件链接到由 Homebrew 管理的命令。",
       "releaseAction": "最新版本",
       "disclaimer": "独立开源项目，与Kakao Corp.无隶属关系。",
       "principles": [

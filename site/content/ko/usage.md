@@ -16,12 +16,13 @@
 brew install channprj/tap/kmsg
 ```
 
-업데이트는 다음과 같이 진행합니다.
+업데이트는 다음 명령으로 진행합니다.
 
 ```bash
-brew update
-brew upgrade kmsg
+kmsg update
 ```
+
+`kmsg update`는 필요하면 Homebrew를 설치하고, 포뮬러를 설치하거나 업그레이드한 뒤, 직접 설치한 바이너리를 Homebrew 명령으로 연결합니다.
 
 ### 직접 다운로드
 
@@ -35,6 +36,8 @@ curl -fL \
 chmod +x ~/.local/bin/kmsg
 kmsg --version
 ```
+
+직접 받은 바이너리도 `kmsg update`를 실행하면 Homebrew 설치본으로 전환됩니다.
 
 ### 소스에서 빌드
 
@@ -98,6 +101,7 @@ kmsg auth login --auto
 | `kmsg inspect` | KakaoTalk AX 계층 구조 조사 |
 | `kmsg cache` | self-healing AX 경로 캐시 관리 |
 | `kmsg mcp-server` | 네이티브 stdio MCP 서버 실행 |
+| `kmsg update` | Homebrew 릴리스로 kmsg 업데이트 |
 
 ### 안전한 읽기
 

@@ -6,6 +6,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 
 import { HomePage } from "~/components/home-page"
+import { HOME_CONTENT } from "~/content/home"
 
 const EXPECTED_MORE_STORIES_URL =
   "https://www.google.com/search?q=kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1+OR+kmsg+%EC%B9%B4%ED%86%A1+OR+kmsg+%EC%B9%B4%EC%B9%B4%EC%98%A4"
@@ -183,6 +184,18 @@ describe("localized React home", () => {
     )
     expect(discoveryLinks[0]?.parentElement).toHaveClass("justify-center")
   })
+
+  it.each(["ko", "en", "jp", "cn"] as const)(
+    "exposes the install and self-update commands for %s",
+    (locale) => {
+      vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })))
+      render(<HomePage locale={locale} />)
+
+      expect(screen.getByText("brew install channprj/tap/kmsg")).toBeVisible()
+      expect(screen.getByText("kmsg update")).toBeVisible()
+      expect(screen.getByText(HOME_CONTENT[locale].updateDescription)).toBeVisible()
+    },
+  )
 
   it.each([
     ["ko", "더 많은 사례 보기"],

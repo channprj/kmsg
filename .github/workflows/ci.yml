@@ -31,7 +31,7 @@ jobs:
         run: .build/debug/kmsg --version
 
       - name: Run release automation tests
-        run: python3 -m unittest tests.test_sync_homebrew_tap tests.test_release_workflow
+        run: python3 -m unittest tests.test_sync_homebrew_tap tests.test_release_workflow tests.test_update_command
 
       - name: Validate OpenClaw MCP server script
         run: python3 -m py_compile tools/kmsg-mcp.py tools/sync_homebrew_tap.py

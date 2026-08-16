@@ -19,9 +19,10 @@ brew install channprj/tap/kmsg
 アップデート:
 
 ```bash
-brew update
-brew upgrade kmsg
+kmsg update
 ```
+
+`kmsg update`は必要に応じてHomebrewをインストールし、フォーミュラをインストールまたはアップグレードし、直接インストールしたバイナリをHomebrew管理のコマンドにリンクします。
 
 ### ソースからビルド
 
@@ -83,6 +84,7 @@ kmsg auth login --auto
 | `kmsg inspect` | AX階層を調査 |
 | `kmsg cache` | AXパスキャッシュを管理 |
 | `kmsg mcp-server` | ネイティブstdio MCPサーバーを起動 |
+| `kmsg update` | Homebrewのリリースへkmsgを更新 |
 
 ## 安全な読み取り
 

@@ -57,6 +57,15 @@ Homebrew is the primary installation path:
 brew install channprj/tap/kmsg
 ```
 
+Update an existing installation with:
+
+```bash
+kmsg update
+```
+
+`kmsg update` installs Homebrew when it is missing, installs or upgrades the
+formula, and links a directly installed binary to the Homebrew-managed command.
+
 Direct-download and source-build instructions are in [USAGE.md](USAGE.md#installation).
 
 ## Quick start
