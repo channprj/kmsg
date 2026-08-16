@@ -151,6 +151,15 @@ class UpdateCommandTests(unittest.TestCase):
         self.assertFalse(target.is_symlink())
         self.assertTrue(target.is_file())
 
+    def test_cancelled_formula_operation_is_reported_as_cancellation(self) -> None:
+        target = self.install_direct_binary()
+
+        result = self.run_update(target, FAKE_BREW_PACKAGE_STATUS="130")
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("cancelled", result.stderr)
+        self.assertFalse(target.is_symlink())
+
     def test_root_help_lists_the_update_command(self) -> None:
         result = subprocess.run(
             [str(self.binary), "--help"],

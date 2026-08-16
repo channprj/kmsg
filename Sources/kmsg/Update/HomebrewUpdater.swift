@@ -16,6 +16,10 @@ enum SelfUpdateError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .commandFailed(command, status, details):
+            // 130 is the shell convention for an interrupted command.
+            guard status != 130 else {
+                return "`\(command)` was cancelled. Run `kmsg update` again when you are ready."
+            }
             let trimmed = details.trimmingCharacters(in: .whitespacesAndNewlines)
             let suffix = trimmed.isEmpty ? "" : "\n\(trimmed)"
             return "`\(command)` exited with code \(status).\(suffix)"
