@@ -141,6 +141,19 @@ class UpdateCommandTests(unittest.TestCase):
         )
         self.assertIn(str(target), result.stdout)
 
+    def test_binary_already_managed_by_homebrew_is_left_alone(self) -> None:
+        homebrew_binary = self.brew_prefix / "bin" / "kmsg"
+        shutil.copy2(self.binary, homebrew_binary)
+        target = self.root / "local" / "bin" / "kmsg"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.symlink_to(homebrew_binary)
+
+        result = self.run_update(target)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(os.readlink(target), str(homebrew_binary))
+        self.assertIn(str(homebrew_binary), result.stdout)
+
     def test_failed_formula_operation_keeps_the_current_binary(self) -> None:
         target = self.install_direct_binary()
 
