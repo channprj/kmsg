@@ -19,9 +19,10 @@ brew install channprj/tap/kmsg
 更新:
 
 ```bash
-brew update
-brew upgrade kmsg
+kmsg update
 ```
+
+`kmsg update`会在需要时安装Homebrew，安装或升级formula，并将直接安装的二进制文件链接到由Homebrew管理的命令。
 
 ### 从源码构建
 
@@ -83,6 +84,7 @@ kmsg auth login --auto
 | `kmsg inspect` | 检查AX层级 |
 | `kmsg cache` | 管理AX路径缓存 |
 | `kmsg mcp-server` | 启动原生stdio MCP服务器 |
+| `kmsg update` | 将kmsg更新到Homebrew发布版本 |
 
 ## 安全读取
 

@@ -83,6 +83,15 @@ Homebrew 설치를 권장합니다.
 brew install channprj/tap/kmsg
 ```
 
+이미 설치했다면 다음 명령으로 업데이트합니다.
+
+```bash
+kmsg update
+```
+
+`kmsg update`는 필요하면 Homebrew를 설치하고, 포뮬러를 설치하거나 업그레이드한
+뒤, 직접 설치한 바이너리를 Homebrew 명령으로 연결합니다.
+
 직접 다운로드와 소스 빌드 방법은 [USAGE.md](USAGE.md#installation)를 참고하세요.
 
 ## 빠른 시작

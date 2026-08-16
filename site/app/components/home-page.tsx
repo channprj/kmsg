@@ -335,15 +335,25 @@ export function HomePage({ locale }: { locale: LocaleId }) {
                   </li>
                 ))}
               </ol>
-              <div className="mt-6 flex items-center gap-3 rounded-xl bg-(--terminal) p-4 text-white">
-                <code className="min-w-0 flex-1 overflow-x-auto">brew install channprj/tap/kmsg</code>
-                <CopyButton
-                  copiedLabel={ui.copied}
-                  failedLabel={ui.copyFailed}
-                  idleLabel={`${ui.copy}: brew install channprj/tap/kmsg`}
-                  text="brew install channprj/tap/kmsg"
-                />
-              </div>
+              {[
+                { command: "brew install channprj/tap/kmsg" },
+                { command: "kmsg update", description: copy.updateDescription },
+              ].map(({ command, description }) => (
+                <div className="mt-6" key={command}>
+                  <div className="flex items-center gap-3 rounded-xl bg-(--terminal) p-4 text-white">
+                    <code className="min-w-0 flex-1 overflow-x-auto">{command}</code>
+                    <CopyButton
+                      copiedLabel={ui.copied}
+                      failedLabel={ui.copyFailed}
+                      idleLabel={`${ui.copy}: ${command}`}
+                      text={command}
+                    />
+                  </div>
+                  {description ? (
+                    <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+                  ) : null}
+                </div>
+              ))}
             </CardContent>
             <CardFooter>
               <a className={buttonVariants({ variant: "outline" })} href="https://github.com/channprj/kmsg/releases">

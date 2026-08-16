@@ -21,12 +21,15 @@ brew install channprj/tap/kmsg
 The tap publishes `kmsg` for the latest release and retains exact-version
 formulae for the ten most recent published releases.
 
-Upgrade the current formula with:
+Update an existing installation with:
 
 ```bash
-brew update
-brew upgrade kmsg
+kmsg update
 ```
+
+`kmsg update` installs Homebrew when it is missing, installs or upgrades the
+formula, and links a directly installed binary to the Homebrew-managed command.
+The plain Homebrew equivalent is `brew update` followed by `brew upgrade kmsg`.
 
 ### Direct download
 
@@ -46,6 +49,8 @@ Ensure `~/.local/bin` is in `PATH`, then verify the binary:
 ```bash
 kmsg --version
 ```
+
+Run `kmsg update` later to move this binary onto the Homebrew-managed release.
 
 ### Build from source
 
@@ -350,6 +355,27 @@ For send tools, `confirm=false` or an omitted `confirm` sends immediately.
 can request approval and call again.
 
 See [docs/openclaw.md](docs/openclaw.md) for complete integration examples.
+
+### `update`
+
+```bash
+kmsg update
+```
+
+Moves the current installation onto the Homebrew-managed release:
+
+1. Finds `brew` on `PATH`, at `/opt/homebrew/bin/brew`, or at
+   `/usr/local/bin/brew`, and runs Homebrew's official installer when none of
+   them exists.
+2. Runs `brew install` or `brew upgrade` for `channprj/tap/kmsg`.
+3. Verifies the resulting binary by running it with `--version`.
+4. Replaces a directly installed `kmsg` with a link to the verified binary, so
+   the path the shell already resolved keeps working. A build product under
+   `.build` is never replaced.
+
+Progress goes to `stderr` and the final summary to `stdout`. Homebrew or `sudo`
+may ask for confirmation. The command needs no Accessibility permission and
+never edits shell startup files.
 
 ## JSON output
 

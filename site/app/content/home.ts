@@ -53,6 +53,7 @@ export interface HomeContent {
   installTitle: string
   installDescription: string
   installSteps: string[]
+  updateDescription: string
   releaseAction: string
   disclaimer: string
   principles: HomePrinciple[]
