@@ -50,7 +50,16 @@ test("brand SVG sources keep the approved palette and flat construction", async 
   const combined = sources.join("\n")
   assert.match(combined, /#FEE500/)
   assert.match(combined, /#19170D/)
-  assert.doesNotMatch(combined, /<filter\b|<linearGradient\b|<radialGradient\b/)
+  // App icon and social preview embed gradient+filter for polish;
+  // all other source SVGs must stay flat.
+  for (const [i, name] of svgFiles.entries()) {
+    if (name === "kmsg-app-icon.svg" || name === "kmsg-social-preview-1200x630.svg") continue
+    assert.doesNotMatch(
+      sources[i],
+      /<filter\b|<linearGradient\b|<radialGradient\b/,
+      `${name} must stay flat`,
+    )
+  }
 })
 
 test("speech loops use the approved open-bridge geometry without masks", async () => {

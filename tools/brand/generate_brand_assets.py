@@ -84,9 +84,26 @@ def symbol_markup(
 
 
 def app_icon_markup(*, prefix: str, transform: str | None = None) -> str:
+    """App icon: gradient bg + enlarged symbol + drop shadow for polished look."""
     content = f"""
-<rect x="32" y="32" width="960" height="960" rx="216" fill="{YELLOW}"/>
-{symbol_markup(INK, prefix=f"{prefix}-symbol")}""".strip()
+<defs>
+  <linearGradient id="app-bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="{YELLOW}"/>
+    <stop offset="100%" stop-color="#EBC400"/>
+  </linearGradient>
+  <filter id="bubble-shadow" x="-10%" y="-10%" width="130%" height="130%">
+    <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#A08000" flood-opacity="0.28"/>
+  </filter>
+</defs>
+<rect x="32" y="32" width="960" height="960" rx="216" fill="url(#app-bg)"/>
+<g filter="url(#bubble-shadow)">
+  <g transform="translate(22 16) scale(.88)">
+    <g transform="translate(90 50)">
+      <path d="{RIGHT_PATH}" fill="none" stroke="{INK}" stroke-width="{STROKE}" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <path d="{LEFT_PATH}" fill="none" stroke="{INK}" stroke-width="{STROKE}" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</g>""".strip()
     if transform:
         return f'<g transform="{transform}">\n{content}\n</g>'
     return content
@@ -291,7 +308,7 @@ def review_board_svg(
 <text x="550" y="820" fill="{MUTED}" font-family="Arial, sans-serif" font-size="15">Two directional speech loops form one bridge.</text>
 <text x="550" y="852" fill="{INK}" font-family="Arial, sans-serif" font-size="18" font-weight="700">Priority surfaces</text>
 <text x="550" y="886" fill="{MUTED}" font-family="Arial, sans-serif" font-size="15">GitHub README · project website · 32px header</text>
-<text x="550" y="922" fill="{MUTED}" font-family="Arial, sans-serif" font-size="13">Flat vector · no gradient · no shadow · no mascot</text>"""
+<text x="550" y="922" fill="{MUTED}" font-family="Arial, sans-serif" font-size="13">Polished app icon · gradient depth · soft shadow · no mascot</text>"""
     return svg_document("0 0 1280 1024", content, width=1280, height=1024)
 
 
