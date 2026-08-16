@@ -189,6 +189,27 @@ source documents and repository landing pages do not disagree.
 Tests assert that the localized homepage exposes both the installation and
 self-update commands.
 
+## Implementation notes
+
+Two decisions differ from the plan above and supersede it.
+
+**No Swift test target.** The repository's toolchain is the macOS Command Line
+Tools, which ship neither `XCTest` nor `Testing`, so `swift test` cannot run and
+in-process dependency injection would have no consumer. The updater is verified
+end to end instead: `tests/test_update_command.py` puts a fake `brew` executable
+first on `PATH`, runs the built binary, and asserts the exact Homebrew argument
+lists, the install-versus-upgrade choice, direct-binary replacement, `.build`
+exclusion, cancellation, failure propagation, and help text. The Homebrew
+installer and the privileged replacement must never run for real during tests,
+so they are covered by source assertions in the same file. Verification is
+`swift build`, `swift build -c release`, the Python suite, and the website's
+build, typecheck, and test scripts.
+
+**`UpdateCommand` is synchronous.** The root command is a `ParsableCommand`, and
+ArgumentParser cannot dispatch an `AsyncParsableCommand` from a synchronous
+root. Nothing in the update path is asynchronous, so the command conforms to
+`ParsableCommand`.
+
 ## Scope boundaries
 
 - No release tag or version bump is part of this change.
