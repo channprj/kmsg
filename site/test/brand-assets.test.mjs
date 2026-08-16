@@ -70,8 +70,8 @@ test("speech loops use the approved open-bridge geometry without masks", async (
 
   for (const svg of [master, small]) {
     assert.doesNotMatch(svg, /<mask\b|<circle\b/)
-    assert.match(svg, /translate\(20 46\) scale\(\.86\)/)
-    assert.match(svg, /translate\(90 50\)/)
+    // Both bubbles use arc (A) commands with radius 140 for clean rounded rects
+    assert.ok((svg.match(/A140 140 /g) ?? []).length >= 4)
   }
   assert.match(master, /stroke-width="96"/)
   assert.match(small, /stroke-width="104"/)

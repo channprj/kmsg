@@ -14,10 +14,8 @@
 <rect x="32" y="32" width="960" height="960" rx="216" fill="url(#app-bg)"/>
 <g filter="url(#bubble-shadow)">
   <g transform="translate(22 16) scale(.88)">
-    <g transform="translate(90 50)">
-      <path d="M552 416H712C750 416 786 436 806 468L872 392L824 500V608C824 670 774 720 712 720H552C490 720 440 670 440 608V528C440 466 490 416 552 416Z" fill="none" stroke="#19170D" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-    <path d="M312 304H472C534 304 584 354 584 416V496C584 558 534 608 472 608H352L240 712L264 600C226 580 200 540 200 496V416C200 354 250 304 312 304Z" fill="none" stroke="#19170D" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M312 292H460A140 140 0 0 1 600 432V512A140 140 0 0 1 460 652H360L240 732L280 652H312A140 140 0 0 1 172 512V432A140 140 0 0 1 312 292Z" fill="none" stroke="#19170D" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M564 292H712A140 140 0 0 1 852 432V512A140 140 0 0 1 712 652H664L784 732L744 652H564A140 140 0 0 1 424 512V432A140 140 0 0 1 564 292Z" fill="none" stroke="#19170D" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </g>
 </g>

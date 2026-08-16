@@ -42,13 +42,14 @@ MUTED = "#68675F"
 STROKE = 96
 SMALL_STROKE = 104
 LEFT_PATH = (
-    "M312 304H472C534 304 584 354 584 416V496C584 558 534 608 472 608"
-    "H352L240 712L264 600C226 580 200 540 200 496V416C200 354 250 304 312 304Z"
+    "M312 292H460A140 140 0 0 1 600 432V512A140 140 0 0 1 460 "
+    "652H360L240 732L280 652H312A140 140 0 0 1 172 512V432A140 "
+    "140 0 0 1 312 292Z"
 )
 RIGHT_PATH = (
-    "M552 416H712C750 416 786 436 806 468L872 392L824 500V608"
-    "C824 670 774 720 712 720H552C490 720 440 670 440 608V528"
-    "C440 466 490 416 552 416Z"
+    "M564 292H712A140 140 0 0 1 852 432V512A140 140 0 0 1 712 "
+    "652H664L784 732L744 652H564A140 140 0 0 1 424 512V432A140 "
+    "140 0 0 1 564 292Z"
 )
 
 SVG_HEADER = '<svg xmlns="http://www.w3.org/2000/svg"'
@@ -71,13 +72,7 @@ def symbol_markup(
     transform: str | None = None,
 ) -> str:
     _ = prefix
-    inner = f"""
-<g transform="translate(20 46) scale(.86)">
-  <g transform="translate(90 50)">
-    <path d="{RIGHT_PATH}" fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round"/>
-  </g>
-  <path d="{LEFT_PATH}" fill="none" stroke="{color}" stroke-width="{stroke}" stroke-linecap="round" stroke-linejoin="round"/>
-</g>""".strip()
+    inner = f"<path d=\"{LEFT_PATH}\" fill=\"none\" stroke=\"{color}\" stroke-width=\"{stroke}\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n<path d=\"{RIGHT_PATH}\" fill=\"none\" stroke=\"{color}\" stroke-width=\"{stroke}\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>"
     if transform:
         return f'<g transform="{transform}">\n{inner}\n</g>'
     return inner
@@ -98,10 +93,8 @@ def app_icon_markup(*, prefix: str, transform: str | None = None) -> str:
 <rect x="32" y="32" width="960" height="960" rx="216" fill="url(#app-bg)"/>
 <g filter="url(#bubble-shadow)">
   <g transform="translate(22 16) scale(.88)">
-    <g transform="translate(90 50)">
-      <path d="{RIGHT_PATH}" fill="none" stroke="{INK}" stroke-width="{STROKE}" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
     <path d="{LEFT_PATH}" fill="none" stroke="{INK}" stroke-width="{STROKE}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="{RIGHT_PATH}" fill="none" stroke="{INK}" stroke-width="{STROKE}" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
 </g>""".strip()
     if transform:
@@ -190,7 +183,7 @@ def signature_markup(
     symbol = symbol_markup(
         symbol_color,
         prefix=f"{prefix}-mark",
-        transform="translate(-91 -121) scale(.868)",
+        transform="translate(-110 -176) scale(.82)",
     )
     content = f"""
 {symbol}
