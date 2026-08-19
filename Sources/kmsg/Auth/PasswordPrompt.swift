@@ -33,6 +33,14 @@ enum PasswordPrompt {
         )
     }
 
+    static func promptForPassword(_ message: String) throws -> String {
+        let password = try promptPassword(message)
+        guard !password.isEmpty else {
+            throw ValidationError("KakaoTalk password is required.")
+        }
+        return password
+    }
+
     private static func prompt(_ message: String) -> String? {
         FileHandle.standardOutput.write(Data(message.utf8))
         fflush(stdout)

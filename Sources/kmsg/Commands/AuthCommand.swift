@@ -48,6 +48,8 @@ struct AuthLoginCommand: ParsableCommand {
             } else {
                 print("KakaoTalk is already logged in. Credentials were refreshed.")
             }
+        case .unlocked:
+            print("KakaoTalk lock screen unlocked.")
         case .loggedIn:
             print("KakaoTalk login completed.")
             print("Credentials saved to \(AuthPaths.credentialsURL.path)")
