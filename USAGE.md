@@ -119,18 +119,19 @@ key are stored separately with owner-only filesystem permissions:
 
 ### Lock mode
 
-When KakaoTalk's lock screen is showing, commands unlock it before continuing.
-The lock passcode is set inside KakaoTalk and is separate from the account
-password, so `kmsg` prompts for it once and then stores it encrypted next to
-the account credentials.
+When KakaoTalk's lock screen is showing, commands unlock it before continuing,
+then carry on with the original request.
 
-Only one unlock attempt is made per command, because KakaoTalk signs the
-account out after repeated wrong passcodes. If the passcode is rejected, the
-stored value is discarded and the next command prompts for it again.
+The passcode comes from what is already stored: the passcode remembered from an
+earlier unlock, otherwise the account password saved by `kmsg auth login`. `kmsg`
+prompts only when neither is available, and remembers whatever worked.
+
+Only one unlock attempt is made per command, because KakaoTalk signs the account
+out after repeated wrong passcodes. A saved account password the lock screen
+refuses is not tried again — run `kmsg auth login` to save the current one.
 
 Callers without a terminal — `kmsg mcp-server`, `kmsg watch`, cron jobs — cannot
-prompt. Unlock once from a terminal so the passcode is saved, and they unlock on
-their own from then on.
+prompt, so they depend on those stored credentials.
 
 ## Command reference
 
