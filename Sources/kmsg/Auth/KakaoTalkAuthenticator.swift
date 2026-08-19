@@ -19,6 +19,7 @@ enum AuthenticationError: Error, LocalizedError {
     case loginFailed
     case lockScreenUnlockFailed
     case lockPasswordUnavailable
+    case lockRejectedAccountPassword
 
     var errorDescription: String? {
         switch self {
@@ -33,7 +34,9 @@ enum AuthenticationError: Error, LocalizedError {
         case .lockScreenUnlockFailed:
             return "KakaoTalk lock screen could not be unlocked. The saved lock password was discarded; kmsg will ask for it again on the next run."
         case .lockPasswordUnavailable:
-            return "KakaoTalk is locked and no lock password is saved. Run `kmsg auth login --auto` in a terminal to unlock and save it."
+            return "KakaoTalk is locked and no password is saved. Run `kmsg auth login --auto` in a terminal to unlock and save it."
+        case .lockRejectedAccountPassword:
+            return "KakaoTalk rejected the saved account password at the lock screen. Run `kmsg auth login` to save your current password, then retry."
         }
     }
 }
@@ -48,6 +51,15 @@ private struct LockScreen {
     let window: UIElement
     let passwordField: UIElement
     let confirmButton: UIElement?
+}
+
+private struct LockPasscode {
+    let value: String
+    /// Already persisted as the lock passcode, so a success needs no further write.
+    let isRemembered: Bool
+    /// Came from the saved account credentials. A rejection has to be recorded so the
+    /// next run does not replay it and spend another of KakaoTalk's allowed attempts.
+    let isAccountPassword: Bool
 }
 
 private struct PostLoginAcknowledgement {
@@ -623,15 +635,7 @@ final class KakaoTalkAuthenticator {
         runner.log("auth: lock screen detected title='\(lock.window.title ?? "")'")
         print("KakaoTalk is locked. Unlocking...")
 
-        let storedPassword = store.loadLockPassword()
-        if storedPassword == nil {
-            // Background callers (mcp-server, watch, cron) have no terminal to read a
-            // secret from, so say what to run instead of failing on an empty read.
-            guard PasswordPrompt.canPrompt else {
-                throw AuthenticationError.lockPasswordUnavailable
-            }
-        }
-        let password = try storedPassword ?? PasswordPrompt.promptForPassword("KakaoTalk lock password: ")
+        let passcode = try resolveLockPasscode(from: store)
         kakao.activate()
 
         guard lock.passwordField.isFocused ||
@@ -643,8 +647,17 @@ final class KakaoTalkAuthenticator {
         // Type real key events: KakaoTalk keeps the confirm button disabled until it
         // observes input, so an AXValue-only write leaves nothing to submit.
         runner.pressCommandA()
-        runner.typeTextDirect(password, label: "auth lock password")
+        runner.typeTextDirect(passcode.value, label: "auth lock passcode")
         Thread.sleep(forTimeInterval: 0.1)
+
+        // The field echoes its contents over the accessibility API, so confirm the
+        // keystrokes landed intact. A dropped character would spend a real attempt and
+        // look exactly like a wrong password.
+        let typedValue = lock.passwordField.stringValue ?? ""
+        if typedValue != passcode.value {
+            runner.log("auth lock passcode: typed value did not match input; repairing before submit")
+            _ = setTextWithoutReflection(passcode.value, on: lock.passwordField, label: "auth lock passcode repair")
+        }
 
         if let confirmButton = lock.confirmButton,
            confirmButton.isEnabled,
@@ -665,16 +678,20 @@ final class KakaoTalkAuthenticator {
         guard released else {
             // The lock field is a plain AXTextField that echoes its value over the
             // accessibility API, so a rejected password must not be left on screen.
-            clearFieldBestEffort(lock.passwordField, label: "auth lock password clear")
-            // Drop the stored passcode so the next run prompts instead of replaying a
-            // password KakaoTalk just refused.
+            clearFieldBestEffort(lock.passwordField, label: "auth lock passcode clear")
+            // Drop the stored passcode so the next run does not replay a value KakaoTalk
+            // just refused.
             try? store.clearLockPassword()
+            if passcode.isAccountPassword {
+                try? store.markAccountPasswordRejectedByLock()
+                throw AuthenticationError.lockRejectedAccountPassword
+            }
             throw AuthenticationError.lockScreenUnlockFailed
         }
 
         runner.log("auth: lock screen released")
-        if storedPassword == nil {
-            try? store.saveLockPassword(password)
+        if !passcode.isRemembered {
+            try? store.saveLockPassword(passcode.value)
         }
 
         // The command that triggered the unlock runs next, so let KakaoTalk finish
@@ -688,6 +705,33 @@ final class KakaoTalkAuthenticator {
             kakao.chatListWindow != nil
         }
         return true
+    }
+
+    /// Prefer secrets already on disk so an unattended run can unlock on its own; only
+    /// fall back to asking when nothing stored is usable.
+    private func resolveLockPasscode(from store: CredentialStore) throws -> LockPasscode {
+        if let savedPasscode = store.loadLockPassword() {
+            runner.log("auth: unlocking with the saved lock passcode")
+            return LockPasscode(value: savedPasscode, isRemembered: true, isAccountPassword: false)
+        }
+
+        if store.isAccountPasswordRejectedByLock() {
+            runner.log("auth: skipping the saved account password; the lock screen refused it before")
+        } else if let account = try? store.loadCredentials() {
+            runner.log("auth: unlocking with the saved account password")
+            return LockPasscode(value: account.password, isRemembered: false, isAccountPassword: true)
+        }
+
+        // Background callers (mcp-server, watch, cron) have no terminal to read a secret
+        // from, so say what to run instead of failing on an empty read.
+        guard PasswordPrompt.canPrompt else {
+            throw AuthenticationError.lockPasswordUnavailable
+        }
+        return LockPasscode(
+            value: try PasswordPrompt.promptForPassword("KakaoTalk lock password: "),
+            isRemembered: false,
+            isAccountPassword: false
+        )
     }
 
     private func resolveLockScreen() -> LockScreen? {

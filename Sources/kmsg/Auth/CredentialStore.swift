@@ -10,9 +10,12 @@ private struct StoredCredentialsDocument: Codable {
     var schemaVersion: Int
     var id: String?
     var encryptedPassword: String?
-    /// KakaoTalk's lock mode passcode. Set inside KakaoTalk and independent of the
-    /// account password, so it is stored as its own secret.
+    /// The passcode proven to open KakaoTalk's lock screen. Usually the account
+    /// password, but kept separately because a prompted value has to be remembered too.
     var encryptedLockPassword: String?
+    /// Set once the lock screen has refused the saved account password, so it is not
+    /// replayed on every later run and counted toward KakaoTalk's forced-logout limit.
+    var accountPasswordRejectedByLock: Bool?
     var keyIdentifier: String
     var updatedAt: Date
 }
@@ -97,6 +100,19 @@ final class CredentialStore: @unchecked Sendable {
         try updateDocument { document in
             document.id = normalizedIdentifier
             document.encryptedPassword = try encrypt(password, keyIdentifier: document.keyIdentifier)
+            // A freshly saved password deserves a fresh attempt at the lock screen.
+            document.accountPasswordRejectedByLock = nil
+        }
+    }
+
+    /// Whether the lock screen has already refused the saved account password.
+    func isAccountPasswordRejectedByLock() -> Bool {
+        (try? loadDocument())?.accountPasswordRejectedByLock ?? false
+    }
+
+    func markAccountPasswordRejectedByLock() throws {
+        try updateDocument { document in
+            document.accountPasswordRejectedByLock = true
         }
     }
 
@@ -139,6 +155,7 @@ final class CredentialStore: @unchecked Sendable {
             id: nil,
             encryptedPassword: nil,
             encryptedLockPassword: nil,
+            accountPasswordRejectedByLock: nil,
             keyIdentifier: "primary.key",
             updatedAt: Date()
         )
