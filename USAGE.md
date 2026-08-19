@@ -117,6 +117,17 @@ key are stored separately with owner-only filesystem permissions:
 ~/.config/kmsg/credentials/primary.key
 ```
 
+### Lock mode
+
+When KakaoTalk's lock screen is showing, commands unlock it before continuing.
+The lock passcode is set inside KakaoTalk and is separate from the account
+password, so `kmsg` prompts for it once and then stores it encrypted next to
+the account credentials.
+
+Only one unlock attempt is made per command, because KakaoTalk signs the
+account out after repeated wrong passcodes. If the passcode is rejected, the
+stored value is discarded and the next command prompts for it again.
+
 ## Command reference
 
 ### Global behavior

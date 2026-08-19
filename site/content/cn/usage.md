@@ -70,6 +70,12 @@ kmsg auth login --auto
 ~/.config/kmsg/credentials/primary.key
 ```
 
+### 锁定模式
+
+如果KakaoTalk显示锁定界面，命令会先解锁再继续。锁定密码在KakaoTalk中设置，与账号密码无关；只需输入一次，`kmsg`就会将它与账号凭据一起加密保存。
+
+每条命令只尝试解锁一次，因为多次输错锁定密码会导致KakaoTalk将账号登出。密码被拒绝时会清除已保存的值，下一条命令会重新提示输入。
+
 ## 命令概览
 
 | 命令 | 用途 |
