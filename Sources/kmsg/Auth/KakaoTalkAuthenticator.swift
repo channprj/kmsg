@@ -18,6 +18,7 @@ enum AuthenticationError: Error, LocalizedError {
     case missingPasswordField
     case loginFailed
     case lockScreenUnlockFailed
+    case lockPasswordUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -31,6 +32,8 @@ enum AuthenticationError: Error, LocalizedError {
             return "KakaoTalk login did not complete successfully."
         case .lockScreenUnlockFailed:
             return "KakaoTalk lock screen could not be unlocked. The saved lock password was discarded; kmsg will ask for it again on the next run."
+        case .lockPasswordUnavailable:
+            return "KakaoTalk is locked and no lock password is saved. Run `kmsg auth login --auto` in a terminal to unlock and save it."
         }
     }
 }
@@ -621,6 +624,13 @@ final class KakaoTalkAuthenticator {
         print("KakaoTalk is locked. Unlocking...")
 
         let storedPassword = store.loadLockPassword()
+        if storedPassword == nil {
+            // Background callers (mcp-server, watch, cron) have no terminal to read a
+            // secret from, so say what to run instead of failing on an empty read.
+            guard PasswordPrompt.canPrompt else {
+                throw AuthenticationError.lockPasswordUnavailable
+            }
+        }
         let password = try storedPassword ?? PasswordPrompt.promptForPassword("KakaoTalk lock password: ")
         kakao.activate()
 
@@ -665,6 +675,17 @@ final class KakaoTalkAuthenticator {
         runner.log("auth: lock screen released")
         if storedPassword == nil {
             try? store.saveLockPassword(password)
+        }
+
+        // The command that triggered the unlock runs next, so let KakaoTalk finish
+        // swapping the lock window for the real chat UI before handing control back.
+        _ = runner.waitUntil(
+            label: "auth lock settle",
+            timeout: 5.0,
+            pollInterval: 0.2,
+            evaluateAfterTimeout: false
+        ) { [self] in
+            kakao.chatListWindow != nil
         }
         return true
     }

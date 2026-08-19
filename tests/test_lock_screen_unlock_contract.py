@@ -47,6 +47,34 @@ class LockScreenUnlockContractTests(unittest.TestCase):
         self.assertIn("store.loadLockPassword()", unlock)
         self.assertNotIn("loadCredentials", unlock)
 
+    def test_unlock_refuses_to_prompt_without_a_terminal(self) -> None:
+        source = AUTHENTICATOR.read_text(encoding="utf-8")
+        unlock = section(
+            source,
+            "private func unlockLockScreenIfPresent(",
+            "private func resolveLockScreen() -> LockScreen? {",
+        )
+
+        # mcp-server, watch, and cron callers have no terminal, so an empty read must
+        # not masquerade as a wrong passcode.
+        guard = unlock.index("PasswordPrompt.canPrompt")
+        prompt = unlock.index("PasswordPrompt.promptForPassword(")
+        self.assertLess(guard, prompt)
+        self.assertIn("AuthenticationError.lockPasswordUnavailable", unlock)
+
+    def test_unlock_waits_for_the_chat_ui_before_returning(self) -> None:
+        source = AUTHENTICATOR.read_text(encoding="utf-8")
+        unlock = section(
+            source,
+            "private func unlockLockScreenIfPresent(",
+            "private func resolveLockScreen() -> LockScreen? {",
+        )
+
+        # The command that triggered the unlock runs next and needs a settled window.
+        settle = unlock.index('label: "auth lock settle"')
+        self.assertLess(unlock.index("auth: lock screen released"), settle)
+        self.assertIn("kakao.chatListWindow != nil", unlock)
+
     def test_failed_unlock_discards_the_typed_and_stored_passcode(self) -> None:
         source = AUTHENTICATOR.read_text(encoding="utf-8")
         failure = section(
