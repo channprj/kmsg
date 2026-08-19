@@ -128,6 +128,10 @@ Only one unlock attempt is made per command, because KakaoTalk signs the
 account out after repeated wrong passcodes. If the passcode is rejected, the
 stored value is discarded and the next command prompts for it again.
 
+Callers without a terminal — `kmsg mcp-server`, `kmsg watch`, cron jobs — cannot
+prompt. Unlock once from a terminal so the passcode is saved, and they unlock on
+their own from then on.
+
 ## Command reference
 
 ### Global behavior
