@@ -33,6 +33,19 @@ enum PasswordPrompt {
         )
     }
 
+    /// Whether an interactive terminal is attached to read a secret from.
+    static var canPrompt: Bool {
+        isatty(STDIN_FILENO) == 1
+    }
+
+    static func promptForPassword(_ message: String) throws -> String {
+        let password = try promptPassword(message)
+        guard !password.isEmpty else {
+            throw ValidationError("KakaoTalk password is required.")
+        }
+        return password
+    }
+
     private static func prompt(_ message: String) -> String? {
         FileHandle.standardOutput.write(Data(message.utf8))
         fflush(stdout)

@@ -10,6 +10,9 @@ private struct StoredCredentialsDocument: Codable {
     var schemaVersion: Int
     var id: String?
     var encryptedPassword: String?
+    /// KakaoTalk's lock mode passcode. Set inside KakaoTalk and independent of the
+    /// account password, so it is stored as its own secret.
+    var encryptedLockPassword: String?
     var keyIdentifier: String
     var updatedAt: Date
 }
@@ -91,12 +94,65 @@ final class CredentialStore: @unchecked Sendable {
             throw CredentialStoreError.invalidStoredCredentials
         }
 
+        try updateDocument { document in
+            document.id = normalizedIdentifier
+            document.encryptedPassword = try encrypt(password, keyIdentifier: document.keyIdentifier)
+        }
+    }
+
+    /// The lock mode passcode, or nil when nothing usable is stored.
+    func loadLockPassword() -> String? {
+        guard let document = try? loadDocument(), document.schemaVersion == Self.schemaVersion else {
+            return nil
+        }
+        guard let encryptedLockPassword = normalize(document.encryptedLockPassword) else {
+            return nil
+        }
+        return try? CredentialCrypto.decrypt(
+            encryptedLockPassword,
+            keyIdentifier: document.keyIdentifier,
+            keyDirectoryURL: keyDirectoryURL
+        )
+    }
+
+    func saveLockPassword(_ password: String) throws {
+        guard !password.isEmpty else {
+            throw CredentialStoreError.invalidStoredCredentials
+        }
+
+        try updateDocument { document in
+            document.encryptedLockPassword = try encrypt(password, keyIdentifier: document.keyIdentifier)
+        }
+    }
+
+    func clearLockPassword() throws {
+        try updateDocument { document in
+            document.encryptedLockPassword = nil
+        }
+    }
+
+    private func updateDocument(_ mutate: (inout StoredCredentialsDocument) throws -> Void) throws {
         try AuthPaths.prepareFilesystem()
 
-        let keyIdentifier = "primary.key"
-        let encryptedPassword: String
+        var document = (try? loadDocument()) ?? StoredCredentialsDocument(
+            schemaVersion: Self.schemaVersion,
+            id: nil,
+            encryptedPassword: nil,
+            encryptedLockPassword: nil,
+            keyIdentifier: "primary.key",
+            updatedAt: Date()
+        )
+        try mutate(&document)
+        document.updatedAt = Date()
+
+        let data = try encoder.encode(document)
+        try data.write(to: credentialsURL, options: .atomic)
+        try AuthPaths.applyOwnerOnlyPermissions(to: credentialsURL, mode: 0o600)
+    }
+
+    private func encrypt(_ password: String, keyIdentifier: String) throws -> String {
         do {
-            encryptedPassword = try CredentialCrypto.encrypt(
+            return try CredentialCrypto.encrypt(
                 password,
                 keyIdentifier: keyIdentifier,
                 keyDirectoryURL: keyDirectoryURL
@@ -104,18 +160,6 @@ final class CredentialStore: @unchecked Sendable {
         } catch {
             throw CredentialStoreError.encryptionFailed
         }
-
-        let document = StoredCredentialsDocument(
-            schemaVersion: Self.schemaVersion,
-            id: normalizedIdentifier,
-            encryptedPassword: encryptedPassword,
-            keyIdentifier: keyIdentifier,
-            updatedAt: Date()
-        )
-
-        let data = try encoder.encode(document)
-        try data.write(to: credentialsURL, options: .atomic)
-        try AuthPaths.applyOwnerOnlyPermissions(to: credentialsURL, mode: 0o600)
     }
 
     private func loadDocument() throws -> StoredCredentialsDocument {

@@ -8,6 +8,7 @@ enum AuthenticationMode {
 
 enum AuthenticationOutcome: String {
     case alreadyAuthenticated
+    case unlocked
     case loggedIn
 }
 
@@ -16,6 +17,8 @@ enum AuthenticationError: Error, LocalizedError {
     case missingUsernameField
     case missingPasswordField
     case loginFailed
+    case lockScreenUnlockFailed
+    case lockPasswordUnavailable
 
     var errorDescription: String? {
         switch self {
@@ -27,6 +30,10 @@ enum AuthenticationError: Error, LocalizedError {
             return "Could not locate the KakaoTalk password field."
         case .loginFailed:
             return "KakaoTalk login did not complete successfully."
+        case .lockScreenUnlockFailed:
+            return "KakaoTalk lock screen could not be unlocked. The saved lock password was discarded; kmsg will ask for it again on the next run."
+        case .lockPasswordUnavailable:
+            return "KakaoTalk is locked and no lock password is saved. Run `kmsg auth login --auto` in a terminal to unlock and save it."
         }
     }
 }
@@ -35,6 +42,12 @@ private struct LoginForm {
     let window: UIElement
     let usernameField: UIElement
     let passwordField: UIElement
+}
+
+private struct LockScreen {
+    let window: UIElement
+    let passwordField: UIElement
+    let confirmButton: UIElement?
 }
 
 private struct PostLoginAcknowledgement {
@@ -64,6 +77,8 @@ final class KakaoTalkAuthenticator {
             runner.log("auth: \(message)")
         })
 
+        let didUnlock = try unlockLockScreenIfPresent(using: store)
+
         if mode == .promptForFreshCredentials {
             let prompted = try PasswordPrompt.promptForCredentials(defaultIdentifier: store.storedIdentifier())
 
@@ -84,7 +99,7 @@ final class KakaoTalkAuthenticator {
         }
 
         if isAuthenticated() {
-            return .alreadyAuthenticated
+            return didUnlock ? .unlocked : .alreadyAuthenticated
         }
 
         let storedCredentials = try store.loadCredentials()
@@ -530,7 +545,7 @@ final class KakaoTalkAuthenticator {
     }
 
     private func resolvePostLoginAcknowledgement() -> PostLoginAcknowledgement? {
-        for root in collectPostLoginAcknowledgementRoots() {
+        for root in collectDialogRoots() {
             guard let acknowledgement = resolvePostLoginAcknowledgement(in: root) else {
                 continue
             }
@@ -539,7 +554,7 @@ final class KakaoTalkAuthenticator {
         return nil
     }
 
-    private func collectPostLoginAcknowledgementRoots() -> [UIElement] {
+    private func collectDialogRoots() -> [UIElement] {
         var roots: [UIElement] = []
         appendUnique(kakao.focusedWindow, to: &roots)
         appendUnique(kakao.mainWindow, to: &roots)
@@ -559,7 +574,7 @@ final class KakaoTalkAuthenticator {
     }
 
     private func resolvePostLoginAcknowledgement(in root: UIElement) -> PostLoginAcknowledgement? {
-        let message = collectPostLoginAcknowledgementText(from: root)
+        let message = collectDialogText(from: root)
         guard containsPostLoginAcknowledgementMarkers(message) else {
             return nil
         }
@@ -574,7 +589,7 @@ final class KakaoTalkAuthenticator {
         return PostLoginAcknowledgement(root: root, button: button, message: message)
     }
 
-    private func collectPostLoginAcknowledgementText(from root: UIElement) -> String {
+    private func collectDialogText(from root: UIElement) -> String {
         let roles: Set<String> = [kAXButtonRole, kAXStaticTextRole, kAXGroupRole]
         let found = root.findAll(roles: roles, roleLimits: [
             kAXButtonRole: 8,
@@ -591,6 +606,170 @@ final class KakaoTalkAuthenticator {
                 $0.identifier,
             ].compactMap { $0 }.joined(separator: " ")
         }.joined(separator: " "))
+    }
+
+    // MARK: - Lock Mode
+
+    /// KakaoTalk's "Lock mode" screen hides a still-logged-in session behind a single
+    /// password field. It is not a login form, so `isAuthenticated()` accepts it as a
+    /// usable window and every command silently operates against a locked app. Unlock it
+    /// before the auth state is evaluated.
+    /// - Returns: `true` when a lock screen was present and has been released.
+    private func unlockLockScreenIfPresent(using store: CredentialStore) throws -> Bool {
+        guard let lock = resolveLockScreen() else {
+            return false
+        }
+
+        runner.log("auth: lock screen detected title='\(lock.window.title ?? "")'")
+        print("KakaoTalk is locked. Unlocking...")
+
+        let storedPassword = store.loadLockPassword()
+        if storedPassword == nil {
+            // Background callers (mcp-server, watch, cron) have no terminal to read a
+            // secret from, so say what to run instead of failing on an empty read.
+            guard PasswordPrompt.canPrompt else {
+                throw AuthenticationError.lockPasswordUnavailable
+            }
+        }
+        let password = try storedPassword ?? PasswordPrompt.promptForPassword("KakaoTalk lock password: ")
+        kakao.activate()
+
+        guard lock.passwordField.isFocused ||
+            runner.focusWithVerification(lock.passwordField, label: "auth lock password field", attempts: 2)
+        else {
+            throw AuthenticationError.lockScreenUnlockFailed
+        }
+
+        // Type real key events: KakaoTalk keeps the confirm button disabled until it
+        // observes input, so an AXValue-only write leaves nothing to submit.
+        runner.pressCommandA()
+        runner.typeTextDirect(password, label: "auth lock password")
+        Thread.sleep(forTimeInterval: 0.1)
+
+        if let confirmButton = lock.confirmButton,
+           confirmButton.isEnabled,
+           runner.clickWithRetry(confirmButton, label: "auth lock confirm button", attempts: 2)
+        {
+            runner.log("auth: lock confirm button clicked")
+        } else {
+            runner.log("auth: falling back to Enter for lock submit")
+            runner.pressEnterKey()
+        }
+
+        // Single attempt on purpose: KakaoTalk signs the account out after repeated
+        // wrong lock passwords, so a retry loop would do real damage.
+        let released = runner.waitUntil(label: "auth lock release", timeout: 8.0, pollInterval: 0.2) { [self] in
+            resolveLockScreen() == nil
+        }
+
+        guard released else {
+            // The lock field is a plain AXTextField that echoes its value over the
+            // accessibility API, so a rejected password must not be left on screen.
+            clearFieldBestEffort(lock.passwordField, label: "auth lock password clear")
+            // Drop the stored passcode so the next run prompts instead of replaying a
+            // password KakaoTalk just refused.
+            try? store.clearLockPassword()
+            throw AuthenticationError.lockScreenUnlockFailed
+        }
+
+        runner.log("auth: lock screen released")
+        if storedPassword == nil {
+            try? store.saveLockPassword(password)
+        }
+
+        // The command that triggered the unlock runs next, so let KakaoTalk finish
+        // swapping the lock window for the real chat UI before handing control back.
+        _ = runner.waitUntil(
+            label: "auth lock settle",
+            timeout: 5.0,
+            pollInterval: 0.2,
+            evaluateAfterTimeout: false
+        ) { [self] in
+            kakao.chatListWindow != nil
+        }
+        return true
+    }
+
+    private func resolveLockScreen() -> LockScreen? {
+        for root in collectDialogRoots() {
+            if let lock = resolveLockScreen(in: root) {
+                return lock
+            }
+        }
+        return nil
+    }
+
+    private func resolveLockScreen(in root: UIElement) -> LockScreen? {
+        let candidates = shallowDescendants(of: root)
+
+        // Match on the on-screen notice only, never the window title: a chat merely
+        // *named* "Lock mode" must not be able to pose as the lock screen.
+        let markerText = normalizedText(
+            candidates
+                .filter { $0.role == kAXStaticTextRole }
+                .compactMap { $0.stringValue }
+                .joined(separator: " ")
+        )
+        guard containsLockScreenMarkers(markerText) else {
+            return nil
+        }
+
+        // Chat and chat-list windows always expose a scrolling message area; the lock
+        // screen never does. Without this a chat whose message text quotes the lock
+        // notice could be handed the password.
+        guard !candidates.contains(where: { $0.role == kAXScrollAreaRole || $0.role == kAXTableRole }) else {
+            return nil
+        }
+
+        // A login form also exposes an ID field; the lock screen has exactly one input.
+        let fields = candidates.filter { element in
+            let role = element.role ?? ""
+            return element.isEnabled && (role == kAXTextFieldRole || role == kAXTextAreaRole || role == "AXSecureTextField")
+        }
+        guard fields.count == 1, let passwordField = fields.first else {
+            return nil
+        }
+
+        let confirmButton = candidates
+            .filter { $0.role == kAXButtonRole }
+            .max { scoreLockConfirmButton($0) < scoreLockConfirmButton($1) }
+            .flatMap { scoreLockConfirmButton($0) > 0 ? $0 : nil }
+
+        return LockScreen(window: root, passwordField: passwordField, confirmButton: confirmButton)
+    }
+
+    /// Lock screen controls sit directly under the window, so the top two levels are
+    /// enough. Staying shallow also keeps chat message text — nested deep inside scroll
+    /// areas — from matching a lock marker, which would type the password into a chat.
+    private func shallowDescendants(of root: UIElement) -> [UIElement] {
+        let children = root.children
+        return children + children.flatMap { $0.children }
+    }
+
+    private func containsLockScreenMarkers(_ text: String) -> Bool {
+        let markers = [
+            "currently locked",
+            "lock mode",
+            "잠금 모드",
+            "잠겨 있습니다",
+            "잠금 상태",
+        ]
+        return markers.contains(where: text.contains)
+    }
+
+    private func scoreLockConfirmButton(_ button: UIElement) -> Int {
+        let texts = buttonTextCandidates(button)
+        var score = 0
+        if texts.contains("ok") || texts.contains("확인") {
+            score += 120
+        }
+        if texts.contains("unlock") || texts.contains("잠금 해제") {
+            score += 100
+        }
+        if texts.contains(where: { $0.contains("switch account") || $0.contains("계정 변경") }) {
+            score -= 200
+        }
+        return score
     }
 
     private func containsLoginMarkers(_ text: String) -> Bool {
