@@ -13,6 +13,9 @@ const pageSlugs = ["", "usage/", "architecture/", "mcp/", "skill/", "versioning/
 const canonicalFiles = localePrefixes.flatMap((prefix) =>
   pageSlugs.map((slug) => `${prefix}${slug}index.html`),
 )
+const canonicalMarkdownFiles = canonicalFiles.map((path) =>
+  path.replace(/index\.html$/, "index.md"),
+)
 const legacyAliasFiles = [
   "ko/index.html",
   "ko/usage/index.html",
@@ -59,7 +62,7 @@ test("React build emits every canonical page and compatibility artifact", async 
   ]
 
   await Promise.all(
-    [...canonicalFiles, ...compatibilityFiles, ...assets].map((path) =>
+    [...canonicalFiles, ...canonicalMarkdownFiles, ...compatibilityFiles, ...assets].map((path) =>
       access(join(distDir, path)),
     ),
   )
@@ -78,6 +81,11 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.equal((home.match(/<h1\b/g) ?? []).length, 1)
   assert.ok(visibleText(home).length >= 500)
   assert.doesNotMatch(home, /http-equiv="refresh"/i)
+  assert.match(
+    home,
+    /<link(?=[^>]*rel="alternate")(?=[^>]*type="text\/markdown")(?=[^>]*href="\/kmsg\/index\.md")[^>]*>/,
+  )
+  assert.match(home, /<link[^>]*rel="describedby"[^>]*href="\/kmsg\/llms\.txt"/)
   assert.match(home, /<meta name="twitter:card" content="summary_large_image"/)
   assert.match(home, /<meta property="og:image" content="https:\/\/channprj\.github\.io\/kmsg\/assets\/kmsg-logo\.jpg"/)
   assert.match(docs, /data-code-copy/)
@@ -115,14 +123,18 @@ test("hashed application assets referenced by HTML exist", async () => {
   assert.ok(!files.includes("styles.css"))
 })
 
-test("redirects, 404, and discovery files preserve public contracts", async () => {
-  const [koRedirect, openclawRedirect, notFound, sitemap, llm, manifest, version] =
+test("aliases, 404, and discovery files preserve public contracts", async () => {
+  const [koRedirect, openclawRedirect, notFound, sitemap, llm, llmCompat, robots, homeMarkdown, mcpMarkdown, manifest, version] =
     await Promise.all([
       readOutput("ko/usage/index.html"),
       readOutput("cn/openclaw/index.html"),
       readOutput("404.html"),
       readOutput("sitemap.xml"),
+      readOutput("llms.txt"),
       readOutput("llm.txt"),
+      readOutput("robots.txt"),
+      readOutput("index.md"),
+      readOutput("mcp/index.md"),
       readOutput("site.webmanifest"),
       readFile(resolve(siteDir, "../VERSION"), "utf8"),
     ])
@@ -134,8 +146,25 @@ test("redirects, 404, and discovery files preserve public contracts", async () =
   assert.match(notFound, /<pre[^>]*data-agent-recovery>/)
   assert.match(notFound, /\[Agent index]\(https:\/\/channprj\.github\.io\/kmsg\/llms\.txt\)/)
   assert.match(notFound, /\[Sitemap]\(https:\/\/channprj\.github\.io\/kmsg\/sitemap\.xml\)/)
-  assert.equal((sitemap.match(/<url>/g) ?? []).length, 32)
+  const sitemapEntries = [...sitemap.matchAll(/<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)]
+  assert.equal(sitemapEntries.length, 32)
+  for (const [, location, lastModified] of sitemapEntries) {
+    assert.equal(new URL(location).origin, "https://channprj.github.io")
+    assert.ok(Number.isFinite(Date.parse(lastModified)))
+  }
+  assert.equal(llmCompat, llm)
+  assert.ok(llm.startsWith("# kmsg\n\n>"))
   assert.ok(llm.includes(`Current version: ${version.trim()}`))
-  assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\//)
+  assert.match(llm, /## When to use kmsg/)
+  assert.match(llm, /\[Use the kmsg MCP server]\(https:\/\/channprj\.github\.io\/kmsg\/mcp\/index\.md\)/)
+  assert.match(llm, /## Developer resources/)
+  assert.match(llm, /kmsg authentication docs/)
+  assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\/index\.md/)
+  for (const userAgent of ["ChatGPT-User", "ClaudeBot", "Google-Extended", "ora-agent", "DeepSeekBot"]) {
+    assert.match(robots, new RegExp(`User-agent: ${userAgent}\\nAllow: /`))
+  }
+  assert.match(homeMarkdown, /^#\s+kmsg/m)
+  assert.match(mcpMarkdown, /^#\s+.+/m)
+  assert.match(mcpMarkdown, /\bMCP\b/)
   assert.equal(JSON.parse(manifest).start_url, "/kmsg/")
 })

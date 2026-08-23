@@ -58,6 +58,19 @@ async function copyOutput(sourceRelativePath, targetRelativePath) {
   await cp(join(distDir, sourceRelativePath), target)
 }
 
+async function markdownFor(page) {
+  if (page.pageKey === "privacy" || page.pageKey === "terms") {
+    const copy = legacyContent.legalContent[page.locale][page.pageKey]
+    const sections = copy.sections
+      .map(({ title, body }) => `## ${title}\n\n${body}`)
+      .join("\n\n")
+    return `# ${copy.heading}\n\n> ${copy.intro}\n\n${sections}\n`
+  }
+
+  const markdown = await readFile(resolve(repoDir, page.source), "utf8")
+  return markdown.endsWith("\n") ? markdown : `${markdown}\n`
+}
+
 await rm(distDir, { recursive: true, force: true })
 await mkdir(distDir, { recursive: true })
 await cp(prerenderDir, distDir, { recursive: true })
@@ -79,6 +92,10 @@ for (const locale of Object.keys(localePrefixes)) {
   if (locale === "ko") {
     await copyOutput("mcp/index.html", "ko/openclaw/index.html")
   }
+}
+
+for (const page of canonicalPages) {
+  await write(`${page.publicPath}index.md`, await markdownFor(page))
 }
 
 const localeLinks = Object.entries(localePrefixes)
@@ -110,16 +127,27 @@ await write(
   "sitemap.xml",
   `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries}\n</urlset>\n`,
 )
+const agentUserAgents = [
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "ClaudeBot",
+  "Google-Extended",
+  "ora-agent",
+  "DeepSeekBot",
+]
+const agentAllowRules = agentUserAgents
+  .map((userAgent) => `User-agent: ${userAgent}\nAllow: /`)
+  .join("\n\n")
 await write(
   "robots.txt",
-  `User-agent: *\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: ChatGPT-User\nAllow: /\n\nSitemap: ${baseUrl}sitemap.xml\n`,
+  `User-agent: *\nAllow: /\n\n${agentAllowRules}\n\nSitemap: ${baseUrl}sitemap.xml\n`,
 )
 
 const version = (await readFile(resolve(repoDir, "VERSION"), "utf8")).trim()
 const documentationLinks = canonicalPages
   .map(
     (page) =>
-      `- [${page.title}](${baseUrl}${page.publicPath}): ${page.description}`,
+      `- [${page.title}](${baseUrl}${page.publicPath}index.md): ${page.description}`,
   )
   .join("\n")
 const llmIndex = `# kmsg
@@ -130,6 +158,20 @@ Current version: ${version}
 Canonical website: ${baseUrl}
 Source repository: ${repositoryUrl}
 License: MIT
+
+## When to use kmsg
+
+- [Read and watch KakaoTalk with kmsg](${baseUrl}usage/index.md): Use kmsg when an agent or local automation needs to list chats, read recent messages, watch for new messages, or produce structured JSON on a Mac where KakaoTalk is installed.
+- [Preview and send KakaoTalk messages with kmsg](${baseUrl}usage/index.md): Use kmsg for user-approved text or image sends through the visible KakaoTalk UI; preview the target and payload with \`--dry-run\` before a real send.
+- [Use the kmsg MCP server](${baseUrl}mcp/index.md): Use the native stdio MCP server when Claude, ChatGPT, Codex, or another MCP client should call kmsg read and send tools locally.
+- [Install the kmsg coding-agent Skill](${baseUrl}skill/index.md): Use the Skill when a coding agent needs a repeatable safety-first workflow for checking status, resolving chat identities, reading, and sending.
+
+## Developer resources
+
+- [kmsg developer portal](${baseUrl}architecture/index.md): Architecture, component boundaries, data flow, security decisions, and source layout for contributors and integrators.
+- [kmsg API and CLI reference](${baseUrl}usage/index.md): Command syntax, structured JSON output, environment variables, installation, troubleshooting, and local automation contracts.
+- [kmsg authentication docs](${baseUrl}usage/index.md#authentication): KakaoTalk login readiness, encrypted local credential storage, lock-mode behavior, and non-interactive caller constraints.
+- [kmsg MCP server](${baseUrl}mcp/index.md): Native stdio MCP transport, tool names, client configuration, confirmation behavior, and operating constraints.
 
 ## Documentation
 

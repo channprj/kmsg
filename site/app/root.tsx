@@ -11,7 +11,7 @@ import {
 
 import type { Route } from "./+types/root"
 import { LOCALES } from "./content/locales"
-import { routeFromPath } from "./content/routes"
+import { publicRouteFor, routeFromPath } from "./content/routes"
 import {
   THEME_BOOTSTRAP,
   readThemeFromDocument,
@@ -28,6 +28,9 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: ReactNode }) {
   const route = routeFromPath(useLocation().pathname)
   const lang = LOCALES[route?.locale ?? "ko"].lang
+  const markdownHref = route
+    ? `${publicRouteFor(route.locale, route.pageKey)}index.md`
+    : "/kmsg/index.md"
   const theme =
     typeof document === "undefined" ? "dark" : readThemeFromDocument()
 
@@ -43,6 +46,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={themeColorFor(theme)} />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+        <link rel="alternate" href={markdownHref} type="text/markdown" />
         <Meta />
         <Links />
       </head>
