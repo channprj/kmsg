@@ -725,22 +725,30 @@
     "jp": {
       "privacy": {
         "title": "プライバシー - kmsg",
-        "description": "kmsgの静的ウェブサイトにおけるデータ処理と外部サービスの範囲を説明します。",
+        "description": "kmsgの静的ウェブサイトとローカルCLIにおけるデータ処理、外部サービス、問い合わせ範囲を説明します。",
         "eyebrow": "法的情報",
         "heading": "プライバシー",
-        "intro": "kmsgのウェブサイトは、アカウント、入力フォーム、解析サービスを持たない静的サイトです。",
+        "intro": "この案内は、kmsgの静的ウェブサイトと利用者のMacで動くCLI・MCP serverのデータ境界を説明します。サイトにはアカウント、入力フォーム、解析サービス、広告trackerはありません。",
         "sections": [
           {
             "title": "このサイトが収集する情報",
-            "body": "このサイトは訪問者のアカウント、メッセージ、連絡先、入力内容をサーバーに収集しません。"
+            "body": "このサイトは訪問者のaccount、KakaoTalk message、contact、検索語、入力内容を運営者serverへ収集しません。GitHub Pagesが静的fileを配信する際、GitHubとinfrastructure providerがIP address、request header、時刻など一般的なnetwork logを処理する場合があり、その処理にはGitHubのprivacy policyが適用されます。"
           },
           {
-            "title": "外部サービス",
-            "body": "GitHubやYouTubeのリンクを開くと、各サービスのプライバシーポリシーと利用条件が適用されます。"
+            "title": "CLIとMCPのローカル処理",
+            "body": "kmsgは利用者のMacでAccessibility APIを使い、画面に表示されたKakaoTalk情報を読み取ります。chat content、local identity、command resultはこのサイトへuploadされません。loginやlock-modeに必要なcredentialはlocal configurationへ暗号化して保存され、file permissionとbackupは利用者が管理します。"
           },
           {
-            "title": "KakaoTalkメッセージ",
-            "body": "Mac上のkmsg CLIが処理するKakaoTalkの内容は、このウェブサイトへ送信されません。"
+            "title": "外部サービスと共有",
+            "body": "GitHub repository、Issues、Releases、Homebrew tap、YouTubeなど外部linkを開くと各serviceのpolicyが適用されます。issueやemailへlogを添付する前に、氏名、message、電話番号、account ID、local path、password、token、encryption keyを削除し、synthetic reproductionを使ってください。"
+          },
+          {
+            "title": "保存と削除",
+            "body": "静的サイトには削除対象となる独自account databaseがありません。local credential、cache、実行logは利用者のMacにあり、利用者が確認・削除できます。公開GitHub issueの内容を変更または削除したい場合は、そのissue上で依頼してください。"
+          },
+          {
+            "title": "問い合わせ",
+            "body": "一般的なprivacy質問はcontact pageの公式channelを使い、公開できない脆弱性や個人情報問題はiam@chann.devへ必要最小限の情報だけを送ってください。実際のcredentialやprivate message archiveは送信しないでください。変更はこのpageとGit historyへ記録します。"
           }
         ]
       },
@@ -769,22 +777,30 @@
     "cn": {
       "privacy": {
         "title": "隐私说明 - kmsg",
-        "description": "说明kmsg静态网站的数据处理方式与外部服务范围。",
+        "description": "说明kmsg静态网站与本地CLI的数据处理、外部服务及隐私咨询范围。",
         "eyebrow": "法律信息",
         "heading": "隐私说明",
-        "intro": "kmsg网站为静态网站，不提供账户、输入表单或分析服务。",
+        "intro": "本说明区分kmsg静态网站与在用户Mac上运行的CLI、MCP server的数据边界。网站不提供账户、输入表单、广告tracker或自有analytics service。",
         "sections": [
           {
             "title": "本网站收集的信息",
-            "body": "本网站不会在服务器上收集访客账户、消息、联系人或提交内容。"
+            "body": "本网站不会把访客account、KakaoTalk message、contact、搜索词或输入内容收集到运营者server。GitHub Pages在发送静态file时，GitHub及其infrastructure provider可能处理IP address、request header和访问时间等常规network log，此类处理遵循GitHub的privacy policy。"
           },
           {
-            "title": "外部服务",
-            "body": "打开GitHub或YouTube链接后，将适用相应服务的隐私政策与使用条款。"
+            "title": "CLI与MCP的本地处理",
+            "body": "kmsg在用户Mac上通过Accessibility API读取屏幕中显示的KakaoTalk信息。chat content、local identity与command result不会上传到本网站。login及lock-mode所需credential会加密保存在local configuration中，用户负责管理file permission与backup。"
           },
           {
-            "title": "KakaoTalk消息",
-            "body": "kmsg CLI在您的Mac上处理的KakaoTalk内容不会发送到本网站。"
+            "title": "外部服务与信息共享",
+            "body": "打开GitHub repository、Issues、Releases、Homebrew tap或YouTube等外部link后，将适用各service的policy。提交issue或email前，请从log中删除姓名、message、电话号码、account ID、local path、password、token及encryption key，并优先使用synthetic reproduction。"
+          },
+          {
+            "title": "保留与删除",
+            "body": "静态网站没有可供删除的自有account database。local credential、cache和执行log位于用户Mac，用户可自行检查和删除。公开GitHub issue属于repository记录，如需修改或删除其中内容，应在相应issue中提出请求。"
+          },
+          {
+            "title": "咨询与变更记录",
+            "body": "一般privacy问题请使用contact page中的官方渠道；不应公开的漏洞或敏感个人资料可将最少必要信息发送至iam@chann.dev。请勿发送真实credential或private message archive。处理方式变化时会同步更新本页面source与Git history。"
           }
         ]
       },

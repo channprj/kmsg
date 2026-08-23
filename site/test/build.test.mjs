@@ -109,15 +109,17 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
 })
 
 test("trust anchors and developer resources are substantive raw HTML", async () => {
-  const [home, about, contact, privacy, developers] = await Promise.all([
+  const [home, developers, ...trustPages] = await Promise.all([
     readOutput("index.html"),
-    readOutput("about/index.html"),
-    readOutput("contact/index.html"),
-    readOutput("privacy/index.html"),
     readOutput("developers/index.html"),
+    ...localePrefixes.flatMap((prefix) =>
+      ["about", "contact", "privacy"].map((page) =>
+        readOutput(`${prefix}${page}/index.html`),
+      ),
+    ),
   ])
 
-  for (const html of [about, contact, privacy]) {
+  for (const html of trustPages) {
     assert.match(html, /<h1\b/)
     assert.ok(visibleText(html).length >= 500)
   }

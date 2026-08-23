@@ -47,9 +47,22 @@ describe("localized route table", () => {
     })
   })
 
-  it("rejects unknown and legacy paths", () => {
+  it("maps published compatibility paths to canonical routes", () => {
+    expect(routeFromPath("/kmsg/ko/usage/")).toEqual({
+      locale: "ko",
+      pageKey: "usage",
+    })
+    expect(routeFromPath("/kmsg/ko/openclaw/")).toEqual({
+      locale: "ko",
+      pageKey: "mcp",
+    })
+    expect(routeFromPath("/kmsg/en/openclaw/")).toEqual({
+      locale: "en",
+      pageKey: "mcp",
+    })
+  })
+
+  it("rejects unknown paths", () => {
     expect(routeFromPath("/kmsg/fr/usage/")).toBeNull()
-    expect(routeFromPath("/kmsg/ko/usage/")).toBeNull()
-    expect(routeFromPath("/kmsg/openclaw/")).toBeNull()
   })
 })

@@ -75,6 +75,9 @@ export function routeFromPath(pathname: string): {
   }
   if (!path.startsWith("/")) path = `/${path}`
   if (!path.endsWith("/")) path = `${path}/`
+  if (path === "/ko/") path = "/"
+  else if (path.startsWith("/ko/")) path = path.slice(3)
+  path = path.replace(/\/openclaw\/$/, "/mcp/")
   return routeLookup.get(path) ?? null
 }
 
