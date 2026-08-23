@@ -8,7 +8,7 @@
       "eyebrow": "kmsg 소개",
       "source": "site/content/ko/about.md",
       "sourceLabel": "site/content/ko/about.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "ko",
@@ -18,7 +18,7 @@
       "eyebrow": "연락처",
       "source": "site/content/ko/contact.md",
       "sourceLabel": "site/content/ko/contact.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "ko",
@@ -28,7 +28,7 @@
       "eyebrow": "개발자 리소스",
       "source": "site/content/ko/developers.md",
       "sourceLabel": "site/content/ko/developers.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "en",
@@ -38,7 +38,7 @@
       "eyebrow": "About kmsg",
       "source": "site/content/en/about.md",
       "sourceLabel": "site/content/en/about.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "en",
@@ -48,7 +48,7 @@
       "eyebrow": "Contact",
       "source": "site/content/en/contact.md",
       "sourceLabel": "site/content/en/contact.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "en",
@@ -58,7 +58,7 @@
       "eyebrow": "Developers",
       "source": "site/content/en/developers.md",
       "sourceLabel": "site/content/en/developers.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "jp",
@@ -68,7 +68,7 @@
       "eyebrow": "kmsgについて",
       "source": "site/content/jp/about.md",
       "sourceLabel": "site/content/jp/about.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "jp",
@@ -78,7 +78,7 @@
       "eyebrow": "連絡先",
       "source": "site/content/jp/contact.md",
       "sourceLabel": "site/content/jp/contact.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "jp",
@@ -88,7 +88,7 @@
       "eyebrow": "開発者向け",
       "source": "site/content/jp/developers.md",
       "sourceLabel": "site/content/jp/developers.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "cn",
@@ -98,7 +98,7 @@
       "eyebrow": "关于kmsg",
       "source": "site/content/cn/about.md",
       "sourceLabel": "site/content/cn/about.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "cn",
@@ -108,7 +108,7 @@
       "eyebrow": "联系方式",
       "source": "site/content/cn/contact.md",
       "sourceLabel": "site/content/cn/contact.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     },
     {
       "locale": "cn",
@@ -118,7 +118,7 @@
       "eyebrow": "开发者资源",
       "source": "site/content/cn/developers.md",
       "sourceLabel": "site/content/cn/developers.md",
-      "lastModified": "2026-08-24"
+      "lastModified": "2026-08-24T05:43:35+09:00"
     }
   ]
 }

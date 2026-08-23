@@ -1,4 +1,3 @@
-import { execFileSync } from "node:child_process"
 import { readFile, writeFile } from "node:fs/promises"
 import { dirname, posix, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -8,6 +7,7 @@ import sanitizeHtml from "sanitize-html"
 
 import legacyContent from "../app/content/legacy-content.json" with { type: "json" }
 import trustContent from "../app/content/trust-content.json" with { type: "json" }
+import { lastModifiedForPath } from "./git-metadata.mjs"
 
 const siteDir = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const repoDir = resolve(siteDir, "..")
@@ -176,17 +176,6 @@ function enhanceMarkdown(html, page) {
   return { html: enhanced, headings }
 }
 
-function lastModifiedFor(source) {
-  try {
-    return execFileSync("git", ["log", "-1", "--format=%cI", "--", source], {
-      cwd: repoDir,
-      encoding: "utf8",
-    }).trim()
-  } catch {
-    return new Date(0).toISOString()
-  }
-}
-
 const pages = [...legacyContent.pages, ...trustContent.pages]
   .filter(({ pageKey }) => docsKeys.has(pageKey))
   .map((page) => ({
@@ -207,7 +196,7 @@ for (const page of pages) {
     title,
     source: page.source,
     sourceLabel: page.sourceLabel ?? page.source,
-    lastModified: page.lastModified ?? lastModifiedFor(page.source),
+    lastModified: page.lastModified ?? lastModifiedForPath(repoDir, page.source),
     ...rendered,
   })
 }

@@ -156,7 +156,7 @@ test("hashed application assets referenced by HTML exist", async () => {
 })
 
 test("aliases, 404, and discovery files preserve public contracts", async () => {
-  const [koRedirect, openclawRedirect, notFound, sitemap, llm, llmCompat, robots, homeMarkdown, mcpMarkdown, manifest, version] =
+  const [koRedirect, openclawRedirect, notFound, sitemap, llm, llmCompat, robots, homeMarkdown, mcpMarkdown, manifest, version, pagesWorkflow] =
     await Promise.all([
       readOutput("ko/usage/index.html"),
       readOutput("cn/openclaw/index.html"),
@@ -169,6 +169,7 @@ test("aliases, 404, and discovery files preserve public contracts", async () => 
       readOutput("mcp/index.md"),
       readOutput("site.webmanifest"),
       readFile(resolve(siteDir, "../VERSION"), "utf8"),
+      readFile(resolve(siteDir, "../.github/workflows/pages.yml"), "utf8"),
     ])
 
   assert.match(koRedirect, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/usage\/"/)
@@ -204,5 +205,7 @@ test("aliases, 404, and discovery files preserve public contracts", async () => 
   assert.match(homeMarkdown, /^#\s+kmsg/m)
   assert.match(mcpMarkdown, /^#\s+.+/m)
   assert.match(mcpMarkdown, /\bMCP\b/)
+  assert.match(pagesWorkflow, /- "VERSION"/)
+  assert.match(pagesWorkflow, /fetch-depth: 0/)
   assert.equal(JSON.parse(manifest).start_url, "/kmsg/")
 })

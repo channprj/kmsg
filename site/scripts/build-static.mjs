@@ -1,10 +1,10 @@
-import { execFileSync } from "node:child_process"
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises"
 import { basename, dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import legacyContent from "../app/content/legacy-content.json" with { type: "json" }
 import trustContent from "../app/content/trust-content.json" with { type: "json" }
+import { lastModifiedForPath } from "./git-metadata.mjs"
 
 const siteDir = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const repoDir = resolve(siteDir, "..")
@@ -38,17 +38,6 @@ const canonicalPages = [...legacyContent.pages, ...trustContent.pages].map((page
   ...page,
   publicPath: `${localePrefixes[page.locale]}${pageSlugs[page.pageKey]}`,
 }))
-
-function lastModified(source) {
-  try {
-    return execFileSync("git", ["log", "-1", "--format=%cI", "--", source], {
-      cwd: repoDir,
-      encoding: "utf8",
-    }).trim()
-  } catch {
-    return new Date(0).toISOString()
-  }
-}
 
 async function write(relativePath, content) {
   const path = join(distDir, relativePath)
@@ -124,7 +113,7 @@ const sitemapEntries = canonicalPages
   .map((page) => {
     const priority = page.pageKey === "home" ? "1.0" : "0.8"
     const frequency = page.pageKey === "home" ? "weekly" : "monthly"
-    return `  <url>\n    <loc>${baseUrl}${page.publicPath}</loc>\n    <lastmod>${page.lastModified ?? lastModified(page.source)}</lastmod>\n    <changefreq>${frequency}</changefreq>\n    <priority>${priority}</priority>\n  </url>`
+    return `  <url>\n    <loc>${baseUrl}${page.publicPath}</loc>\n    <lastmod>${page.lastModified ?? lastModifiedForPath(repoDir, page.source)}</lastmod>\n    <changefreq>${frequency}</changefreq>\n    <priority>${priority}</priority>\n  </url>`
   })
   .join("\n")
 await write(

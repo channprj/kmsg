@@ -10,6 +10,7 @@ on:
       - "README.en.md"
       - "USAGE.md"
       - "ARCHITECTURE.md"
+      - "VERSION"
       - "VERSIONING.md"
       - "docs/openclaw.md"
       - "assets/demo1.mp4"
@@ -33,6 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
