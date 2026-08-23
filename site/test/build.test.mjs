@@ -13,22 +13,34 @@ const pageSlugs = ["", "usage/", "architecture/", "mcp/", "skill/", "versioning/
 const canonicalFiles = localePrefixes.flatMap((prefix) =>
   pageSlugs.map((slug) => `${prefix}${slug}index.html`),
 )
+const legacyAliasFiles = [
+  "ko/index.html",
+  "ko/usage/index.html",
+  "ko/architecture/index.html",
+  "ko/mcp/index.html",
+  "ko/openclaw/index.html",
+  "ko/skill/index.html",
+  "ko/versioning/index.html",
+  "ko/privacy/index.html",
+  "ko/terms/index.html",
+  "openclaw/index.html",
+  "en/openclaw/index.html",
+  "jp/openclaw/index.html",
+  "cn/openclaw/index.html",
+]
+
+const visibleText = (html) =>
+  html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&(?:amp|lt|gt|quot|#39|#x27);/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim()
 
 test("React build emits every canonical page and compatibility artifact", async () => {
   const compatibilityFiles = [
-    "ko/index.html",
-    "ko/usage/index.html",
-    "ko/architecture/index.html",
-    "ko/mcp/index.html",
-    "ko/openclaw/index.html",
-    "ko/skill/index.html",
-    "ko/versioning/index.html",
-    "ko/privacy/index.html",
-    "ko/terms/index.html",
-    "openclaw/index.html",
-    "en/openclaw/index.html",
-    "jp/openclaw/index.html",
-    "cn/openclaw/index.html",
+    ...legacyAliasFiles,
     "404.html",
     "robots.txt",
     "sitemap.xml",
@@ -63,6 +75,9 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.match(home, /data-slot="dropdown-menu-trigger"/)
   assert.match(home, /data-footer-wordmark="true"/)
   assert.doesNotMatch(home, /<select\b/)
+  assert.equal((home.match(/<h1\b/g) ?? []).length, 1)
+  assert.ok(visibleText(home).length >= 500)
+  assert.doesNotMatch(home, /http-equiv="refresh"/i)
   assert.match(home, /<meta name="twitter:card" content="summary_large_image"/)
   assert.match(home, /<meta property="og:image" content="https:\/\/channprj\.github\.io\/kmsg\/assets\/kmsg-logo\.jpg"/)
   assert.match(docs, /data-code-copy/)
@@ -72,6 +87,16 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
     /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/cn\/architecture\/"/,
   )
   assert.match(chinese, /<meta property="og:locale" content="zh_CN"/)
+})
+
+test("legacy aliases serve complete prerendered pages without meta refresh", async () => {
+  const aliases = await Promise.all(legacyAliasFiles.map(readOutput))
+
+  for (const html of aliases) {
+    assert.doesNotMatch(html, /http-equiv="refresh"/i)
+    assert.match(html, /<h1\b/)
+    assert.ok(visibleText(html).length >= 200)
+  }
 })
 
 test("hashed application assets referenced by HTML exist", async () => {
@@ -102,10 +127,13 @@ test("redirects, 404, and discovery files preserve public contracts", async () =
       readFile(resolve(siteDir, "../VERSION"), "utf8"),
     ])
 
-  assert.match(koRedirect, /url=https:\/\/channprj\.github\.io\/kmsg\/usage\//)
-  assert.match(openclawRedirect, /url=https:\/\/channprj\.github\.io\/kmsg\/cn\/mcp\//)
+  assert.match(koRedirect, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/usage\/"/)
+  assert.match(openclawRedirect, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/cn\/mcp\/"/)
   assert.match(notFound, /<meta name="robots" content="noindex,follow"/)
   assert.equal((notFound.match(/class="not-found-locale"/g) ?? []).length, 4)
+  assert.match(notFound, /<pre[^>]*data-agent-recovery>/)
+  assert.match(notFound, /\[Agent index]\(https:\/\/channprj\.github\.io\/kmsg\/llms\.txt\)/)
+  assert.match(notFound, /\[Sitemap]\(https:\/\/channprj\.github\.io\/kmsg\/sitemap\.xml\)/)
   assert.equal((sitemap.match(/<url>/g) ?? []).length, 32)
   assert.ok(llm.includes(`Current version: ${version.trim()}`))
   assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\//)

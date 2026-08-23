@@ -22,7 +22,7 @@ import "./app.css"
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/kmsg/assets/favicon.svg", type: "image/svg+xml" },
   { rel: "manifest", href: "/kmsg/site.webmanifest" },
-  { rel: "alternate", href: "/kmsg/llm.txt", type: "text/plain", title: "LLM-readable site index" },
+  { rel: "describedby", href: "/kmsg/llms.txt", title: "LLM-readable site index" },
 ]
 
 export function Layout({ children }: { children: ReactNode }) {

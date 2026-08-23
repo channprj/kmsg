@@ -19,7 +19,6 @@ if (basename(distDir) !== "dist" || dirname(distDir) !== siteDir) {
 }
 
 const localePrefixes = { ko: "", en: "en/", jp: "jp/", cn: "cn/" }
-const hrefLang = { ko: "ko", en: "en", jp: "ja", cn: "zh-CN" }
 const pageSlugs = {
   home: "",
   usage: "usage/",
@@ -47,14 +46,16 @@ function lastModified(source) {
   }
 }
 
-function redirectDocument(target, language = "en") {
-  return `<!doctype html><html lang="${language}"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=${target}"><link rel="canonical" href="${target}"><meta name="robots" content="noindex,follow"></head><body><p><a href="${target}">Continue to kmsg</a></p></body></html>`
-}
-
 async function write(relativePath, content) {
   const path = join(distDir, relativePath)
   await mkdir(dirname(path), { recursive: true })
   await writeFile(path, content)
+}
+
+async function copyOutput(sourceRelativePath, targetRelativePath) {
+  const target = join(distDir, targetRelativePath)
+  await mkdir(dirname(target), { recursive: true })
+  await cp(join(distDir, sourceRelativePath), target)
 }
 
 await rm(distDir, { recursive: true, force: true })
@@ -68,17 +69,15 @@ await Promise.all([
 ])
 
 for (const page of canonicalPages.filter(({ locale }) => locale === "ko")) {
-  const target = `${baseUrl}${page.publicPath}`
   const legacyPath = `ko/${pageSlugs[page.pageKey]}index.html`
-  await write(legacyPath, redirectDocument(target, "ko"))
+  await copyOutput(`${page.publicPath}index.html`, legacyPath)
 }
 
 for (const locale of Object.keys(localePrefixes)) {
   const prefix = localePrefixes[locale]
-  const target = `${baseUrl}${prefix}mcp/`
-  await write(`${prefix}openclaw/index.html`, redirectDocument(target, hrefLang[locale]))
+  await copyOutput(`${prefix}mcp/index.html`, `${prefix}openclaw/index.html`)
   if (locale === "ko") {
-    await write("ko/openclaw/index.html", redirectDocument(target, "ko"))
+    await copyOutput("mcp/index.html", "ko/openclaw/index.html")
   }
 }
 
@@ -90,7 +89,14 @@ const localeLinks = Object.entries(localePrefixes)
   .join("")
 await write(
   "404.html",
-  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found - kmsg</title><meta name="robots" content="noindex,follow"><link rel="icon" href="/kmsg/assets/favicon.svg" type="image/svg+xml"><style>html{color-scheme:dark;background:#11110f;color:#f7f7f2;font-family:system-ui,sans-serif}body{margin:0}.not-found-page{display:flex;min-height:100vh;box-sizing:border-box;flex-direction:column;justify-content:center;max-width:48rem;margin:auto;padding:2rem}.not-found-page img{border-radius:.75rem}.not-found-page h1{font-size:clamp(2.5rem,8vw,5rem);margin:.75rem 0}.not-found-page p{color:#aaa99f;line-height:1.7}.not-found-page nav{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}.not-found-locale{min-height:2.75rem;display:inline-flex;align-items:center;border:1px solid #35352e;border-radius:.75rem;padding:0 1rem;color:inherit;text-decoration:none}.not-found-locale:hover{background:#252520}</style></head><body><main class="not-found-page"><img src="/kmsg/assets/kmsg-logo.jpg" alt="" width="64" height="64"><p>404</p><h1>Page not found</h1><p>The requested page does not exist. Choose a language to return to kmsg.</p><nav aria-label="Choose a kmsg homepage">${localeLinks}</nav></main></body></html>`,
+  `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found - kmsg</title><meta name="robots" content="noindex,follow"><link rel="icon" href="/kmsg/assets/favicon.svg" type="image/svg+xml"><link rel="describedby" href="/kmsg/llms.txt"><style>html{color-scheme:dark;background:#11110f;color:#f7f7f2;font-family:system-ui,sans-serif}body{margin:0}.not-found-page{display:flex;min-height:100vh;box-sizing:border-box;flex-direction:column;justify-content:center;max-width:48rem;margin:auto;padding:2rem}.not-found-page img{border-radius:.75rem}.not-found-page h1{font-size:clamp(2.5rem,8vw,5rem);margin:.75rem 0}.not-found-page p{color:#aaa99f;line-height:1.7}.not-found-page nav{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:2rem}.not-found-locale{min-height:2.75rem;display:inline-flex;align-items:center;border:1px solid #35352e;border-radius:.75rem;padding:0 1rem;color:inherit;text-decoration:none}.not-found-locale:hover{background:#252520}.agent-recovery{margin:2rem 0 0;border:1px solid #35352e;border-radius:.75rem;background:#191915;padding:1rem;white-space:pre-wrap;color:#d8d7cf;line-height:1.6;overflow-wrap:anywhere}</style></head><body><main class="not-found-page"><img src="/kmsg/assets/kmsg-logo.jpg" alt="" width="64" height="64"><p>404</p><h1>Page not found</h1><p>The requested page does not exist. Choose a language to return to kmsg.</p><nav aria-label="Choose a kmsg homepage">${localeLinks}</nav><pre class="agent-recovery" data-agent-recovery># kmsg 404
+
+The requested path does not exist. Continue with one of these resources:
+
+- [Home](${baseUrl})
+- [Agent index](${baseUrl}llms.txt)
+- [Sitemap](${baseUrl}sitemap.xml)
+- [MCP documentation](${baseUrl}mcp/)</pre></main></body></html>`,
 )
 
 const sitemapEntries = canonicalPages
