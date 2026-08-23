@@ -658,22 +658,30 @@
       },
       "terms": {
         "title": "이용 조건 - kmsg",
-        "description": "kmsg 웹사이트와 오픈소스 소프트웨어의 이용 조건을 안내합니다.",
+        "description": "kmsg 웹사이트, 문서와 오픈소스 소프트웨어의 이용 조건, 책임 범위와 변경 원칙을 안내합니다.",
         "eyebrow": "법적 안내",
         "heading": "이용 조건",
-        "intro": "kmsg는 MIT License로 제공되는 독립 오픈소스 프로젝트입니다.",
+        "intro": "kmsg는 MIT License로 제공되는 독립 오픈소스 프로젝트입니다. 이 조건은 정적 웹사이트와 문서 이용, software 설치·수정·자동화에 적용되는 기본 범위를 설명합니다.",
         "sections": [
           {
             "title": "오픈소스 라이선스",
-            "body": "소프트웨어 사용, 복제, 수정, 배포 조건은 저장소의 MIT License를 따릅니다."
+            "body": "software의 사용, 복제, 수정, 병합, 배포와 재라이선스 조건은 GitHub repository의 MIT License 원문을 따릅니다. source 또는 binary를 재배포할 때는 copyright notice와 license notice를 유지해야 합니다. 이 웹페이지의 요약이 license 원문을 대체하지 않습니다."
           },
           {
             "title": "비공식 프로젝트",
-            "body": "kmsg는 Kakao Corp.와 제휴하거나 승인받은 공식 도구가 아닙니다."
+            "body": "kmsg는 Kakao Corp.와 제휴하거나 승인받은 공식 도구가 아닙니다. KakaoTalk 이름과 관련 표시는 호환되는 desktop application을 설명하기 위해 사용합니다. KakaoTalk service, account, UI와 정책은 해당 제공자가 관리하며 kmsg project가 availability나 변경을 통제하지 않습니다."
           },
           {
             "title": "사용자 책임",
-            "body": "사용자는 자동화 대상, 손쉬운 사용 권한, 메시지 전송 결과를 직접 확인하고 관련 정책과 법률을 준수해야 합니다."
+            "body": "사용자는 자신이 제어할 권한이 있는 Mac과 KakaoTalk account에서만 kmsg를 사용하고, Accessibility 권한, automation target, message payload와 실제 전송 결과를 직접 확인해야 합니다. 개인정보, 통신 비밀, spam, platform policy와 적용 법률을 준수하고 real send 전에는 dry-run 또는 별도 approval 절차를 사용하세요."
+          },
+          {
+            "title": "보증과 책임 제한",
+            "body": "kmsg와 이 웹사이트는 적용 가능한 범위에서 어떠한 명시적·묵시적 보증 없이 현재 상태로 제공됩니다. desktop UI 변경, permission 상태, network 또는 local environment에 따라 command가 실패할 수 있습니다. 중요한 workflow는 backup, rate limit, idempotency와 human verification을 별도로 마련해야 합니다."
+          },
+          {
+            "title": "문서와 조건의 변경",
+            "body": "supported command, security boundary, website content와 이 조건이 바뀌면 public source와 Git history에 기록합니다. 특정 version의 동작은 release note와 해당 tag의 문서를 기준으로 확인하세요. 질문이나 문제 제기는 contact page의 공식 channel을 사용하고 credential이나 private message는 공개 issue에 넣지 마세요."
           }
         ]
       }
@@ -754,22 +762,30 @@
       },
       "terms": {
         "title": "利用条件 - kmsg",
-        "description": "kmsgのウェブサイトとオープンソースソフトウェアの利用条件を説明します。",
+        "description": "kmsgのウェブサイト、文書、オープンソースsoftwareの利用条件、責任範囲、変更方針を説明します。",
         "eyebrow": "法的情報",
         "heading": "利用条件",
-        "intro": "kmsgはMIT Licenseで提供される独立したオープンソースプロジェクトです。",
+        "intro": "kmsgはMIT Licenseで提供される独立したオープンソースprojectです。この条件は静的website、文書、softwareのinstall・変更・automationに関する基本範囲を説明します。",
         "sections": [
           {
             "title": "オープンソースライセンス",
-            "body": "ソフトウェアの利用、複製、変更、配布にはリポジトリのMIT Licenseが適用されます。"
+            "body": "softwareの利用、複製、変更、merge、配布、再licenseにはGitHub repositoryのMIT License原文が適用されます。sourceまたはbinaryを再配布する場合はcopyright noticeとlicense noticeを維持してください。このpageの要約はlicense原文を置き換えません。"
           },
           {
             "title": "非公式プロジェクト",
-            "body": "kmsgはKakao Corp.と提携、承認された公式ツールではありません。"
+            "body": "kmsgはKakao Corp.と提携または承認された公式toolではありません。KakaoTalkの名称は対応するdesktop applicationを説明するために使用します。service、account、UI、policyは各提供者が管理し、kmsg projectはavailabilityや変更を管理できません。"
           },
           {
             "title": "利用者の責任",
-            "body": "自動化対象、アクセシビリティ権限、送信結果を確認し、関連する方針と法律を遵守してください。"
+            "body": "利用者は自分が管理する権限のあるMacとKakaoTalk accountでのみkmsgを利用し、Accessibility権限、automation target、message payload、実際の送信結果を確認してください。privacy、通信、spam、platform policy、適用法令を守り、real send前にはdry-runまたは明示的approvalを利用してください。"
+          },
+          {
+            "title": "保証と責任の制限",
+            "body": "kmsgとこのwebsiteは適用可能な範囲で明示・黙示の保証なく現状のまま提供されます。desktop UI、permission、network、local environmentの変更によってcommandが失敗する場合があります。重要なworkflowにはbackup、rate limit、idempotency、人によるverificationを別途用意してください。"
+          },
+          {
+            "title": "文書と条件の変更",
+            "body": "supported command、security boundary、website content、この条件の変更はpublic sourceとGit historyへ記録します。特定versionの動作はrelease noteとtag時点の文書で確認してください。問い合わせはcontact pageの公式channelを使い、credentialやprivate messageをpublic issueへ投稿しないでください。"
           }
         ]
       }
@@ -806,22 +822,30 @@
       },
       "terms": {
         "title": "使用条款 - kmsg",
-        "description": "说明kmsg网站与开源软件的使用条款。",
+        "description": "说明kmsg网站、文档与开源software的使用条款、责任范围及变更原则。",
         "eyebrow": "法律信息",
         "heading": "使用条款",
-        "intro": "kmsg是依据MIT License提供的独立开源项目。",
+        "intro": "kmsg是依据MIT License提供的独立开源project。本条款说明使用静态website与文档，以及安装、修改和自动化software时适用的基本范围。",
         "sections": [
           {
             "title": "开源许可证",
-            "body": "软件的使用、复制、修改与分发遵循仓库中的MIT License。"
+            "body": "software的使用、复制、修改、merge、分发与再许可遵循GitHub repository中的MIT License原文。重新分发source或binary时应保留copyright notice与license notice。本页面摘要不能替代license原文。"
           },
           {
             "title": "非官方项目",
-            "body": "kmsg并非Kakao Corp.的关联、认可或官方工具。"
+            "body": "kmsg并非Kakao Corp.关联、认可或官方tool。KakaoTalk名称仅用于说明兼容的desktop application。service、account、UI及policy由相应提供者管理，kmsg project不能控制其availability与变更。"
           },
           {
             "title": "用户责任",
-            "body": "用户应自行确认自动化目标、辅助功能权限与消息发送结果，并遵守适用政策和法律。"
+            "body": "用户只能在自己有权控制的Mac与KakaoTalk account中使用kmsg，并核对Accessibility权限、automation target、message payload及真实发送结果。应遵守privacy、通信、spam、platform policy和适用法律，real send前应使用dry-run或明确approval流程。"
+          },
+          {
+            "title": "保证与责任限制",
+            "body": "kmsg与本website在适用法律允许范围内按现状提供，不作明示或默示保证。desktop UI、permission、network或local environment变化可能导致command失败。重要workflow应另外设置backup、rate limit、idempotency以及人工verification。"
+          },
+          {
+            "title": "文档与条款变更",
+            "body": "supported command、security boundary、website content及本条款的变更会记录在public source与Git history中。特定version行为应以相应release note和tag文档为准。问题请通过contact page官方渠道提出，不要在public issue中提交credential或private message。"
           }
         ]
       }

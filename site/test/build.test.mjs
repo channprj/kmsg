@@ -113,7 +113,7 @@ test("trust anchors and developer resources are substantive raw HTML", async () 
     readOutput("index.html"),
     readOutput("developers/index.html"),
     ...localePrefixes.flatMap((prefix) =>
-      ["about", "contact", "privacy"].map((page) =>
+      ["about", "contact", "privacy", "terms"].map((page) =>
         readOutput(`${prefix}${page}/index.html`),
       ),
     ),
