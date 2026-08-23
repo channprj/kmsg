@@ -11,6 +11,7 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet"
 import { LOCALES } from "~/content/locales"
+import { pageCopyFor } from "~/content/pages"
 import { publicRouteFor, type LocaleId } from "~/content/routes"
 import { cn } from "~/lib/utils"
 
@@ -58,6 +59,12 @@ export function MobileNavigation({ locale }: { locale: LocaleId }) {
             href={publicRouteFor(locale, "skill")}
           >
             {ui.skill}
+          </a>
+          <a
+            className={cn(buttonVariants({ variant: "ghost" }), "min-h-11 justify-start")}
+            href={publicRouteFor(locale, "developers")}
+          >
+            {pageCopyFor(locale, "developers").eyebrow}
           </a>
         </nav>
         <div className="mt-auto flex items-center justify-between border-t p-4">

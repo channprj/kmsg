@@ -11,7 +11,8 @@ import {
 
 import type { Route } from "./+types/root"
 import { LOCALES } from "./content/locales"
-import { routeFromPath } from "./content/routes"
+import { publicRouteFor, routeFromPath } from "./content/routes"
+import { homepageStructuredData } from "./lib/metadata"
 import {
   THEME_BOOTSTRAP,
   readThemeFromDocument,
@@ -22,12 +23,18 @@ import "./app.css"
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/kmsg/assets/favicon.svg", type: "image/svg+xml" },
   { rel: "manifest", href: "/kmsg/site.webmanifest" },
-  { rel: "alternate", href: "/kmsg/llm.txt", type: "text/plain", title: "LLM-readable site index" },
+  { rel: "describedby", href: "/kmsg/llms.txt", title: "LLM-readable site index" },
 ]
 
 export function Layout({ children }: { children: ReactNode }) {
   const route = routeFromPath(useLocation().pathname)
   const lang = LOCALES[route?.locale ?? "ko"].lang
+  const markdownHref = route
+    ? `${publicRouteFor(route.locale, route.pageKey)}index.md`
+    : "/kmsg/index.md"
+  const structuredData = route?.pageKey === "home"
+    ? JSON.stringify(homepageStructuredData()).replace(/</g, "\\u003c")
+    : null
   const theme =
     typeof document === "undefined" ? "dark" : readThemeFromDocument()
 
@@ -43,6 +50,13 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content={themeColorFor(theme)} />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+        <link rel="alternate" href={markdownHref} type="text/markdown" />
+        {structuredData ? (
+          <script
+            dangerouslySetInnerHTML={{ __html: structuredData }}
+            type="application/ld+json"
+          />
+        ) : null}
         <Meta />
         <Links />
       </head>

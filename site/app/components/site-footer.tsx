@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react"
 
 import { FooterWordmark } from "~/components/footer-wordmark"
 import { LOCALES } from "~/content/locales"
+import { pageCopyFor } from "~/content/pages"
 import { publicRouteFor, type LocaleId } from "~/content/routes"
 
 export function SiteFooter({ locale }: { locale: LocaleId }) {
@@ -25,6 +26,15 @@ export function SiteFooter({ locale }: { locale: LocaleId }) {
           </p>
         </div>
         <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm" aria-label="Footer">
+          {(["developers", "about", "contact"] as const).map((pageKey) => (
+            <a
+              className="min-h-11 py-3 hover:underline"
+              href={publicRouteFor(locale, pageKey)}
+              key={pageKey}
+            >
+              {pageCopyFor(locale, pageKey).eyebrow}
+            </a>
+          ))}
           <a className="min-h-11 py-3 hover:underline" href={publicRouteFor(locale, "privacy")}>
             {ui.privacy}
           </a>

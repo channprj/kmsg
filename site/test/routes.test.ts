@@ -11,11 +11,11 @@ import {
 } from "~/content/routes"
 
 describe("localized route table", () => {
-  it("contains 32 unique canonical pages", () => {
+  it("contains 44 unique canonical pages", () => {
     expect(LOCALE_IDS).toHaveLength(4)
-    expect(PAGE_KEYS).toHaveLength(8)
-    expect(CANONICAL_ROUTES).toHaveLength(32)
-    expect(new Set(CANONICAL_ROUTES.map(({ path }) => path)).size).toBe(32)
+    expect(PAGE_KEYS).toHaveLength(11)
+    expect(CANONICAL_ROUTES).toHaveLength(44)
+    expect(new Set(CANONICAL_ROUTES.map(({ path }) => path)).size).toBe(44)
   })
 
   it("round-trips every locale and page key", () => {
@@ -39,11 +39,30 @@ describe("localized route table", () => {
       jp: "/kmsg/jp/usage/",
       cn: "/kmsg/cn/usage/",
     })
+    expect(localeTargets("about")).toEqual({
+      ko: "/kmsg/about/",
+      en: "/kmsg/en/about/",
+      jp: "/kmsg/jp/about/",
+      cn: "/kmsg/cn/about/",
+    })
   })
 
-  it("rejects unknown and legacy paths", () => {
+  it("maps published compatibility paths to canonical routes", () => {
+    expect(routeFromPath("/kmsg/ko/usage/")).toEqual({
+      locale: "ko",
+      pageKey: "usage",
+    })
+    expect(routeFromPath("/kmsg/ko/openclaw/")).toEqual({
+      locale: "ko",
+      pageKey: "mcp",
+    })
+    expect(routeFromPath("/kmsg/en/openclaw/")).toEqual({
+      locale: "en",
+      pageKey: "mcp",
+    })
+  })
+
+  it("rejects unknown paths", () => {
     expect(routeFromPath("/kmsg/fr/usage/")).toBeNull()
-    expect(routeFromPath("/kmsg/ko/usage/")).toBeNull()
-    expect(routeFromPath("/kmsg/openclaw/")).toBeNull()
   })
 })

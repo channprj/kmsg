@@ -1,0 +1,124 @@
+{
+  "pages": [
+    {
+      "locale": "ko",
+      "pageKey": "about",
+      "title": "kmsg 소개 — 프로젝트, 운영 주체와 설계 원칙",
+      "description": "kmsg가 누구를 위해 만들어졌고 어떻게 운영되는지, 독립 오픈소스 프로젝트의 범위와 신뢰 근거를 설명합니다.",
+      "eyebrow": "kmsg 소개",
+      "source": "site/content/ko/about.md",
+      "sourceLabel": "site/content/ko/about.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "ko",
+      "pageKey": "contact",
+      "title": "kmsg 연락처와 지원 안내",
+      "description": "kmsg 버그 신고, 기능 제안, 보안·개인정보 문의에 사용할 공식 공개 채널과 안전한 문의 방법을 안내합니다.",
+      "eyebrow": "연락처",
+      "source": "site/content/ko/contact.md",
+      "sourceLabel": "site/content/ko/contact.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "ko",
+      "pageKey": "developers",
+      "title": "kmsg 개발자 리소스 — CLI, JSON, 인증과 MCP 서버",
+      "description": "kmsg CLI·구조화 JSON·로컬 인증·stdio MCP 서버의 개발자 문서와 지원 범위를 한곳에 정리합니다.",
+      "eyebrow": "개발자 리소스",
+      "source": "site/content/ko/developers.md",
+      "sourceLabel": "site/content/ko/developers.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "en",
+      "pageKey": "about",
+      "title": "About kmsg — project identity and design principles",
+      "description": "Who kmsg is for, how the independent open source project is maintained, and which technical and trust boundaries apply.",
+      "eyebrow": "About kmsg",
+      "source": "site/content/en/about.md",
+      "sourceLabel": "site/content/en/about.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "en",
+      "pageKey": "contact",
+      "title": "Contact and support for kmsg",
+      "description": "Official public channels for kmsg bug reports, feature requests, security concerns, and privacy questions.",
+      "eyebrow": "Contact",
+      "source": "site/content/en/contact.md",
+      "sourceLabel": "site/content/en/contact.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "en",
+      "pageKey": "developers",
+      "title": "kmsg developer resources — CLI, JSON, auth, and MCP",
+      "description": "A predictable index for the kmsg CLI, structured JSON, local authentication, architecture, and native stdio MCP server.",
+      "eyebrow": "Developers",
+      "source": "site/content/en/developers.md",
+      "sourceLabel": "site/content/en/developers.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "jp",
+      "pageKey": "about",
+      "title": "kmsgについて — プロジェクトと設計原則",
+      "description": "kmsgの目的、独立したオープンソース運営、技術的な範囲と信頼の根拠を説明します。",
+      "eyebrow": "kmsgについて",
+      "source": "site/content/jp/about.md",
+      "sourceLabel": "site/content/jp/about.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "jp",
+      "pageKey": "contact",
+      "title": "kmsgへの連絡とサポート",
+      "description": "バグ報告、機能提案、セキュリティおよびプライバシーに関する公式窓口を案内します。",
+      "eyebrow": "連絡先",
+      "source": "site/content/jp/contact.md",
+      "sourceLabel": "site/content/jp/contact.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "jp",
+      "pageKey": "developers",
+      "title": "kmsg開発者リソース — CLI、JSON、認証、MCP",
+      "description": "kmsgのCLI、構造化JSON、ローカル認証、アーキテクチャ、stdio MCPサーバーの索引です。",
+      "eyebrow": "開発者向け",
+      "source": "site/content/jp/developers.md",
+      "sourceLabel": "site/content/jp/developers.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "cn",
+      "pageKey": "about",
+      "title": "关于kmsg — 项目身份与设计原则",
+      "description": "说明kmsg的用途、独立开源项目的维护方式、技术边界与可信依据。",
+      "eyebrow": "关于kmsg",
+      "source": "site/content/cn/about.md",
+      "sourceLabel": "site/content/cn/about.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "cn",
+      "pageKey": "contact",
+      "title": "联系kmsg与获取支持",
+      "description": "提供kmsg错误报告、功能建议、安全问题与隐私咨询的官方公开渠道。",
+      "eyebrow": "联系方式",
+      "source": "site/content/cn/contact.md",
+      "sourceLabel": "site/content/cn/contact.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    },
+    {
+      "locale": "cn",
+      "pageKey": "developers",
+      "title": "kmsg开发者资源 — CLI、JSON、认证与MCP",
+      "description": "集中提供kmsg CLI、结构化JSON、本地认证、架构以及stdio MCP服务器文档。",
+      "eyebrow": "开发者资源",
+      "source": "site/content/cn/developers.md",
+      "sourceLabel": "site/content/cn/developers.md",
+      "lastModified": "2026-08-24T05:43:35+09:00"
+    }
+  ]
+}

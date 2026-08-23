@@ -6,6 +6,9 @@ export const PAGE_KEYS = [
   "mcp",
   "skill",
   "versioning",
+  "developers",
+  "about",
+  "contact",
   "privacy",
   "terms",
 ] as const
@@ -29,6 +32,9 @@ const pageSlugs: Record<PageKey, string> = {
   mcp: "mcp",
   skill: "skill",
   versioning: "versioning",
+  developers: "developers",
+  about: "about",
+  contact: "contact",
   privacy: "privacy",
   terms: "terms",
 }
@@ -69,6 +75,9 @@ export function routeFromPath(pathname: string): {
   }
   if (!path.startsWith("/")) path = `/${path}`
   if (!path.endsWith("/")) path = `${path}/`
+  if (path === "/ko/") path = "/"
+  else if (path.startsWith("/ko/")) path = path.slice(3)
+  path = path.replace(/\/openclaw\/$/, "/mcp/")
   return routeLookup.get(path) ?? null
 }
 

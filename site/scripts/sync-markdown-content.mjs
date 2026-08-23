@@ -1,4 +1,3 @@
-import { execFileSync } from "node:child_process"
 import { readFile, writeFile } from "node:fs/promises"
 import { dirname, posix, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -7,12 +6,23 @@ import { marked } from "marked"
 import sanitizeHtml from "sanitize-html"
 
 import legacyContent from "../app/content/legacy-content.json" with { type: "json" }
+import trustContent from "../app/content/trust-content.json" with { type: "json" }
+import { lastModifiedForPath } from "./git-metadata.mjs"
 
 const siteDir = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const repoDir = resolve(siteDir, "..")
 const outputPath = resolve(siteDir, "app/content/document-content.json")
 const repositoryUrl = "https://github.com/channprj/kmsg"
-const docsKeys = new Set(["usage", "architecture", "openclaw", "skill", "versioning"])
+const docsKeys = new Set([
+  "usage",
+  "architecture",
+  "openclaw",
+  "skill",
+  "versioning",
+  "developers",
+  "about",
+  "contact",
+])
 
 const routeKey = (pageKey) => (pageKey === "openclaw" ? "mcp" : pageKey)
 const localePrefix = (locale) => (locale === "ko" ? "" : `${locale}/`)
@@ -26,6 +36,9 @@ const markdownPageKey = (rawPath) => {
   if (["openclaw.md", "openclaw"].includes(basename)) return "openclaw"
   if (["skill.md", "skill"].includes(basename)) return "skill"
   if (["versioning.md", "versioning"].includes(basename)) return "versioning"
+  if (["developers.md", "developers"].includes(basename)) return "developers"
+  if (["about.md", "about"].includes(basename)) return "about"
+  if (["contact.md", "contact"].includes(basename)) return "contact"
   return null
 }
 
@@ -163,18 +176,12 @@ function enhanceMarkdown(html, page) {
   return { html: enhanced, headings }
 }
 
-function lastModifiedFor(source) {
-  try {
-    return execFileSync("git", ["log", "-1", "--format=%cI", "--", source], {
-      cwd: repoDir,
-      encoding: "utf8",
-    }).trim()
-  } catch {
-    return new Date(0).toISOString()
-  }
-}
-
-const pages = legacyContent.pages.filter(({ pageKey }) => docsKeys.has(pageKey))
+const pages = [...legacyContent.pages, ...trustContent.pages]
+  .filter(({ pageKey }) => docsKeys.has(pageKey))
+  .map((page) => ({
+    ...page,
+    localeConfig: page.localeConfig ?? legacyContent.locales[page.locale],
+  }))
 const entries = []
 
 for (const page of pages) {
@@ -189,7 +196,7 @@ for (const page of pages) {
     title,
     source: page.source,
     sourceLabel: page.sourceLabel ?? page.source,
-    lastModified: lastModifiedFor(page.source),
+    lastModified: page.lastModified ?? lastModifiedForPath(repoDir, page.source),
     ...rendered,
   })
 }

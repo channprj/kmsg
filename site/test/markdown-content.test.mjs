@@ -7,7 +7,7 @@ const contentUrl = new URL("../app/content/document-content.json", import.meta.u
 test("synced Markdown content covers every documentation route", async () => {
   const entries = JSON.parse(await readFile(contentUrl, "utf8"))
 
-  assert.equal(entries.length, 20)
+  assert.equal(entries.length, 32)
   assert.deepEqual(
     [...new Set(entries.map(({ locale }) => locale))].sort(),
     ["cn", "en", "jp", "ko"],

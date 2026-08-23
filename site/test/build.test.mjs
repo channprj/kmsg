@@ -9,26 +9,44 @@ const distDir = join(siteDir, "dist")
 const readOutput = (path) => readFile(join(distDir, path), "utf8")
 
 const localePrefixes = ["", "en/", "jp/", "cn/"]
-const pageSlugs = ["", "usage/", "architecture/", "mcp/", "skill/", "versioning/", "privacy/", "terms/"]
+const pageSlugs = ["", "usage/", "architecture/", "mcp/", "skill/", "versioning/", "developers/", "about/", "contact/", "privacy/", "terms/"]
 const canonicalFiles = localePrefixes.flatMap((prefix) =>
   pageSlugs.map((slug) => `${prefix}${slug}index.html`),
 )
+const canonicalMarkdownFiles = canonicalFiles.map((path) =>
+  path.replace(/index\.html$/, "index.md"),
+)
+const legacyAliasFiles = [
+  "ko/index.html",
+  "ko/usage/index.html",
+  "ko/architecture/index.html",
+  "ko/mcp/index.html",
+  "ko/openclaw/index.html",
+  "ko/skill/index.html",
+  "ko/versioning/index.html",
+  "ko/developers/index.html",
+  "ko/about/index.html",
+  "ko/contact/index.html",
+  "ko/privacy/index.html",
+  "ko/terms/index.html",
+  "openclaw/index.html",
+  "en/openclaw/index.html",
+  "jp/openclaw/index.html",
+  "cn/openclaw/index.html",
+]
+
+const visibleText = (html) =>
+  html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&(?:amp|lt|gt|quot|#39|#x27);/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim()
 
 test("React build emits every canonical page and compatibility artifact", async () => {
   const compatibilityFiles = [
-    "ko/index.html",
-    "ko/usage/index.html",
-    "ko/architecture/index.html",
-    "ko/mcp/index.html",
-    "ko/openclaw/index.html",
-    "ko/skill/index.html",
-    "ko/versioning/index.html",
-    "ko/privacy/index.html",
-    "ko/terms/index.html",
-    "openclaw/index.html",
-    "en/openclaw/index.html",
-    "jp/openclaw/index.html",
-    "cn/openclaw/index.html",
+    ...legacyAliasFiles,
     "404.html",
     "robots.txt",
     "sitemap.xml",
@@ -47,7 +65,7 @@ test("React build emits every canonical page and compatibility artifact", async 
   ]
 
   await Promise.all(
-    [...canonicalFiles, ...compatibilityFiles, ...assets].map((path) =>
+    [...canonicalFiles, ...canonicalMarkdownFiles, ...compatibilityFiles, ...assets].map((path) =>
       access(join(distDir, path)),
     ),
   )
@@ -63,8 +81,24 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.match(home, /data-slot="dropdown-menu-trigger"/)
   assert.match(home, /data-footer-wordmark="true"/)
   assert.doesNotMatch(home, /<select\b/)
+  assert.equal((home.match(/<h1\b/g) ?? []).length, 1)
+  assert.ok(visibleText(home).length >= 500)
+  assert.doesNotMatch(home, /http-equiv="refresh"/i)
+  assert.match(home, /^<!DOCTYPE html><html lang="ko"/)
+  assert.match(home, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/"/)
+  assert.match(home, /<meta property="og:type" content="website"/)
+  assert.match(
+    home,
+    /<link(?=[^>]*rel="alternate")(?=[^>]*type="text\/markdown")(?=[^>]*href="\/kmsg\/index\.md")[^>]*>/,
+  )
+  assert.match(home, /<link[^>]*rel="describedby"[^>]*href="\/kmsg\/llms\.txt"/)
   assert.match(home, /<meta name="twitter:card" content="summary_large_image"/)
   assert.match(home, /<meta property="og:image" content="https:\/\/channprj\.github\.io\/kmsg\/assets\/kmsg-logo\.jpg"/)
+  const jsonLd = home.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)
+  assert.ok(jsonLd)
+  const structuredData = JSON.parse(jsonLd[1])
+  assert.ok(structuredData["@graph"].some(({ "@type": type }) => type === "SoftwareApplication"))
+  assert.ok(structuredData["@graph"].some(({ "@type": type }) => type === "Organization"))
   assert.match(docs, /data-code-copy/)
   assert.match(docs, /role="region"/)
   assert.match(
@@ -72,6 +106,39 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
     /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/cn\/architecture\/"/,
   )
   assert.match(chinese, /<meta property="og:locale" content="zh_CN"/)
+})
+
+test("trust anchors and developer resources are substantive raw HTML", async () => {
+  const [home, developers, ...trustPages] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("developers/index.html"),
+    ...localePrefixes.flatMap((prefix) =>
+      ["about", "contact", "privacy"].map((page) =>
+        readOutput(`${prefix}${page}/index.html`),
+      ),
+    ),
+  ])
+
+  for (const html of trustPages) {
+    assert.match(html, /<h1\b/)
+    assert.ok(visibleText(html).length >= 500)
+  }
+  assert.match(home, /href="\/kmsg\/about\/"/)
+  assert.match(home, /href="\/kmsg\/contact\/"/)
+  assert.match(home, /href="\/kmsg\/developers\/"/)
+  assert.match(developers, /kmsg mcp-server/)
+  assert.match(developers, /HTTP API/)
+  assert.match(developers, /webhook/i)
+})
+
+test("legacy aliases serve complete prerendered pages without meta refresh", async () => {
+  const aliases = await Promise.all(legacyAliasFiles.map(readOutput))
+
+  for (const html of aliases) {
+    assert.doesNotMatch(html, /http-equiv="refresh"/i)
+    assert.match(html, /<h1\b/)
+    assert.ok(visibleText(html).length >= 200)
+  }
 })
 
 test("hashed application assets referenced by HTML exist", async () => {
@@ -90,23 +157,57 @@ test("hashed application assets referenced by HTML exist", async () => {
   assert.ok(!files.includes("styles.css"))
 })
 
-test("redirects, 404, and discovery files preserve public contracts", async () => {
-  const [koRedirect, openclawRedirect, notFound, sitemap, llm, manifest] =
+test("aliases, 404, and discovery files preserve public contracts", async () => {
+  const [koRedirect, openclawRedirect, notFound, sitemap, llm, llmCompat, robots, homeMarkdown, mcpMarkdown, manifest, version, pagesWorkflow] =
     await Promise.all([
       readOutput("ko/usage/index.html"),
       readOutput("cn/openclaw/index.html"),
       readOutput("404.html"),
       readOutput("sitemap.xml"),
+      readOutput("llms.txt"),
       readOutput("llm.txt"),
+      readOutput("robots.txt"),
+      readOutput("index.md"),
+      readOutput("mcp/index.md"),
       readOutput("site.webmanifest"),
+      readFile(resolve(siteDir, "../VERSION"), "utf8"),
+      readFile(resolve(siteDir, "../.github/workflows/pages.yml"), "utf8"),
     ])
 
-  assert.match(koRedirect, /url=https:\/\/channprj\.github\.io\/kmsg\/usage\//)
-  assert.match(openclawRedirect, /url=https:\/\/channprj\.github\.io\/kmsg\/cn\/mcp\//)
+  assert.match(koRedirect, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/usage\/"/)
+  assert.match(openclawRedirect, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/cn\/mcp\/"/)
   assert.match(notFound, /<meta name="robots" content="noindex,follow"/)
   assert.equal((notFound.match(/class="not-found-locale"/g) ?? []).length, 4)
-  assert.equal((sitemap.match(/<url>/g) ?? []).length, 32)
-  assert.match(llm, /Current version: 1\.260729\.0/)
-  assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\//)
+  assert.match(notFound, /<pre[^>]*data-agent-recovery>/)
+  assert.match(notFound, /\[Agent index]\(https:\/\/channprj\.github\.io\/kmsg\/llms\.txt\)/)
+  assert.match(notFound, /\[Sitemap]\(https:\/\/channprj\.github\.io\/kmsg\/sitemap\.xml\)/)
+  const sitemapEntries = [...sitemap.matchAll(/<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)]
+  assert.equal(sitemapEntries.length, 44)
+  for (const [, location, lastModified] of sitemapEntries) {
+    assert.equal(new URL(location).origin, "https://channprj.github.io")
+    assert.ok(Number.isFinite(Date.parse(lastModified)))
+  }
+  assert.equal(llmCompat, llm)
+  assert.ok(llm.startsWith("# kmsg\n\n>"))
+  assert.ok(llm.includes(`Current version: ${version.trim()}`))
+  assert.match(llm, /## When to use kmsg/)
+  assert.match(llm, /\[Use the kmsg MCP server]\(https:\/\/channprj\.github\.io\/kmsg\/mcp\/index\.md\)/)
+  assert.match(llm, /## Developer resources/)
+  assert.match(llm, /kmsg authentication docs/)
+  assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\/index\.md/)
+  const llmsFileLists = llm.split(/\n(?=## )/).filter((section) => section.startsWith("## "))
+  for (const section of llmsFileLists) {
+    const listItems = section.split("\n").filter((line) => line.startsWith("- "))
+    assert.ok(listItems.length > 0)
+    assert.ok(listItems.every((line) => /^- \[[^\]]+\]\(https:\/\//.test(line)))
+  }
+  for (const userAgent of ["ChatGPT-User", "ClaudeBot", "Google-Extended", "ora-agent", "DeepSeekBot"]) {
+    assert.match(robots, new RegExp(`User-agent: ${userAgent}\\nAllow: /`))
+  }
+  assert.match(homeMarkdown, /^#\s+kmsg/m)
+  assert.match(mcpMarkdown, /^#\s+.+/m)
+  assert.match(mcpMarkdown, /\bMCP\b/)
+  assert.match(pagesWorkflow, /- "VERSION"/)
+  assert.match(pagesWorkflow, /fetch-depth: 0/)
   assert.equal(JSON.parse(manifest).start_url, "/kmsg/")
 })

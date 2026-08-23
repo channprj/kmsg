@@ -629,22 +629,30 @@
     "ko": {
       "privacy": {
         "title": "개인정보 처리 안내 - kmsg",
-        "description": "kmsg 정적 웹사이트의 데이터 처리와 외부 서비스 이용 범위를 안내합니다.",
+        "description": "kmsg 정적 웹사이트와 로컬 CLI의 데이터 처리, 외부 서비스, 보안 문의 범위를 안내합니다.",
         "eyebrow": "법적 안내",
         "heading": "개인정보 처리 안내",
-        "intro": "kmsg 웹사이트는 계정, 입력 폼, 분석 도구 없이 정적으로 제공됩니다.",
+        "intro": "이 안내는 kmsg 정적 웹사이트와 사용자의 Mac에서 실행되는 kmsg CLI·MCP server의 데이터 경계를 구분해 설명합니다. 웹사이트에는 계정, 입력 폼, 광고 추적기 또는 자체 분석 service가 없습니다.",
         "sections": [
           {
             "title": "웹사이트가 수집하는 정보",
-            "body": "이 웹사이트는 방문자의 계정, 메시지, 연락처 또는 입력 내용을 서버에 수집하지 않습니다."
+            "body": "이 웹사이트는 방문자의 계정, KakaoTalk 메시지, 연락처, 검색어 또는 입력 내용을 운영자 server에 수집하지 않습니다. GitHub Pages가 정적 파일을 전달하는 과정에서 GitHub와 그 infrastructure provider가 IP address, request header, 접속 시각 같은 통상적인 network log를 처리할 수 있으며, 그 처리는 GitHub의 개인정보 정책을 따릅니다. kmsg 프로젝트는 해당 platform log를 별도 사용자 profile과 결합하지 않습니다."
           },
           {
-            "title": "외부 서비스",
-            "body": "GitHub와 YouTube 링크를 열면 해당 서비스의 개인정보 처리방침과 이용 조건이 적용됩니다."
+            "title": "CLI와 MCP의 로컬 데이터 처리",
+            "body": "kmsg는 사용자의 Mac에서 Accessibility API를 통해 화면에 표시된 KakaoTalk 정보를 읽고 명령을 수행합니다. chat content, contact name, local chat identity와 command result는 이 웹사이트로 업로드되지 않습니다. login credential과 lock-mode에 필요한 값은 사용자의 local configuration에 암호화해 저장하며, 사용자는 해당 file의 접근 권한과 backup을 직접 관리해야 합니다."
           },
           {
-            "title": "KakaoTalk 메시지",
-            "body": "kmsg CLI가 사용자의 Mac에서 처리하는 KakaoTalk 내용은 이 웹사이트로 전송되지 않습니다."
+            "title": "외부 서비스와 링크",
+            "body": "GitHub repository, GitHub Issues, GitHub Releases, Homebrew tap, YouTube example 등 외부 link를 열면 각 service의 개인정보 처리방침과 이용 조건이 적용됩니다. issue나 email로 log를 공유할 때는 실제 사람 이름, message body, 전화번호, account identifier, local path, password, token과 encryption key를 제거하고 synthetic reproduction을 사용하세요."
+          },
+          {
+            "title": "보관, 삭제와 사용자의 선택",
+            "body": "정적 웹사이트 자체에는 사용자가 삭제를 요청할 account database가 없습니다. local kmsg credential, cache와 실행 log는 사용자의 Mac에 있으므로 사용자가 configuration과 file을 직접 검토하고 삭제할 수 있습니다. 공개 GitHub issue에 작성한 내용은 repository 운영 기록이 되며 수정이나 삭제가 필요하면 해당 issue에서 요청해야 합니다."
+          },
+          {
+            "title": "문의와 변경 기록",
+            "body": "일반적인 privacy 질문은 contact page의 공식 channel을 사용하고, 공개하면 안 되는 취약점이나 민감한 개인정보 문제는 iam@chann.dev로 최소한의 정보만 보내세요. 실제 credential이나 private message archive는 보내지 마세요. 처리 방식이 바뀌면 이 페이지의 source와 Git history를 함께 갱신해 변경 시점과 내용을 확인할 수 있게 합니다."
           }
         ]
       },
@@ -717,22 +725,30 @@
     "jp": {
       "privacy": {
         "title": "プライバシー - kmsg",
-        "description": "kmsgの静的ウェブサイトにおけるデータ処理と外部サービスの範囲を説明します。",
+        "description": "kmsgの静的ウェブサイトとローカルCLIにおけるデータ処理、外部サービス、問い合わせ範囲を説明します。",
         "eyebrow": "法的情報",
         "heading": "プライバシー",
-        "intro": "kmsgのウェブサイトは、アカウント、入力フォーム、解析サービスを持たない静的サイトです。",
+        "intro": "この案内は、kmsgの静的ウェブサイトと利用者のMacで動くCLI・MCP serverのデータ境界を説明します。サイトにはアカウント、入力フォーム、解析サービス、広告trackerはありません。",
         "sections": [
           {
             "title": "このサイトが収集する情報",
-            "body": "このサイトは訪問者のアカウント、メッセージ、連絡先、入力内容をサーバーに収集しません。"
+            "body": "このサイトは訪問者のaccount、KakaoTalk message、contact、検索語、入力内容を運営者serverへ収集しません。GitHub Pagesが静的fileを配信する際、GitHubとinfrastructure providerがIP address、request header、時刻など一般的なnetwork logを処理する場合があり、その処理にはGitHubのprivacy policyが適用されます。"
           },
           {
-            "title": "外部サービス",
-            "body": "GitHubやYouTubeのリンクを開くと、各サービスのプライバシーポリシーと利用条件が適用されます。"
+            "title": "CLIとMCPのローカル処理",
+            "body": "kmsgは利用者のMacでAccessibility APIを使い、画面に表示されたKakaoTalk情報を読み取ります。chat content、local identity、command resultはこのサイトへuploadされません。loginやlock-modeに必要なcredentialはlocal configurationへ暗号化して保存され、file permissionとbackupは利用者が管理します。"
           },
           {
-            "title": "KakaoTalkメッセージ",
-            "body": "Mac上のkmsg CLIが処理するKakaoTalkの内容は、このウェブサイトへ送信されません。"
+            "title": "外部サービスと共有",
+            "body": "GitHub repository、Issues、Releases、Homebrew tap、YouTubeなど外部linkを開くと各serviceのpolicyが適用されます。issueやemailへlogを添付する前に、氏名、message、電話番号、account ID、local path、password、token、encryption keyを削除し、synthetic reproductionを使ってください。"
+          },
+          {
+            "title": "保存と削除",
+            "body": "静的サイトには削除対象となる独自account databaseがありません。local credential、cache、実行logは利用者のMacにあり、利用者が確認・削除できます。公開GitHub issueの内容を変更または削除したい場合は、そのissue上で依頼してください。"
+          },
+          {
+            "title": "問い合わせ",
+            "body": "一般的なprivacy質問はcontact pageの公式channelを使い、公開できない脆弱性や個人情報問題はiam@chann.devへ必要最小限の情報だけを送ってください。実際のcredentialやprivate message archiveは送信しないでください。変更はこのpageとGit historyへ記録します。"
           }
         ]
       },
@@ -761,22 +777,30 @@
     "cn": {
       "privacy": {
         "title": "隐私说明 - kmsg",
-        "description": "说明kmsg静态网站的数据处理方式与外部服务范围。",
+        "description": "说明kmsg静态网站与本地CLI的数据处理、外部服务及隐私咨询范围。",
         "eyebrow": "法律信息",
         "heading": "隐私说明",
-        "intro": "kmsg网站为静态网站，不提供账户、输入表单或分析服务。",
+        "intro": "本说明区分kmsg静态网站与在用户Mac上运行的CLI、MCP server的数据边界。网站不提供账户、输入表单、广告tracker或自有analytics service。",
         "sections": [
           {
             "title": "本网站收集的信息",
-            "body": "本网站不会在服务器上收集访客账户、消息、联系人或提交内容。"
+            "body": "本网站不会把访客account、KakaoTalk message、contact、搜索词或输入内容收集到运营者server。GitHub Pages在发送静态file时，GitHub及其infrastructure provider可能处理IP address、request header和访问时间等常规network log，此类处理遵循GitHub的privacy policy。"
           },
           {
-            "title": "外部服务",
-            "body": "打开GitHub或YouTube链接后，将适用相应服务的隐私政策与使用条款。"
+            "title": "CLI与MCP的本地处理",
+            "body": "kmsg在用户Mac上通过Accessibility API读取屏幕中显示的KakaoTalk信息。chat content、local identity与command result不会上传到本网站。login及lock-mode所需credential会加密保存在local configuration中，用户负责管理file permission与backup。"
           },
           {
-            "title": "KakaoTalk消息",
-            "body": "kmsg CLI在您的Mac上处理的KakaoTalk内容不会发送到本网站。"
+            "title": "外部服务与信息共享",
+            "body": "打开GitHub repository、Issues、Releases、Homebrew tap或YouTube等外部link后，将适用各service的policy。提交issue或email前，请从log中删除姓名、message、电话号码、account ID、local path、password、token及encryption key，并优先使用synthetic reproduction。"
+          },
+          {
+            "title": "保留与删除",
+            "body": "静态网站没有可供删除的自有account database。local credential、cache和执行log位于用户Mac，用户可自行检查和删除。公开GitHub issue属于repository记录，如需修改或删除其中内容，应在相应issue中提出请求。"
+          },
+          {
+            "title": "咨询与变更记录",
+            "body": "一般privacy问题请使用contact page中的官方渠道；不应公开的漏洞或敏感个人资料可将最少必要信息发送至iam@chann.dev。请勿发送真实credential或private message archive。处理方式变化时会同步更新本页面source与Git history。"
           }
         ]
       },
