@@ -192,6 +192,12 @@ test("aliases, 404, and discovery files preserve public contracts", async () => 
   assert.match(llm, /## Developer resources/)
   assert.match(llm, /kmsg authentication docs/)
   assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\/index\.md/)
+  const llmsFileLists = llm.split(/\n(?=## )/).filter((section) => section.startsWith("## "))
+  for (const section of llmsFileLists) {
+    const listItems = section.split("\n").filter((line) => line.startsWith("- "))
+    assert.ok(listItems.length > 0)
+    assert.ok(listItems.every((line) => /^- \[[^\]]+\]\(https:\/\//.test(line)))
+  }
   for (const userAgent of ["ChatGPT-User", "ClaudeBot", "Google-Extended", "ora-agent", "DeepSeekBot"]) {
     assert.match(robots, new RegExp(`User-agent: ${userAgent}\\nAllow: /`))
   }

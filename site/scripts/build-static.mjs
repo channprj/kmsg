@@ -163,6 +163,16 @@ Canonical website: ${baseUrl}
 Source repository: ${repositoryUrl}
 License: MIT
 
+Primary facts:
+
+- Platform: macOS 13 or later
+- Runtime dependency: KakaoTalk for macOS
+- Implementation: Swift 6
+- Interface: CLI, structured JSON, hooks, and native stdio MCP server
+- Access method: macOS Accessibility API; kmsg does not implement the private LOCO protocol
+- Install: \`brew install channprj/tap/kmsg\`
+- Affiliation: Independent open source; not affiliated with Kakao Corp.
+
 ## When to use kmsg
 
 - [Read and watch KakaoTalk with kmsg](${baseUrl}usage/index.md): Use kmsg when an agent or local automation needs to list chats, read recent messages, watch for new messages, or produce structured JSON on a Mac where KakaoTalk is installed.
@@ -181,16 +191,6 @@ License: MIT
 ## Documentation
 
 ${documentationLinks}
-
-## Primary facts
-
-- Platform: macOS 13 or later
-- Runtime dependency: KakaoTalk for macOS
-- Implementation: Swift 6
-- Interface: CLI, structured JSON, hooks, and native stdio MCP server
-- Access method: macOS Accessibility API; kmsg does not implement the private LOCO protocol
-- Install: \`brew install channprj/tap/kmsg\`
-- Affiliation: Independent open source; not affiliated with Kakao Corp.
 
 ## Optional
 
