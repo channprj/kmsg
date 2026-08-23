@@ -91,7 +91,7 @@ test("hashed application assets referenced by HTML exist", async () => {
 })
 
 test("redirects, 404, and discovery files preserve public contracts", async () => {
-  const [koRedirect, openclawRedirect, notFound, sitemap, llm, manifest] =
+  const [koRedirect, openclawRedirect, notFound, sitemap, llm, manifest, version] =
     await Promise.all([
       readOutput("ko/usage/index.html"),
       readOutput("cn/openclaw/index.html"),
@@ -99,6 +99,7 @@ test("redirects, 404, and discovery files preserve public contracts", async () =
       readOutput("sitemap.xml"),
       readOutput("llm.txt"),
       readOutput("site.webmanifest"),
+      readFile(resolve(siteDir, "../VERSION"), "utf8"),
     ])
 
   assert.match(koRedirect, /url=https:\/\/channprj\.github\.io\/kmsg\/usage\//)
@@ -106,7 +107,7 @@ test("redirects, 404, and discovery files preserve public contracts", async () =
   assert.match(notFound, /<meta name="robots" content="noindex,follow"/)
   assert.equal((notFound.match(/class="not-found-locale"/g) ?? []).length, 4)
   assert.equal((sitemap.match(/<url>/g) ?? []).length, 32)
-  assert.match(llm, /Current version: 1\.260729\.0/)
+  assert.ok(llm.includes(`Current version: ${version.trim()}`))
   assert.match(llm, /https:\/\/channprj\.github\.io\/kmsg\/cn\/terms\//)
   assert.equal(JSON.parse(manifest).start_url, "/kmsg/")
 })
