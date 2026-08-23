@@ -4,6 +4,7 @@ import { basename, dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import legacyContent from "../app/content/legacy-content.json" with { type: "json" }
+import trustContent from "../app/content/trust-content.json" with { type: "json" }
 
 const siteDir = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const repoDir = resolve(siteDir, "..")
@@ -26,11 +27,14 @@ const pageSlugs = {
   openclaw: "mcp/",
   skill: "skill/",
   versioning: "versioning/",
+  developers: "developers/",
+  about: "about/",
+  contact: "contact/",
   privacy: "privacy/",
   terms: "terms/",
 }
 
-const canonicalPages = legacyContent.pages.map((page) => ({
+const canonicalPages = [...legacyContent.pages, ...trustContent.pages].map((page) => ({
   ...page,
   publicPath: `${localePrefixes[page.locale]}${pageSlugs[page.pageKey]}`,
 }))
@@ -120,7 +124,7 @@ const sitemapEntries = canonicalPages
   .map((page) => {
     const priority = page.pageKey === "home" ? "1.0" : "0.8"
     const frequency = page.pageKey === "home" ? "weekly" : "monthly"
-    return `  <url>\n    <loc>${baseUrl}${page.publicPath}</loc>\n    <lastmod>${lastModified(page.source)}</lastmod>\n    <changefreq>${frequency}</changefreq>\n    <priority>${priority}</priority>\n  </url>`
+    return `  <url>\n    <loc>${baseUrl}${page.publicPath}</loc>\n    <lastmod>${page.lastModified ?? lastModified(page.source)}</lastmod>\n    <changefreq>${frequency}</changefreq>\n    <priority>${priority}</priority>\n  </url>`
   })
   .join("\n")
 await write(
@@ -168,10 +172,11 @@ License: MIT
 
 ## Developer resources
 
-- [kmsg developer portal](${baseUrl}architecture/index.md): Architecture, component boundaries, data flow, security decisions, and source layout for contributors and integrators.
+- [kmsg developer portal](${baseUrl}developers/index.md): First-party integration map for CLI and JSON, authentication, MCP, events, HTTP API status, webhooks, source, and safety boundaries.
 - [kmsg API and CLI reference](${baseUrl}usage/index.md): Command syntax, structured JSON output, environment variables, installation, troubleshooting, and local automation contracts.
-- [kmsg authentication docs](${baseUrl}usage/index.md#authentication): KakaoTalk login readiness, encrypted local credential storage, lock-mode behavior, and non-interactive caller constraints.
+- [kmsg authentication docs](${baseUrl}developers/index.md): KakaoTalk desktop login, encrypted local credential storage, lock-mode behavior, and the absence of hosted OAuth or bearer-token authentication.
 - [kmsg MCP server](${baseUrl}mcp/index.md): Native stdio MCP transport, tool names, client configuration, confirmation behavior, and operating constraints.
+- [kmsg webhooks and event integration status](${baseUrl}developers/index.md): Local \`watch --json\` events, the absence of a hosted webhook service, and the operator-owned supervisor pattern.
 
 ## Documentation
 

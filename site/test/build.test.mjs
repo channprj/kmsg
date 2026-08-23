@@ -9,7 +9,7 @@ const distDir = join(siteDir, "dist")
 const readOutput = (path) => readFile(join(distDir, path), "utf8")
 
 const localePrefixes = ["", "en/", "jp/", "cn/"]
-const pageSlugs = ["", "usage/", "architecture/", "mcp/", "skill/", "versioning/", "privacy/", "terms/"]
+const pageSlugs = ["", "usage/", "architecture/", "mcp/", "skill/", "versioning/", "developers/", "about/", "contact/", "privacy/", "terms/"]
 const canonicalFiles = localePrefixes.flatMap((prefix) =>
   pageSlugs.map((slug) => `${prefix}${slug}index.html`),
 )
@@ -24,6 +24,9 @@ const legacyAliasFiles = [
   "ko/openclaw/index.html",
   "ko/skill/index.html",
   "ko/versioning/index.html",
+  "ko/developers/index.html",
+  "ko/about/index.html",
+  "ko/contact/index.html",
   "ko/privacy/index.html",
   "ko/terms/index.html",
   "openclaw/index.html",
@@ -97,6 +100,27 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.match(chinese, /<meta property="og:locale" content="zh_CN"/)
 })
 
+test("trust anchors and developer resources are substantive raw HTML", async () => {
+  const [home, about, contact, privacy, developers] = await Promise.all([
+    readOutput("index.html"),
+    readOutput("about/index.html"),
+    readOutput("contact/index.html"),
+    readOutput("privacy/index.html"),
+    readOutput("developers/index.html"),
+  ])
+
+  for (const html of [about, contact, privacy]) {
+    assert.match(html, /<h1\b/)
+    assert.ok(visibleText(html).length >= 500)
+  }
+  assert.match(home, /href="\/kmsg\/about\/"/)
+  assert.match(home, /href="\/kmsg\/contact\/"/)
+  assert.match(home, /href="\/kmsg\/developers\/"/)
+  assert.match(developers, /kmsg mcp-server/)
+  assert.match(developers, /HTTP API/)
+  assert.match(developers, /webhook/i)
+})
+
 test("legacy aliases serve complete prerendered pages without meta refresh", async () => {
   const aliases = await Promise.all(legacyAliasFiles.map(readOutput))
 
@@ -147,7 +171,7 @@ test("aliases, 404, and discovery files preserve public contracts", async () => 
   assert.match(notFound, /\[Agent index]\(https:\/\/channprj\.github\.io\/kmsg\/llms\.txt\)/)
   assert.match(notFound, /\[Sitemap]\(https:\/\/channprj\.github\.io\/kmsg\/sitemap\.xml\)/)
   const sitemapEntries = [...sitemap.matchAll(/<url>\s*<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)]
-  assert.equal(sitemapEntries.length, 32)
+  assert.equal(sitemapEntries.length, 44)
   for (const [, location, lastModified] of sitemapEntries) {
     assert.equal(new URL(location).origin, "https://channprj.github.io")
     assert.ok(Number.isFinite(Date.parse(lastModified)))

@@ -1,4 +1,5 @@
 import legacyContent from "./legacy-content.json"
+import trustContent from "./trust-content.json"
 import type { LocaleId, PageKey } from "./routes"
 
 export interface PageCopy {
@@ -19,7 +20,7 @@ export interface PageCopy {
   secondTime?: string
 }
 
-const pages = legacyContent.pages as unknown as Array<
+const pages = [...legacyContent.pages, ...trustContent.pages] as unknown as Array<
   PageCopy & { locale: LocaleId; pageKey: string; source: string }
 >
 

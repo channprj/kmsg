@@ -629,22 +629,30 @@
     "ko": {
       "privacy": {
         "title": "개인정보 처리 안내 - kmsg",
-        "description": "kmsg 정적 웹사이트의 데이터 처리와 외부 서비스 이용 범위를 안내합니다.",
+        "description": "kmsg 정적 웹사이트와 로컬 CLI의 데이터 처리, 외부 서비스, 보안 문의 범위를 안내합니다.",
         "eyebrow": "법적 안내",
         "heading": "개인정보 처리 안내",
-        "intro": "kmsg 웹사이트는 계정, 입력 폼, 분석 도구 없이 정적으로 제공됩니다.",
+        "intro": "이 안내는 kmsg 정적 웹사이트와 사용자의 Mac에서 실행되는 kmsg CLI·MCP server의 데이터 경계를 구분해 설명합니다. 웹사이트에는 계정, 입력 폼, 광고 추적기 또는 자체 분석 service가 없습니다.",
         "sections": [
           {
             "title": "웹사이트가 수집하는 정보",
-            "body": "이 웹사이트는 방문자의 계정, 메시지, 연락처 또는 입력 내용을 서버에 수집하지 않습니다."
+            "body": "이 웹사이트는 방문자의 계정, KakaoTalk 메시지, 연락처, 검색어 또는 입력 내용을 운영자 server에 수집하지 않습니다. GitHub Pages가 정적 파일을 전달하는 과정에서 GitHub와 그 infrastructure provider가 IP address, request header, 접속 시각 같은 통상적인 network log를 처리할 수 있으며, 그 처리는 GitHub의 개인정보 정책을 따릅니다. kmsg 프로젝트는 해당 platform log를 별도 사용자 profile과 결합하지 않습니다."
           },
           {
-            "title": "외부 서비스",
-            "body": "GitHub와 YouTube 링크를 열면 해당 서비스의 개인정보 처리방침과 이용 조건이 적용됩니다."
+            "title": "CLI와 MCP의 로컬 데이터 처리",
+            "body": "kmsg는 사용자의 Mac에서 Accessibility API를 통해 화면에 표시된 KakaoTalk 정보를 읽고 명령을 수행합니다. chat content, contact name, local chat identity와 command result는 이 웹사이트로 업로드되지 않습니다. login credential과 lock-mode에 필요한 값은 사용자의 local configuration에 암호화해 저장하며, 사용자는 해당 file의 접근 권한과 backup을 직접 관리해야 합니다."
           },
           {
-            "title": "KakaoTalk 메시지",
-            "body": "kmsg CLI가 사용자의 Mac에서 처리하는 KakaoTalk 내용은 이 웹사이트로 전송되지 않습니다."
+            "title": "외부 서비스와 링크",
+            "body": "GitHub repository, GitHub Issues, GitHub Releases, Homebrew tap, YouTube example 등 외부 link를 열면 각 service의 개인정보 처리방침과 이용 조건이 적용됩니다. issue나 email로 log를 공유할 때는 실제 사람 이름, message body, 전화번호, account identifier, local path, password, token과 encryption key를 제거하고 synthetic reproduction을 사용하세요."
+          },
+          {
+            "title": "보관, 삭제와 사용자의 선택",
+            "body": "정적 웹사이트 자체에는 사용자가 삭제를 요청할 account database가 없습니다. local kmsg credential, cache와 실행 log는 사용자의 Mac에 있으므로 사용자가 configuration과 file을 직접 검토하고 삭제할 수 있습니다. 공개 GitHub issue에 작성한 내용은 repository 운영 기록이 되며 수정이나 삭제가 필요하면 해당 issue에서 요청해야 합니다."
+          },
+          {
+            "title": "문의와 변경 기록",
+            "body": "일반적인 privacy 질문은 contact page의 공식 channel을 사용하고, 공개하면 안 되는 취약점이나 민감한 개인정보 문제는 iam@chann.dev로 최소한의 정보만 보내세요. 실제 credential이나 private message archive는 보내지 마세요. 처리 방식이 바뀌면 이 페이지의 source와 Git history를 함께 갱신해 변경 시점과 내용을 확인할 수 있게 합니다."
           }
         ]
       },

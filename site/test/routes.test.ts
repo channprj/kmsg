@@ -11,11 +11,11 @@ import {
 } from "~/content/routes"
 
 describe("localized route table", () => {
-  it("contains 32 unique canonical pages", () => {
+  it("contains 44 unique canonical pages", () => {
     expect(LOCALE_IDS).toHaveLength(4)
-    expect(PAGE_KEYS).toHaveLength(8)
-    expect(CANONICAL_ROUTES).toHaveLength(32)
-    expect(new Set(CANONICAL_ROUTES.map(({ path }) => path)).size).toBe(32)
+    expect(PAGE_KEYS).toHaveLength(11)
+    expect(CANONICAL_ROUTES).toHaveLength(44)
+    expect(new Set(CANONICAL_ROUTES.map(({ path }) => path)).size).toBe(44)
   })
 
   it("round-trips every locale and page key", () => {
@@ -38,6 +38,12 @@ describe("localized route table", () => {
       en: "/kmsg/en/usage/",
       jp: "/kmsg/jp/usage/",
       cn: "/kmsg/cn/usage/",
+    })
+    expect(localeTargets("about")).toEqual({
+      ko: "/kmsg/about/",
+      en: "/kmsg/en/about/",
+      jp: "/kmsg/jp/about/",
+      cn: "/kmsg/cn/about/",
     })
   })
 

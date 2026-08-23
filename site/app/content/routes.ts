@@ -6,6 +6,9 @@ export const PAGE_KEYS = [
   "mcp",
   "skill",
   "versioning",
+  "developers",
+  "about",
+  "contact",
   "privacy",
   "terms",
 ] as const
@@ -29,6 +32,9 @@ const pageSlugs: Record<PageKey, string> = {
   mcp: "mcp",
   skill: "skill",
   versioning: "versioning",
+  developers: "developers",
+  about: "about",
+  contact: "contact",
   privacy: "privacy",
   terms: "terms",
 }
