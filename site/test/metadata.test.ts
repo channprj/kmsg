@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { LOCALE_IDS, PAGE_KEYS, publicRouteFor } from "~/content/routes"
-import { metadataFor } from "~/lib/metadata"
+import { homepageStructuredData, metadataFor } from "~/lib/metadata"
 import { meta } from "~/routes/page"
 
 describe("localized metadata", () => {
@@ -44,5 +44,35 @@ describe("localized metadata", () => {
       property: "og:locale",
       content: "zh_CN",
     })
+  })
+
+  it("describes kmsg and its public maintainer organization", () => {
+    const structuredData = homepageStructuredData()
+    const graph = structuredData["@graph"]
+    const application = graph.find((entry) => entry["@type"] === "SoftwareApplication")
+    const organization = graph.find((entry) => entry["@type"] === "Organization")
+
+    expect(application).toMatchObject({
+      name: "kmsg",
+      url: "https://channprj.github.io/kmsg/",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "macOS 13 or later",
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    })
+    expect(organization).toMatchObject({
+      name: "CHANN",
+      url: "https://chann.dev",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "technical support",
+        email: "iam@chann.dev",
+      },
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Seoul",
+        addressCountry: "KR",
+      },
+    })
+    expect(JSON.stringify(structuredData)).not.toContain("telephone")
   })
 })

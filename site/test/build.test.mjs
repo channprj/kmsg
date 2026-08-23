@@ -84,6 +84,9 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.equal((home.match(/<h1\b/g) ?? []).length, 1)
   assert.ok(visibleText(home).length >= 500)
   assert.doesNotMatch(home, /http-equiv="refresh"/i)
+  assert.match(home, /^<!DOCTYPE html><html lang="ko"/)
+  assert.match(home, /<link rel="canonical" href="https:\/\/channprj\.github\.io\/kmsg\/"/)
+  assert.match(home, /<meta property="og:type" content="website"/)
   assert.match(
     home,
     /<link(?=[^>]*rel="alternate")(?=[^>]*type="text\/markdown")(?=[^>]*href="\/kmsg\/index\.md")[^>]*>/,
@@ -91,6 +94,11 @@ test("canonical HTML is the localized React and Shadcn artifact", async () => {
   assert.match(home, /<link[^>]*rel="describedby"[^>]*href="\/kmsg\/llms\.txt"/)
   assert.match(home, /<meta name="twitter:card" content="summary_large_image"/)
   assert.match(home, /<meta property="og:image" content="https:\/\/channprj\.github\.io\/kmsg\/assets\/kmsg-logo\.jpg"/)
+  const jsonLd = home.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)
+  assert.ok(jsonLd)
+  const structuredData = JSON.parse(jsonLd[1])
+  assert.ok(structuredData["@graph"].some(({ "@type": type }) => type === "SoftwareApplication"))
+  assert.ok(structuredData["@graph"].some(({ "@type": type }) => type === "Organization"))
   assert.match(docs, /data-code-copy/)
   assert.match(docs, /role="region"/)
   assert.match(

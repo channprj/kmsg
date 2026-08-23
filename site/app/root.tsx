@@ -12,6 +12,7 @@ import {
 import type { Route } from "./+types/root"
 import { LOCALES } from "./content/locales"
 import { publicRouteFor, routeFromPath } from "./content/routes"
+import { homepageStructuredData } from "./lib/metadata"
 import {
   THEME_BOOTSTRAP,
   readThemeFromDocument,
@@ -31,6 +32,9 @@ export function Layout({ children }: { children: ReactNode }) {
   const markdownHref = route
     ? `${publicRouteFor(route.locale, route.pageKey)}index.md`
     : "/kmsg/index.md"
+  const structuredData = route?.pageKey === "home"
+    ? JSON.stringify(homepageStructuredData()).replace(/</g, "\\u003c")
+    : null
   const theme =
     typeof document === "undefined" ? "dark" : readThemeFromDocument()
 
@@ -47,6 +51,12 @@ export function Layout({ children }: { children: ReactNode }) {
         <meta name="theme-color" content={themeColorFor(theme)} />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
         <link rel="alternate" href={markdownHref} type="text/markdown" />
+        {structuredData ? (
+          <script
+            dangerouslySetInnerHTML={{ __html: structuredData }}
+            type="application/ld+json"
+          />
+        ) : null}
         <Meta />
         <Links />
       </head>
