@@ -6,6 +6,10 @@ import Foundation
 public enum AccessibilityPermission {
     private static let settingsURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")
 
+    private static var executableURL: URL? {
+        Bundle.main.executableURL?.resolvingSymlinksInPath()
+    }
+
     /// Check if the app has accessibility permissions
     public static func isGranted() -> Bool {
         AXIsProcessTrusted()
@@ -40,16 +44,30 @@ public enum AccessibilityPermission {
         }
 
         if openSettingsOnFailure {
-            openAccessibilitySettings()
+            // Reveal the actual binary (including Homebrew symlink targets) so it
+            // can be dragged into the permission list or selected with '+'.
+            if let executableURL {
+                NSWorkspace.shared.activateFileViewerSelecting([executableURL])
+            }
+            FileHandle.standardError.write(Data("Opening Accessibility settings...\n".utf8))
+            if !openAccessibilitySettings() {
+                FileHandle.standardError.write(Data("Could not open System Settings automatically. Please open System Settings > Privacy & Security > Accessibility manually.\n".utf8))
+            }
         }
 
         return isGranted()
     }
 
-    /// Open the Accessibility pane in System Settings.
-    public static func openAccessibilitySettings() {
-        guard let settingsURL else { return }
-        _ = NSWorkspace.shared.open(settingsURL)
+    /// Open the Accessibility pane, falling back to System Settings if the deep link fails.
+    @discardableResult
+    public static func openAccessibilitySettings() -> Bool {
+        if let settingsURL, NSWorkspace.shared.open(settingsURL) {
+            return true
+        }
+        guard let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.systempreferences") else {
+            return false
+        }
+        return NSWorkspace.shared.open(appURL)
     }
 
     /// Print instructions for granting accessibility permissions
@@ -57,14 +75,21 @@ public enum AccessibilityPermission {
         print("""
         ⚠️  Accessibility permission required!
 
-        kmsg requested permission automatically, but macOS still requires manual approval.
+        macOS requires you to approve Accessibility access manually.
 
         To use kmsg, you need to grant Accessibility permissions:
 
         1. Open System Settings > Privacy & Security > Accessibility
         2. Click the '+' button
-        3. Navigate to and select the kmsg binary
+        3. Press Command+Shift+G, paste the binary path below, and select it
         4. Enable the toggle for kmsg
+        5. Run your kmsg command again
+
+        Binary path: \(executableURL?.path ?? "(unavailable; select the kmsg binary you just ran)")
+
+        You can also drag the kmsg binary from Finder into the Accessibility list.
+        If kmsg is already enabled but permission is still denied after an update,
+        remove its old entry with '-' and add the binary above again.
         """)
     }
 
