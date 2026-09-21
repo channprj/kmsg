@@ -84,13 +84,13 @@ def formula_class_name(version: str) -> str:
 
 
 def render_formula(class_name: str, url: str, sha256: str, version: str) -> str:
+    # Homebrew infers the version from the release URL; an explicit version is redundant.
     return (
         f"class {class_name} < Formula\n"
         '  desc "CLI tool for KakaoTalk on macOS"\n'
         '  homepage "https://github.com/channprj/kmsg"\n'
         f'  url "{url}"\n'
         f'  sha256 "{sha256}"\n'
-        f'  version "{version}"\n'
         '  license "MIT"\n'
         "\n"
         "  def install\n"

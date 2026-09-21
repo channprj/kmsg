@@ -1,5 +1,7 @@
 import hashlib
 import json
+import os
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -11,6 +13,40 @@ SCRIPT_PATH = REPO_ROOT / "tools" / "sync_homebrew_tap.py"
 
 
 class SyncHomebrewTapTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("brew"), "Homebrew is required for formula style validation")
+    def test_generated_formulas_pass_homebrew_style(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp = Path(tmpdir)
+            tap_dir = tmp / "homebrew-tap"
+            asset_path = tmp / "kmsg-macos-universal"
+            asset_path.write_bytes(b"kmsg-binary")
+            metadata_path = tmp / "release-metadata.json"
+            metadata_path.write_text("{}", encoding="utf-8")
+
+            generated = subprocess.run(
+                [
+                    "python3", str(SCRIPT_PATH),
+                    "--tap-dir", str(tap_dir),
+                    "--asset-path", str(asset_path),
+                    "--repository", "channprj/kmsg",
+                    "--current-tag", "v1.260921.0",
+                    "--release-metadata-file", str(metadata_path),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
+            self.assertEqual(generated.returncode, 0, generated.stderr)
+
+            checked = subprocess.run(
+                ["brew", "style", str(tap_dir / "Formula")],
+                env={**os.environ, "HOMEBREW_NO_AUTO_UPDATE": "1", "HOMEBREW_DEVELOPER": "1"},
+                capture_output=True,
+                text=True,
+                timeout=180,
+            )
+            self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
     def test_generates_latest_formula_for_major_date_patch_versions_and_preserves_recent_legacy_releases(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp = Path(tmpdir)
@@ -94,7 +130,6 @@ class SyncHomebrewTapTests(unittest.TestCase):
                 latest_formula,
             )
             self.assertIn(f'sha256 "{expected_sha}"', latest_formula)
-            self.assertIn('version "1.260425.0"', latest_formula)
 
             expected_versions = [
                 "0.1.1",
@@ -119,7 +154,7 @@ class SyncHomebrewTapTests(unittest.TestCase):
                 formula_path = formula_dir / f"kmsg@{version}.rb"
                 self.assertTrue(formula_path.exists(), f"missing formula for {version}")
                 formula_body = formula_path.read_text(encoding="utf-8")
-                self.assertIn(f'version "{version}"', formula_body)
+                self.assertIn(f'url "{metadata[f"v{version}"]["url"]}"', formula_body)
                 class_suffix = version.replace(".", "")
                 self.assertIn(f"class KmsgAT{class_suffix} < Formula", formula_body)
                 self.assertIn(f'sha256 "{metadata[f"v{version}"]["sha256"]}"', formula_body)
