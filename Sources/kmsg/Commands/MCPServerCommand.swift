@@ -61,6 +61,12 @@ private final class MCPDataBuffer: @unchecked Sendable {
 }
 
 private final class KmsgSubprocessRunner {
+    /// Limits for commands that drive the KakaoTalk UI (read/send/send-image).
+    /// Cold runs measured 10-18s with silent gaps up to ~8s, so they fail on
+    /// 12s without stderr output (the `--trace-ax` heartbeat) under a 30s ceiling.
+    static let uiIdleTimeoutSec: TimeInterval = 12.0
+    static let uiHardTimeoutSec: TimeInterval = 30.0
+
     let executablePath: String
 
     init() {
@@ -537,10 +543,15 @@ private final class KmsgMCPServer {
         if deepRecovery { command.append("--deep-recovery") }
         if backgroundSafe { command.append("--background-safe") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let timeoutSec = deepRecovery ? 15.0 : 8.0
-        var first = runner.run(command, timeoutSec: timeoutSec)
+        var first = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
 
         if first.timedOut {
             return errorPayload(
@@ -559,7 +570,11 @@ private final class KmsgMCPServer {
             if code == "CHAT_NOT_FOUND" && !deepRecovery && !backgroundSafe {
                 var retryCommand = command
                 retryCommand.append("--deep-recovery")
-                let retry = runner.run(retryCommand, timeoutSec: 15.0)
+                let retry = runner.run(
+                    retryCommand,
+                    timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+                    idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+                )
                 if retry.returncode == 0 && !retry.timedOut {
                     first = retry
                 } else {
@@ -654,9 +669,11 @@ private final class KmsgMCPServer {
         // stderr is still only surfaced in the response when traceAX was requested.
         command.append("--trace-ax")
 
-        // Cold opens via search measured 10.3-15.9s (n=29) with silent gaps up to ~8s,
-        // so a fixed 10s/18s cap is too tight; fail on 12s of silence instead.
-        let run = runner.run(command, timeoutSec: 30.0, idleTimeoutSec: 12.0)
+        let run = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
         if run.timedOut {
             return errorPayload(
                 code: "PROCESS_TIMEOUT",
@@ -741,9 +758,15 @@ private final class KmsgMCPServer {
         var command = ["send-image", chat, imagePath]
         if deepRecovery { command.append("--deep-recovery") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let run = runner.run(command, timeoutSec: deepRecovery ? 20.0 : 12.0)
+        let run = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
         if run.timedOut {
             return errorPayload(
                 code: "PROCESS_TIMEOUT",
