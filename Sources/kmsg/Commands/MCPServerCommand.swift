@@ -32,11 +32,25 @@ private enum MCPStdioTransport {
 private final class MCPDataBuffer: @unchecked Sendable {
     private let lock = NSLock()
     private var data = Data()
+    private var lastWrite = Date()
 
     func store(_ newData: Data) {
         lock.lock()
         data = newData
         lock.unlock()
+    }
+
+    func append(_ chunk: Data) {
+        lock.lock()
+        data.append(chunk)
+        lastWrite = Date()
+        lock.unlock()
+    }
+
+    func lastWriteDate() -> Date {
+        lock.lock()
+        defer { lock.unlock() }
+        return lastWrite
     }
 
     func load() -> Data {
@@ -47,6 +61,12 @@ private final class MCPDataBuffer: @unchecked Sendable {
 }
 
 private final class KmsgSubprocessRunner {
+    /// Limits for commands that drive the KakaoTalk UI (read/send/send-image).
+    /// Cold runs measured 10-18s with silent gaps up to ~8s, so they fail on
+    /// 12s without stderr output (the `--trace-ax` heartbeat) under a 30s ceiling.
+    static let uiIdleTimeoutSec: TimeInterval = 12.0
+    static let uiHardTimeoutSec: TimeInterval = 30.0
+
     let executablePath: String
 
     init() {
@@ -57,7 +77,12 @@ private final class KmsgSubprocessRunner {
         }
     }
 
-    func run(_ arguments: [String], timeoutSec: TimeInterval) -> MCPCommandResult {
+    /// - Parameters:
+    ///   - timeoutSec: Hard ceiling for the whole run.
+    ///   - idleTimeoutSec: When set, the run is also killed after this many seconds
+    ///     without stderr output. `--trace-ax` lines are written to stderr unbuffered,
+    ///     so they act as a progress heartbeat. When nil, behavior is unchanged.
+    func run(_ arguments: [String], timeoutSec: TimeInterval, idleTimeoutSec: TimeInterval? = nil) -> MCPCommandResult {
         let start = Date()
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executablePath)
@@ -90,7 +115,12 @@ private final class KmsgSubprocessRunner {
             stdoutSemaphore.signal()
         }
         DispatchQueue.global().async {
-            stderrData.store(stderrPipe.fileHandleForReading.readDataToEndOfFile())
+            let handle = stderrPipe.fileHandleForReading
+            while true {
+                let chunk = handle.availableData
+                if chunk.isEmpty { break }
+                stderrData.append(chunk)
+            }
             stderrSemaphore.signal()
         }
 
@@ -100,7 +130,19 @@ private final class KmsgSubprocessRunner {
             waitSemaphore.signal()
         }
 
-        let timedOut = waitSemaphore.wait(timeout: .now() + timeoutSec) == .timedOut
+        var timedOut = false
+        if let idleTimeoutSec {
+            while waitSemaphore.wait(timeout: .now() + 0.25) == .timedOut {
+                let now = Date()
+                if now.timeIntervalSince(start) > timeoutSec
+                    || now.timeIntervalSince(stderrData.lastWriteDate()) > idleTimeoutSec {
+                    timedOut = true
+                    break
+                }
+            }
+        } else {
+            timedOut = waitSemaphore.wait(timeout: .now() + timeoutSec) == .timedOut
+        }
         if timedOut {
             process.terminate()
 
@@ -501,10 +543,15 @@ private final class KmsgMCPServer {
         if deepRecovery { command.append("--deep-recovery") }
         if backgroundSafe { command.append("--background-safe") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let timeoutSec = deepRecovery ? 15.0 : 8.0
-        var first = runner.run(command, timeoutSec: timeoutSec)
+        var first = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
 
         if first.timedOut {
             return errorPayload(
@@ -523,7 +570,11 @@ private final class KmsgMCPServer {
             if code == "CHAT_NOT_FOUND" && !deepRecovery && !backgroundSafe {
                 var retryCommand = command
                 retryCommand.append("--deep-recovery")
-                let retry = runner.run(retryCommand, timeoutSec: 15.0)
+                let retry = runner.run(
+                    retryCommand,
+                    timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+                    idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+                )
                 if retry.returncode == 0 && !retry.timedOut {
                     first = retry
                 } else {
@@ -614,9 +665,15 @@ private final class KmsgMCPServer {
         var command = ["send", chat, message]
         if deepRecovery { command.append("--deep-recovery") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let run = runner.run(command, timeoutSec: deepRecovery ? 18.0 : 10.0)
+        let run = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
         if run.timedOut {
             return errorPayload(
                 code: "PROCESS_TIMEOUT",
@@ -701,9 +758,15 @@ private final class KmsgMCPServer {
         var command = ["send-image", chat, imagePath]
         if deepRecovery { command.append("--deep-recovery") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let run = runner.run(command, timeoutSec: deepRecovery ? 20.0 : 12.0)
+        let run = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
         if run.timedOut {
             return errorPayload(
                 code: "PROCESS_TIMEOUT",
