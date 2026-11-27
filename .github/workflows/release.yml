@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build-and-release:
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       RELEASE_ASSET_NAME: kmsg-macos-universal
       TAP_REPO: channprj/homebrew-tap
