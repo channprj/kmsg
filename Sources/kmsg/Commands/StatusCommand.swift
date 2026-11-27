@@ -38,8 +38,9 @@ struct StatusCommand: ParsableCommand {
             print("KakaoTalk: ✓ Running")
         }
 
+        let kakao: KakaoTalkApp
         do {
-            _ = try AuthBootstrap.requireAuthenticated(traceAX: false)
+            kakao = try AuthBootstrap.requireAuthenticated(traceAX: false)
             print("Authentication: ✓ Ready")
         } catch {
             print("Authentication: ✗ \(error.localizedDescription)")
@@ -49,18 +50,13 @@ struct StatusCommand: ParsableCommand {
         // Get detailed info if verbose
         if verbose {
             print("")
-            do {
-                let kakao = try AuthBootstrap.requireAuthenticated(traceAX: false)
-                let windows = kakao.windows
+            let windows = kakao.windows
 
-                print("Windows (\(windows.count)):")
-                for (index, window) in windows.enumerated() {
-                    let title = window.title ?? "(untitled)"
-                    let frame = window.frame.map { "(\(Int($0.origin.x)), \(Int($0.origin.y))) \(Int($0.size.width))x\(Int($0.size.height))" } ?? "unknown"
-                    print("  [\(index)] \(title) - \(frame)")
-                }
-            } catch {
-                print("Error accessing KakaoTalk: \(error)")
+            print("Windows (\(windows.count)):")
+            for (index, window) in windows.enumerated() {
+                let title = window.title ?? "(untitled)"
+                let frame = window.frame.map { "(\(Int($0.origin.x)), \(Int($0.origin.y))) \(Int($0.size.width))x\(Int($0.size.height))" } ?? "unknown"
+                print("  [\(index)] \(title) - \(frame)")
             }
         }
 

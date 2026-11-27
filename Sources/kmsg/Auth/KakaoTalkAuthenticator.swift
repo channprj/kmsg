@@ -68,6 +68,19 @@ private struct PostLoginAcknowledgement {
     let message: String
 }
 
+private enum PostLoginAcknowledgementResult {
+    case notPresent
+    case dismissed
+    case failedToDismiss
+}
+
+private enum LoginFormSearchResult {
+    case authenticated
+    case unlocked
+    case form(LoginForm)
+    case notFound
+}
+
 final class KakaoTalkAuthenticator {
     private let kakao: KakaoTalkApp
     private let runner: AXActionRunner
@@ -81,11 +94,9 @@ final class KakaoTalkAuthenticator {
         using store: CredentialStore,
         mode: AuthenticationMode
     ) throws -> AuthenticationOutcome {
-        // KakaoTalk may be running with its main window closed (the user closed the window
-        // but left the app running in the background). Activation alone won't reopen it, so
-        // an already-authenticated session would be misread as logged-out and fall through to
-        // a failing blind keyboard login. Reopen the window once before evaluating auth state.
-        _ = kakao.ensureWindowReopened(timeout: 3.0, trace: { [self] message in
+        // KakaoTalk may be freshly launched (window still opening) or running with its main
+        // window closed in the background. Wait for a usable window before evaluating auth state.
+        _ = kakao.ensureWindowReopened(timeout: 6.0, trace: { [self] message in
             runner.log("auth: \(message)")
         })
 
@@ -94,19 +105,35 @@ final class KakaoTalkAuthenticator {
         if mode == .promptForFreshCredentials {
             let prompted = try PasswordPrompt.promptForCredentials(defaultIdentifier: store.storedIdentifier())
 
+            if try completeLoginIfPostLoginAcknowledgementPresent(using: store) {
+                try store.save(identifier: prompted.identifier, password: prompted.password)
+                return .loggedIn
+            }
+
             if isAuthenticated() {
                 try store.save(identifier: prompted.identifier, password: prompted.password)
                 return .alreadyAuthenticated
             }
 
-            guard let form = findLoginForm() else {
-                try performBlindLogin(with: prompted)
+            switch try findLoginFormOrAuthCompletion(using: store) {
+            case .authenticated:
+                try store.save(identifier: prompted.identifier, password: prompted.password)
+                return .loggedIn
+            case .unlocked:
+                try store.save(identifier: prompted.identifier, password: prompted.password)
+                return .unlocked
+            case .form(let form):
+                try performLogin(with: prompted, form: form, using: store)
+                try store.save(identifier: prompted.identifier, password: prompted.password)
+                return .loggedIn
+            case .notFound:
+                try performBlindLogin(with: prompted, using: store)
                 try store.save(identifier: prompted.identifier, password: prompted.password)
                 return .loggedIn
             }
+        }
 
-            try performLogin(with: prompted, form: form)
-            try store.save(identifier: prompted.identifier, password: prompted.password)
+        if try completeLoginIfPostLoginAcknowledgementPresent(using: store) {
             return .loggedIn
         }
 
@@ -116,22 +143,33 @@ final class KakaoTalkAuthenticator {
 
         let storedCredentials = try store.loadCredentials()
         let credentials = try storedCredentials ?? PasswordPrompt.promptForCredentials(defaultIdentifier: store.storedIdentifier())
-        guard let form = findLoginForm() else {
-            try performBlindLogin(with: credentials)
+        switch try findLoginFormOrAuthCompletion(using: store) {
+        case .authenticated:
+            if storedCredentials == nil {
+                try store.save(identifier: credentials.identifier, password: credentials.password)
+            }
+            return .loggedIn
+        case .unlocked:
+            if storedCredentials == nil {
+                try store.save(identifier: credentials.identifier, password: credentials.password)
+            }
+            return .unlocked
+        case .form(let form):
+            try performLogin(with: credentials, form: form, using: store)
+            if storedCredentials == nil {
+                try store.save(identifier: credentials.identifier, password: credentials.password)
+            }
+            return .loggedIn
+        case .notFound:
+            try performBlindLogin(with: credentials, using: store)
             if storedCredentials == nil {
                 try store.save(identifier: credentials.identifier, password: credentials.password)
             }
             return .loggedIn
         }
-
-        try performLogin(with: credentials, form: form)
-        if storedCredentials == nil {
-            try store.save(identifier: credentials.identifier, password: credentials.password)
-        }
-        return .loggedIn
     }
 
-    private func performLogin(with credentials: DecryptedCredentials, form: LoginForm) throws {
+    private func performLogin(with credentials: DecryptedCredentials, form: LoginForm, using store: CredentialStore) throws {
         runner.log("auth: using login window title='\(form.window.title ?? "")'")
         print("Attempting KakaoTalk login...")
 
@@ -167,9 +205,7 @@ final class KakaoTalkAuthenticator {
             runner.pressEnterKey()
         }
 
-        let loggedIn = runner.waitUntil(label: "auth completion", timeout: 10.0, pollInterval: 0.2) { [self] in
-            isAuthenticated()
-        }
+        let loggedIn = waitForAuthenticationCompletion(using: store, timeout: 12.0)
         guard loggedIn else {
             throw AuthenticationError.loginFailed
         }
@@ -204,7 +240,7 @@ final class KakaoTalkAuthenticator {
         return true
     }
 
-    private func performBlindLogin(with credentials: DecryptedCredentials) throws {
+    private func performBlindLogin(with credentials: DecryptedCredentials, using store: CredentialStore) throws {
         runner.log("auth: login form not found; falling back to keyboard-only login")
         print("Attempting KakaoTalk login with keyboard fallback...")
         kakao.activate()
@@ -231,33 +267,74 @@ final class KakaoTalkAuthenticator {
             pressBlindSubmitSequence([.tab], label: "auth blind submit tab-space")
         }
 
-        if !runner.waitUntil(label: "auth blind completion", timeout: 2.0, pollInterval: 0.2, evaluateAfterTimeout: false, condition: { [self] in
-            isAuthenticated()
-        }) {
+        if !waitForBlindSubmitStep(timeout: 2.0, label: "auth blind completion") {
             runner.log("auth: first blind submit did not complete; retrying with extended Tab traversal")
             pressBlindSubmitSequence([.tab, .tab], label: "auth blind submit tab-tab-space")
         }
 
-        if !runner.waitUntil(label: "auth blind completion retry", timeout: 1.2, pollInterval: 0.2, evaluateAfterTimeout: false, condition: { [self] in
-            isAuthenticated()
-        }) {
+        if !waitForBlindSubmitStep(timeout: 1.2, label: "auth blind completion retry") {
             runner.log("auth: keyboard traversal still pending; retrying with reverse traversal")
             pressBlindSubmitSequence([.shiftTab], label: "auth blind submit shift-tab-space")
         }
 
-        let loggedIn = runner.waitUntil(label: "auth completion", timeout: 10.0, pollInterval: 0.2) { [self] in
-            isAuthenticated()
-        }
+        let loggedIn = waitForAuthenticationCompletion(using: store, timeout: 12.0)
         guard loggedIn else {
             throw AuthenticationError.loginFailed
         }
     }
 
+    private func waitForBlindSubmitStep(timeout: TimeInterval, label: String) -> Bool {
+        var sawAcknowledgement = false
+        let ready = runner.waitUntil(label: label, timeout: timeout, pollInterval: 0.2, evaluateAfterTimeout: false) { [self] in
+            switch handlePostLoginAcknowledgementIfPresent() {
+            case .dismissed:
+                sawAcknowledgement = true
+                return true
+            case .failedToDismiss:
+                sawAcknowledgement = true
+                return true
+            case .notPresent:
+                return isAuthenticatedWindowReady()
+            }
+        }
+        return ready || sawAcknowledgement
+    }
+
+    private func completeLoginIfPostLoginAcknowledgementPresent(using store: CredentialStore) throws -> Bool {
+        switch handlePostLoginAcknowledgementIfPresent() {
+        case .notPresent:
+            return false
+        case .dismissed:
+            print("Confirming KakaoTalk login on this device...")
+            return waitForAuthenticationCompletion(using: store, timeout: 12.0)
+        case .failedToDismiss:
+            throw AuthenticationError.loginFailed
+        }
+    }
+
+    private func waitForAuthenticationCompletion(using store: CredentialStore, timeout: TimeInterval) -> Bool {
+        runner.waitUntil(label: "auth completion", timeout: timeout, pollInterval: 0.2) { [self] in
+            switch handlePostLoginAcknowledgementIfPresent() {
+            case .dismissed, .failedToDismiss:
+                return false
+            case .notPresent:
+                break
+            }
+
+            _ = try? unlockLockScreenIfPresent(using: store)
+            return isAuthenticatedWindowReady()
+        }
+    }
+
     private func isAuthenticated() -> Bool {
-        if dismissPostLoginAcknowledgementIfPresent() {
+        guard handlePostLoginAcknowledgementIfPresent() == .notPresent else {
             return false
         }
 
+        return isAuthenticatedWindowReady()
+    }
+
+    private func isAuthenticatedWindowReady() -> Bool {
         if let chatListWindow = kakao.chatListWindow, !isLikelyLoginWindow(chatListWindow) {
             runner.log("auth: chatListWindow considered authenticated title='\(chatListWindow.title ?? "")'")
             return true
@@ -277,38 +354,92 @@ final class KakaoTalkAuthenticator {
         return false
     }
 
-    private func dismissPostLoginAcknowledgementIfPresent() -> Bool {
+    private func handlePostLoginAcknowledgementIfPresent() -> PostLoginAcknowledgementResult {
         guard let acknowledgement = resolvePostLoginAcknowledgement() else {
-            return false
+            return .notPresent
         }
 
         let compactMessage = acknowledgement.message.replacingOccurrences(of: "\n", with: " ")
         runner.log("auth: post-login acknowledgement detected text='\(String(compactMessage.prefix(120)))'")
 
-        guard runner.clickWithRetry(acknowledgement.button, label: "auth post-login ok button", attempts: 2) else {
-            runner.log("auth: failed to dismiss post-login acknowledgement")
-            return false
+        kakao.activate()
+
+        do {
+            try acknowledgement.button.press()
+            runner.log("auth post-login ok button: AXPress dispatched")
+        } catch {
+            // Dismissing a modal sheet can trigger synchronous login work that exceeds the
+            // short AX messaging timeout, so verify by screen state instead of failing early.
+            runner.log("auth post-login ok button: AXPress returned (\(error)); verifying modal dismissal")
         }
 
-        Thread.sleep(forTimeInterval: 0.15)
-        runner.log("auth: post-login acknowledgement dismissed")
-        return true
+        if waitForAcknowledgementDismissal(timeout: 1.0) {
+            runner.log("auth: post-login acknowledgement dismissed via AXPress")
+            return .dismissed
+        }
+
+        if let current = resolvePostLoginAcknowledgement(), let frame = current.button.frame {
+            kakao.activate()
+            let center = CGPoint(x: frame.midX, y: frame.midY)
+            runner.mouseClick(at: center, label: "auth post-login ok mouse click")
+            if waitForAcknowledgementDismissal(timeout: 1.0) {
+                runner.log("auth: post-login acknowledgement dismissed via mouse click")
+                return .dismissed
+            }
+        }
+
+        if let current = resolvePostLoginAcknowledgement() {
+            let isDefault = defaultButton(in: current.root).map { CFEqual($0.axElement, current.button.axElement) } ?? false
+            if current.button.isFocused || isDefault {
+                kakao.activate()
+                runner.pressEnterKey()
+                if waitForAcknowledgementDismissal(timeout: 1.0) {
+                    runner.log("auth: post-login acknowledgement dismissed via Enter")
+                    return .dismissed
+                }
+            }
+        }
+
+        runner.log("auth: failed to dismiss post-login acknowledgement")
+        return .failedToDismiss
     }
 
-    private func findLoginForm() -> LoginForm? {
+    private func waitForAcknowledgementDismissal(timeout: TimeInterval) -> Bool {
+        runner.waitUntil(label: "auth post-login acknowledgement dismissal", timeout: timeout, pollInterval: 0.1) { [self] in
+            resolvePostLoginAcknowledgement() == nil
+        }
+    }
+
+    private func findLoginFormOrAuthCompletion(using store: CredentialStore) throws -> LoginFormSearchResult {
         kakao.activate()
-        let deadline = Date().addingTimeInterval(3.5)
+        let deadline = Date().addingTimeInterval(4.5)
         var attempt = 0
         var attemptedResetFromQRCode = false
 
         while Date() < deadline {
             attempt += 1
+
+            if try unlockLockScreenIfPresent(using: store) {
+                return .unlocked
+            }
+
+            if try completeLoginIfPostLoginAcknowledgementPresent(using: store) {
+                return .authenticated
+            }
+
+            if isAuthenticatedWindowReady() {
+                return .authenticated
+            }
+
             let roots = collectLoginSearchRoots()
             runner.log("auth: login search roots=\(roots.count) attempt=\(attempt)")
             for root in roots {
                 if let form = buildLoginForm(from: root) {
+                    if try completeLoginIfPostLoginAcknowledgementPresent(using: store) {
+                        return .authenticated
+                    }
                     runner.log("auth: login form found on attempt \(attempt)")
-                    return form
+                    return .form(form)
                 }
             }
 
@@ -333,7 +464,7 @@ final class KakaoTalkAuthenticator {
             Thread.sleep(forTimeInterval: 0.15)
         }
 
-        return nil
+        return .notFound
     }
 
     private func collectLoginSearchRoots() -> [UIElement] {
@@ -568,32 +699,100 @@ final class KakaoTalkAuthenticator {
 
     private func collectDialogRoots() -> [UIElement] {
         var roots: [UIElement] = []
-        appendUnique(kakao.focusedWindow, to: &roots)
-        appendUnique(kakao.mainWindow, to: &roots)
-        appendUnique(kakao.applicationElement.focusedUIElement, to: &roots)
-        appendFocusedElementAncestorChain(from: kakao.applicationElement.focusedUIElement, to: &roots)
+        let candidateWindows: [UIElement?] = [kakao.focusedWindow, kakao.mainWindow] + kakao.windows.map { Optional($0) }
 
-        let systemWide = UIElement.systemWide()
-        appendUnique(systemWide.focusedUIElement, to: &roots)
-        appendFocusedElementAncestorChain(from: systemWide.focusedUIElement, to: &roots)
+        // Check attached sheets first: KakaoTalk presents the "logged in on another device"
+        // modal as an AXSheet child of the Login window, where scanning the parent window first
+        // can saturate button search limits on background login buttons.
+        for window in candidateWindows {
+            guard let window else { continue }
+            appendAttachedSheets(from: window, to: &roots)
+        }
 
-        for window in kakao.windows {
+        let appFocused = kakao.applicationElement.focusedUIElement
+        let systemFocused = UIElement.systemWide().focusedUIElement
+        appendSheetAncestors(from: appFocused, to: &roots)
+        appendSheetAncestors(from: systemFocused, to: &roots)
+
+        for window in candidateWindows {
             appendUnique(window, to: &roots)
         }
+
+        appendUnique(appFocused, to: &roots)
+        appendFocusedElementAncestorChain(from: appFocused, to: &roots)
+        appendUnique(systemFocused, to: &roots)
+        appendFocusedElementAncestorChain(from: systemFocused, to: &roots)
 
         appendUnique(kakao.applicationElement, to: &roots)
         return roots
     }
 
+    private func appendAttachedSheets(from window: UIElement, to roots: inout [UIElement]) {
+        if let sheets: [AXUIElement] = window.attributeOptional(kAXSheetsAttribute) {
+            for sheet in sheets {
+                appendUnique(UIElement(sheet), to: &roots)
+            }
+        }
+        for child in window.children where child.role == kAXSheetRole {
+            appendUnique(child, to: &roots)
+        }
+    }
+
+    private func appendSheetAncestors(from element: UIElement?, to roots: inout [UIElement]) {
+        var current = element
+        var remaining = 8
+        while let candidate = current, remaining > 0 {
+            if candidate.role == kAXSheetRole {
+                appendUnique(candidate, to: &roots)
+            }
+            current = candidate.parent
+            remaining -= 1
+        }
+    }
+
+    private func defaultButton(in root: UIElement) -> UIElement? {
+        guard let axButton: AXUIElement = root.attributeOptional(kAXDefaultButtonAttribute) else {
+            return nil
+        }
+        return UIElement(axButton)
+    }
+
     private func resolvePostLoginAcknowledgement(in root: UIElement) -> PostLoginAcknowledgement? {
+        let isSheet = root.role == kAXSheetRole
+        if !isSheet {
+            let shallow = shallowDescendants(of: root)
+            if shallow.contains(where: { $0.role == kAXScrollAreaRole || $0.role == kAXTableRole }) {
+                return nil
+            }
+            if buildLoginForm(from: root) != nil {
+                return nil
+            }
+        }
+
         let message = collectDialogText(from: root)
         guard containsPostLoginAcknowledgementMarkers(message) else {
             return nil
         }
 
-        let buttons = root.findAll(role: kAXButtonRole, limit: 8, maxNodes: 220)
-        guard let button = buttons.max(by: { scoreAcknowledgementButton($0) < scoreAcknowledgementButton($1) }),
-              scoreAcknowledgementButton(button) > 0
+        let rootDefaultButton = defaultButton(in: root)
+        var buttons = root.findAll(role: kAXButtonRole, limit: 24, maxNodes: 260)
+        if let rootDefaultButton {
+            appendUnique(rootDefaultButton, to: &buttons)
+        }
+
+        let bestButton = buttons.max { lhs, rhs in
+            let lhsScore = scoreAcknowledgementButton(lhs, defaultButton: rootDefaultButton)
+            let rhsScore = scoreAcknowledgementButton(rhs, defaultButton: rootDefaultButton)
+            if lhsScore == rhsScore {
+                let lhsX = lhs.frame?.midX ?? -.greatestFiniteMagnitude
+                let rhsX = rhs.frame?.midX ?? -.greatestFiniteMagnitude
+                return lhsX < rhsX
+            }
+            return lhsScore < rhsScore
+        }
+
+        guard let button = bestButton,
+              scoreAcknowledgementButton(button, defaultButton: rootDefaultButton) > 0
         else {
             return nil
         }
@@ -837,8 +1036,12 @@ final class KakaoTalkAuthenticator {
             "you are currently logged in",
             "you are already logged in",
             "logged in on another device",
+            "automatically logged out",
             "이미 로그인",
             "로그인되어 있습니다",
+            "다른 기기에서 로그인",
+            "다른 pc에서 로그인",
+            "자동으로 로그아웃",
         ]
 
         if exactMarkers.contains(where: text.contains) {
@@ -846,15 +1049,18 @@ final class KakaoTalkAuthenticator {
         }
 
         let hasLoggedInMarker =
-            text.contains("logged in") ||
+            (text.contains("logged in") && !text.contains("keep me logged in")) ||
             text.contains("이미 로그인") ||
-            text.contains("로그인되어")
+            text.contains("로그인되어") ||
+            text.contains("로그인 중")
         let hasPromptMarker =
             text.contains("ok") ||
             text.contains("확인") ||
             text.contains("currently") ||
             text.contains("already") ||
-            text.contains("device")
+            text.contains("device") ||
+            text.contains("다른 기기") ||
+            text.contains("다른 pc")
 
         return hasLoggedInMarker && hasPromptMarker
     }
@@ -950,17 +1156,28 @@ final class KakaoTalkAuthenticator {
         return score
     }
 
-    private func scoreAcknowledgementButton(_ button: UIElement) -> Int {
+    private func scoreAcknowledgementButton(_ button: UIElement, defaultButton: UIElement? = nil) -> Int {
         let texts = buttonTextCandidates(button)
+        let negativeLabels: Set<String> = ["cancel", "취소", "no", "아니오", "close", "닫기"]
+        if texts.contains(where: { negativeLabels.contains($0) }) {
+            return -200
+        }
+
         var score = 0
         if texts.contains("ok") {
             score += 140
         }
         if texts.contains("확인") {
-            score += 120
+            score += 140
         }
         if texts.contains("confirm") {
             score += 100
+        }
+        if texts.contains("continue") || texts.contains("계속") {
+            score += 80
+        }
+        if let defaultButton, CFEqual(defaultButton.axElement, button.axElement) {
+            score += 80
         }
         if button.isEnabled {
             score += 20

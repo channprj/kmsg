@@ -270,6 +270,12 @@ struct AXActionRunner {
         }
     }
 
+    /// Post a left-button single-click at the given screen point.
+    func mouseClick(at point: CGPoint, label: String) {
+        log("\(label): click at (\(Int(point.x)),\(Int(point.y)))")
+        postMouseClicks(at: point, clickCount: 1)
+    }
+
     /// Post a left-button double-click at the given screen point.
     /// KakaoTalk's search/chat-list rows expose only AXShowDefaultUI/AXShowAlternateUI and
     /// ignore both AXPress and keyboard Enter, so a hardware-level double-click is the only
