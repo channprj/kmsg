@@ -32,11 +32,26 @@ private enum MCPStdioTransport {
 private final class MCPDataBuffer: @unchecked Sendable {
     private let lock = NSLock()
     private var data = Data()
+    private var lastWriteUptime = ProcessInfo.processInfo.systemUptime
 
     func store(_ newData: Data) {
         lock.lock()
         data = newData
+        lastWriteUptime = ProcessInfo.processInfo.systemUptime
         lock.unlock()
+    }
+
+    func append(_ chunk: Data) {
+        lock.lock()
+        data.append(chunk)
+        lastWriteUptime = ProcessInfo.processInfo.systemUptime
+        lock.unlock()
+    }
+
+    func lastWriteTime() -> TimeInterval {
+        lock.lock()
+        defer { lock.unlock() }
+        return lastWriteUptime
     }
 
     func load() -> Data {
@@ -47,6 +62,12 @@ private final class MCPDataBuffer: @unchecked Sendable {
 }
 
 private final class KmsgSubprocessRunner {
+    /// Limits for commands that drive the KakaoTalk UI (read/send/send-image).
+    /// Cold runs measured 10-18s with silent gaps up to ~8s, so they fail on
+    /// 12s without stderr output (the `--trace-ax` heartbeat) under a 30s ceiling.
+    static let uiIdleTimeoutSec: TimeInterval = 12.0
+    static let uiHardTimeoutSec: TimeInterval = 30.0
+
     let executablePath: String
 
     init() {
@@ -57,8 +78,13 @@ private final class KmsgSubprocessRunner {
         }
     }
 
-    func run(_ arguments: [String], timeoutSec: TimeInterval) -> MCPCommandResult {
-        let start = Date()
+    /// - Parameters:
+    ///   - timeoutSec: Hard ceiling for the whole run.
+    ///   - idleTimeoutSec: When set, the run is also killed after this many seconds
+    ///     without stderr output. `--trace-ax` lines are written to stderr unbuffered,
+    ///     so they act as a progress heartbeat. When nil, behavior is unchanged.
+    func run(_ arguments: [String], timeoutSec: TimeInterval, idleTimeoutSec: TimeInterval? = nil) -> MCPCommandResult {
+        let startUptime = ProcessInfo.processInfo.systemUptime
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executablePath)
         process.arguments = arguments
@@ -75,7 +101,7 @@ private final class KmsgSubprocessRunner {
                 returncode: 127,
                 stdout: "",
                 stderr: String(describing: error),
-                latencyMs: Int(Date().timeIntervalSince(start) * 1000),
+                latencyMs: Int((ProcessInfo.processInfo.systemUptime - startUptime) * 1000),
                 timedOut: false
             )
         }
@@ -90,7 +116,12 @@ private final class KmsgSubprocessRunner {
             stdoutSemaphore.signal()
         }
         DispatchQueue.global().async {
-            stderrData.store(stderrPipe.fileHandleForReading.readDataToEndOfFile())
+            let handle = stderrPipe.fileHandleForReading
+            while true {
+                let chunk = autoreleasepool { handle.availableData }
+                if chunk.isEmpty { break }
+                stderrData.append(chunk)
+            }
             stderrSemaphore.signal()
         }
 
@@ -100,7 +131,19 @@ private final class KmsgSubprocessRunner {
             waitSemaphore.signal()
         }
 
-        let timedOut = waitSemaphore.wait(timeout: .now() + timeoutSec) == .timedOut
+        var timedOut = false
+        if let idleTimeoutSec {
+            while waitSemaphore.wait(timeout: .now() + 0.25) == .timedOut {
+                let now = ProcessInfo.processInfo.systemUptime
+                if (now - startUptime) > timeoutSec
+                    || (now - stderrData.lastWriteTime()) > idleTimeoutSec {
+                    timedOut = true
+                    break
+                }
+            }
+        } else {
+            timedOut = waitSemaphore.wait(timeout: .now() + timeoutSec) == .timedOut
+        }
         if timedOut {
             process.terminate()
 
@@ -126,7 +169,7 @@ private final class KmsgSubprocessRunner {
             returncode: process.terminationStatus,
             stdout: stdout,
             stderr: stderr,
-            latencyMs: Int(Date().timeIntervalSince(start) * 1000),
+            latencyMs: Int((ProcessInfo.processInfo.systemUptime - startUptime) * 1000),
             timedOut: timedOut
         )
     }
@@ -501,10 +544,15 @@ private final class KmsgMCPServer {
         if deepRecovery { command.append("--deep-recovery") }
         if backgroundSafe { command.append("--background-safe") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let timeoutSec = deepRecovery ? 15.0 : 8.0
-        var first = runner.run(command, timeoutSec: timeoutSec)
+        var first = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
 
         if first.timedOut {
             return errorPayload(
@@ -512,28 +560,41 @@ private final class KmsgMCPServer {
                 message: "kmsg read timed out",
                 hint: "Increase stability (keep KakaoTalk open/focused) and retry.",
                 rawStdout: first.stdout,
-                rawStderr: first.stderr,
+                rawStderr: responseStderr(first.stderr, traceAX: traceAX),
                 latencyMs: first.latencyMs
             )
         }
 
         if first.returncode != 0 {
-            let combined = "\(first.stdout)\n\(first.stderr)"
+            let combined = "\(first.stdout)\n\(stripTraceLines(first.stderr))"
             let code = extractErrorCode(combined)
             if code == "CHAT_NOT_FOUND" && !deepRecovery && !backgroundSafe {
                 var retryCommand = command
                 retryCommand.append("--deep-recovery")
-                let retry = runner.run(retryCommand, timeoutSec: 15.0)
+                let retry = runner.run(
+                    retryCommand,
+                    timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+                    idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+                )
                 if retry.returncode == 0 && !retry.timedOut {
                     first = retry
+                } else if retry.timedOut {
+                    return errorPayload(
+                        code: "PROCESS_TIMEOUT",
+                        message: "kmsg read timed out after deep-recovery retry",
+                        hint: "Increase stability (keep KakaoTalk open/focused) and retry.",
+                        rawStdout: retry.stdout,
+                        rawStderr: responseStderr(retry.stderr, traceAX: traceAX),
+                        latencyMs: retry.latencyMs
+                    )
                 } else {
-                    let retryCode = extractErrorCode("\(retry.stdout)\n\(retry.stderr)")
+                    let retryCode = extractErrorCode("\(retry.stdout)\n\(stripTraceLines(retry.stderr))")
                     return errorPayload(
                         code: retryCode,
                         message: "kmsg read failed after deep-recovery retry",
                         hint: mapHint(retryCode),
                         rawStdout: retry.stdout,
-                        rawStderr: retry.stderr,
+                        rawStderr: responseStderr(retry.stderr, traceAX: traceAX),
                         latencyMs: retry.latencyMs
                     )
                 }
@@ -543,7 +604,7 @@ private final class KmsgMCPServer {
                     message: "kmsg read failed",
                     hint: mapHint(code),
                     rawStdout: first.stdout,
-                    rawStderr: first.stderr,
+                    rawStderr: responseStderr(first.stderr, traceAX: traceAX),
                     latencyMs: first.latencyMs
                 )
             }
@@ -555,7 +616,7 @@ private final class KmsgMCPServer {
                 message: "kmsg returned non-JSON output for read --json",
                 hint: "Run kmsg read manually and confirm JSON-only stdout.",
                 rawStdout: first.stdout,
-                rawStderr: first.stderr,
+                rawStderr: responseStderr(first.stderr, traceAX: traceAX),
                 latencyMs: first.latencyMs
             )
         }
@@ -614,27 +675,33 @@ private final class KmsgMCPServer {
         var command = ["send", chat, message]
         if deepRecovery { command.append("--deep-recovery") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let run = runner.run(command, timeoutSec: deepRecovery ? 18.0 : 10.0)
+        let run = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
         if run.timedOut {
             return errorPayload(
                 code: "PROCESS_TIMEOUT",
                 message: "kmsg send timed out",
                 hint: "Retry after ensuring KakaoTalk is responsive.",
                 rawStdout: run.stdout,
-                rawStderr: run.stderr,
+                rawStderr: responseStderr(run.stderr, traceAX: traceAX),
                 latencyMs: run.latencyMs
             )
         }
         if run.returncode != 0 {
-            let code = extractErrorCode("\(run.stdout)\n\(run.stderr)")
+            let code = extractErrorCode("\(run.stdout)\n\(stripTraceLines(run.stderr))")
             return errorPayload(
                 code: code,
                 message: "kmsg send failed",
                 hint: mapHint(code),
                 rawStdout: run.stdout,
-                rawStderr: run.stderr,
+                rawStderr: responseStderr(run.stderr, traceAX: traceAX),
                 latencyMs: run.latencyMs
             )
         }
@@ -701,27 +768,33 @@ private final class KmsgMCPServer {
         var command = ["send-image", chat, imagePath]
         if deepRecovery { command.append("--deep-recovery") }
         if keepWindow { command.append("--keep-window") }
-        if traceAX { command.append("--trace-ax") }
+        // Always trace: stderr trace lines are the heartbeat for the idle timeout.
+        // stderr is still only surfaced in the response when traceAX was requested.
+        command.append("--trace-ax")
 
-        let run = runner.run(command, timeoutSec: deepRecovery ? 20.0 : 12.0)
+        let run = runner.run(
+            command,
+            timeoutSec: KmsgSubprocessRunner.uiHardTimeoutSec,
+            idleTimeoutSec: KmsgSubprocessRunner.uiIdleTimeoutSec
+        )
         if run.timedOut {
             return errorPayload(
                 code: "PROCESS_TIMEOUT",
                 message: "kmsg send-image timed out",
                 hint: "Retry after ensuring KakaoTalk is responsive.",
                 rawStdout: run.stdout,
-                rawStderr: run.stderr,
+                rawStderr: responseStderr(run.stderr, traceAX: traceAX),
                 latencyMs: run.latencyMs
             )
         }
         if run.returncode != 0 {
-            let code = extractErrorCode("\(run.stdout)\n\(run.stderr)")
+            let code = extractErrorCode("\(run.stdout)\n\(stripTraceLines(run.stderr))")
             return errorPayload(
                 code: code,
                 message: "kmsg send-image failed",
                 hint: mapHint(code),
                 rawStdout: run.stdout,
-                rawStderr: run.stderr,
+                rawStderr: responseStderr(run.stderr, traceAX: traceAX),
                 latencyMs: run.latencyMs
             )
         }
@@ -741,6 +814,18 @@ private final class KmsgMCPServer {
             response["meta"] = meta
         }
         return response
+    }
+
+    private func stripTraceLines(_ stderr: String) -> String {
+        guard !stderr.isEmpty else { return "" }
+        let kept = stderr
+            .split(omittingEmptySubsequences: false, whereSeparator: \.isNewline)
+            .filter { !$0.hasPrefix("[trace-ax]") }
+        return kept.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func responseStderr(_ stderr: String, traceAX: Bool) -> String {
+        traceAX ? stderr : stripTraceLines(stderr)
     }
 
     private func errorPayload(
